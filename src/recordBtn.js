@@ -1,4 +1,6 @@
 import React from "react"
+import './css/recordBtn.css'
+
 let leftDataList = [], rightDataList = [];
 let audioContext = null;
 let mediaNode = null, jsNode = null;
@@ -208,9 +210,9 @@ export default class RecordBtn extends React.Component {
         if (!this.state.recoding && leftDataList.length && rightDataList.length){
             return (
                 <div>
-                    <button onClick={this.handleClick}>{text}</button>
-                    <button onClick={this.playRecord}>replay</button>
-                    <button onClick={this.uploadRecord}>upload</button>
+                    <button className="button" onClick={this.handleClick}>{text}</button>
+                    <button className="button" onClick={this.playRecord}>replay</button>
+                    <button className="button" onClick={this.uploadRecord}>upload</button>
                     <audio src={this.state.relpay} autoPlay></audio>
                 </div>
                 );
@@ -218,7 +220,7 @@ export default class RecordBtn extends React.Component {
         else{
             return (
                 <div>
-                    <button onClick={this.handleClick}>{text}</button>
+                    <button className="button" onClick={this.handleClick}>{text}</button>
                 </div>
                 );
         }

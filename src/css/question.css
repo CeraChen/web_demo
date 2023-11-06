@@ -1,0 +1,35 @@
+#question_area {
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 10px;
+}
+
+
+#part {
+    text-align: left;
+    font-weight: 700;
+}
+
+#source {
+    margin-top: -10px;
+    font-style: italic;
+    text-align: left;
+    font-weight: 350;
+}
+
+#title {
+    font-weight: 500;
+    text-align: center;
+}
+
+#content {
+    text-align: justify;
+    white-space: pre-line;
+    font-weight: 350;
+}
+
+.sub_questions {
+    margin-left: 5%;
+    text-align: left;
+    font-weight: 500;
+}

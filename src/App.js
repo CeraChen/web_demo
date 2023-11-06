@@ -1,10 +1,12 @@
 import logo from './logo.svg';
-import './App.css';
+import './css/App.css';
 import RecordBtn from './recordBtn';
+import Question from './question';
 
 function App() {
   return (
     <div className="App">
+      <Question/>
       <RecordBtn/>
       {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
