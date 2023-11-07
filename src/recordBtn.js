@@ -143,16 +143,24 @@ export default class RecordBtn extends React.Component {
         formData.append('time', Date.now());
         formData.append('part', 'A');
 
-        fetch('/upload', {
+        fetch('http://143.89.162.149:80/upload', {
             method: 'POST',
+            mode: 'no-cors',
             body: formData
         })
-        .then(function(response) {
-            console.log('Successfully uploaded!');
+        // .then((response) => response.json())
+        .then((result) => {
+          console.log("Success:", result);
         })
-        .catch(function(error) {
-            console.error('Fail to upload:', error);
+        .catch((error) => {
+          console.error("Error:", error);
         });
+        // .then(function(response) {
+        //     console.log('Successfully uploaded!');
+        // })
+        // .catch(function(error) {
+        //     console.error('Fail to upload:', error);
+        // });
     }
     
     

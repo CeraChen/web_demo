@@ -3,25 +3,16 @@ import './css/App.css';
 import RecordBtn from './recordBtn';
 import Question from './question';
 
+let PART_A = 0;
+let PART_B = 1;
+let Q_NUM = 1;
+
 function App() {
+  var current_part = PART_A;
   return (
     <div className="App">
-      <Question/>
-      <RecordBtn/>
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
+      <Question part={current_part} q_num={Q_NUM}/>
+      <RecordBtn part={current_part}/>
     </div>
   );
 }
