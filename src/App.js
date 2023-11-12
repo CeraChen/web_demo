@@ -8,7 +8,7 @@ let PART_B = 1;
 let Q_NUM = 1;
 
 function App() {
-  var current_part = PART_A;
+  var current_part = PART_B;
   return (
     <div className="App">
       <Question part={current_part} q_num={Q_NUM}/>

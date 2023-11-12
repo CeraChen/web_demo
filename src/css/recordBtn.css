@@ -1,4 +1,4 @@
-.button {
+.button:not(#pause_resume_button) {
     margin-left: 50px;
     margin-right: 50px;
     margin-top: 10px;
@@ -16,11 +16,15 @@
     display: inline;
 }
 
-.button:not(#replay_button) {
+.button:not(#replay_button, #stop_replay_button, #pause_resume_button) {
     width: 120px;
 }
 
 #replay_button {
+    width: 165px;
+}
+
+#stop_replay_button {
     width: 165px;
 }
 
@@ -35,9 +39,41 @@
     left: 2px;
 }
 
-.button:hover {
+#timing {
+    position: relative;
+    bottom: 6px;
+    left: 2px;
+}
+
+
+#pause_resume_button {
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: lightcoral;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px grey;
+    text-align: center;
+    vertical-align: middle;
+    font-size: small;
+    font-weight: bold;
+    height: 45px;
+    width: 80px;
+    display: inline;
+}
+
+
+#pause_resume_button:hover{
+    background-color: lightpink;
+}
+
+.button:not(#pause_resume_button):hover {
     background-color: rgb(85, 218, 173);
 }
+
 
 .button:hover .button_icon{
     display: none;
@@ -52,8 +88,20 @@
     display: none;
 }
 
-.button:active {    
+.button:hover #timing {
+    display: none;
+}
+
+.button:not(#pause_resume_button):active {    
     background-color: aquamarine;
+    color: lightgray;
+    box-shadow: 0 4px #666;
+    transform: translateY(4px);
+}
+
+
+#pause_resume_button:active {    
+    background-color: mistyrose;
     color: lightgray;
     box-shadow: 0 4px #666;
     transform: translateY(4px);
