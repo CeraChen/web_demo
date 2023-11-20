@@ -1,0 +1,182 @@
+body {
+    background-color: #F4F4F4;
+}
+
+.head {
+    background-color: #515151;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    color: white;
+    font-size: large;
+    font-weight: bold;
+}
+
+#project_icon {
+    width: 25px;
+    height: 25px;
+    position: relative;
+    top: 4.5px;
+    right: 6px;
+}
+
+#project_title {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+
+.side_navigation {
+    position: absolute;
+    width: 180px;
+    height: 460px;
+    background-color: white;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.navi_item {
+    margin-left: 18px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    height: 30px;
+    font-weight: 200;
+}
+
+.navi_icon {
+    width: 17px;
+    height: 17px;
+    margin: 3px;
+    vertical-align: middle;
+    position: relative;
+    top: 1px;
+}
+
+.navi_text {
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+
+
+.sub_entry:not(#module_practice) {
+    background-color: white;
+    border-radius: 10px;
+    width: 480px;
+    height: 200px;
+    margin: 40px;
+    position: relative;
+    left: 32%;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+#module_practice {
+    background-color: white;
+    border-radius: 10px;
+    width: 480px;
+    height: 170px;
+    margin: 40px;
+    position: relative;
+    left: 32%;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+
+.module_title {
+    position: relative;
+    left: 26px;
+    top: 6px;
+    margin-bottom: 28px;
+    font-weight: 400;
+    height: 38px;
+    line-height: 40px;
+}
+
+.module_icon:not(#speaker_icon) {
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+    vertical-align: middle;
+    position: relative;
+    top: 1px;
+}
+
+
+#speaker_icon {
+    width: 19px;
+    height: 19px;
+    margin: 5px;
+    vertical-align: middle;
+    position: relative;
+    top: 1px;
+    left: 3px;
+}
+
+.module_text {
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.mocktest {
+    border: none;
+    width: 62%;
+    height: 45px;
+    line-height: 43px;
+    margin-left: 15%;
+    margin-top: 13px;
+    padding-left: 35px;
+    background-color: rgb(202, 230, 236);
+    font-weight: 500;
+}
+
+.mocktest:hover {
+    background-color: rgb(173, 216, 230);
+}
+
+
+.practice {
+    width: 31%;
+    height: 68px;
+    line-height: 68px;
+    text-align: center;
+    background-color: #C4F1E0;
+    font-weight: 500;
+}
+
+
+#word {
+    float: left;
+    display: inline;
+    margin-left: 15%;
+}
+
+#sentence {
+    float: right;
+    display: inline;
+    margin-right: 15%;
+}
+
+.practice:hover {
+    background-color: rgb(152, 210, 182);
+}
+
+.logo {
+    position: absolute;
+    right: 2%;
+    bottom: 3%;
+}
+
+.ust_logo {
+    width: 20px;
+    margin-right: 7px;
+}
+
+.ust_text {
+    font-size: small;
+    position: relative;
+    top: -9px;
+}

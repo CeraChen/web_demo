@@ -1,6 +1,9 @@
 import React from "react"
 import './css/recordBtn.css'
 
+let PART_A = 0;
+let PART_B = 1;
+
 let leftDataList = [], rightDataList = [];
 let audioContext = null;
 let mediaNode = null, jsNode = null;
@@ -101,6 +104,7 @@ export default class RecordBtn extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            part: props.part,
             isStop: true,
             isPause: false,
             isRecording: false,
@@ -174,22 +178,24 @@ export default class RecordBtn extends React.Component {
             };
 
             ad.ondurationchange = function() {
-                var duration = ad.duration;
-                console.log(ad.duration);
-                var secs = duration;
-                var res = parseInt(duration * 1000) % 1000;
-                var mins = parseInt(secs / 60);
-                secs = parseInt(secs) % 60;
-                mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
-                secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
-                res = (res < 10)? ('0' + res.toString()) : res.toString();
-                mDuration = mins + ":" + secs + "." + res;
-                console.log("mDuration");
-                console.log(mDuration);
-    
-                var dur_span = document.getElementById("duration");
-                if(dur_span){
-                    dur_span.innerText = mDuration;
+                if(ad.duration){
+                    var duration = ad.duration;
+                    console.log(ad.duration);
+                    var secs = duration;
+                    var res = parseInt(duration * 1000) % 1000;
+                    var mins = parseInt(secs / 60);
+                    secs = parseInt(secs) % 60;
+                    mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
+                    secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
+                    res = (res < 10)? ('0' + res.toString()) : res.toString();
+                    mDuration = mins + ":" + secs + "." + res;
+                    console.log("mDuration");
+                    console.log(mDuration);
+        
+                    var dur_span = document.getElementById("duration");
+                    if(dur_span){
+                        dur_span.innerText = mDuration;
+                    }
                 }
             }
           
@@ -227,7 +233,7 @@ export default class RecordBtn extends React.Component {
         formData.append('time', Date.now());
         formData.append('part', 'A');
 
-        fetch('http://143.89.162.149:80/upload', {
+        fetch('http://143.89.191.58:2077/upload', {
             method: 'POST',
             mode: 'no-cors',
             body: formData
@@ -369,7 +375,7 @@ export default class RecordBtn extends React.Component {
                             </button>);
 
             return (
-                <div>
+                <div className="btn_div">
                     <button className="button" onClick={this.startOrStop}>
                         {recordSVG}<span className="label">record</span>
                     </button>
@@ -384,7 +390,7 @@ export default class RecordBtn extends React.Component {
         else{
             if(this.state.isStop){
                 return (
-                    <div>
+                    <div className="btn_div">
                         <button className="button" onClick={this.startOrStop}>
                             {recordSVG}<span className="label">start</span>
                         </button>
@@ -396,7 +402,7 @@ export default class RecordBtn extends React.Component {
                 var mText = (this.state.isPause)? "resume" : "pause";
 
                 return (
-                    <div>
+                    <div className="btn_div">
                         <button className="button" id="pause_resume_button" onClick={this.resumeOrPause}>
                             {mSvg}<span className="label">{mText}</span>
                         </button>
