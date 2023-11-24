@@ -9,14 +9,6 @@ let Q_NUM = 1;
     
 
 function App() {
-  // var current_part = PART_B;
-  // var Mocktest = (
-  //   <div>
-  //       <Question part={current_part} q_num={Q_NUM}/>
-  //       <RecordBtn part={current_part}/>
-  //   </div>
-  // );
-
   return (
     <Routes>
       <Route  path='/' element = {<EntryPage />} />

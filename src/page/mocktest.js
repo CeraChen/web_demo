@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import RecordBtn from '../recordBtn';
-import Question from '../question';
 import { useParams } from 'react-router-dom';
 
 let PART_A = 0;
@@ -12,8 +11,7 @@ function MockTest() {
     var mPart = (part === 'A')? PART_A : PART_B;
     return (
         <div>
-            <Question part={mPart} q_num={1}/>
-            <RecordBtn part={mPart}/>
+            <RecordBtn part={mPart} q_num={1}/>
         </div>
     );
 }

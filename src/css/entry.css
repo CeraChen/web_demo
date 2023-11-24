@@ -1,5 +1,7 @@
 body {
     background-color: #F4F4F4;
+    width: 100%;
+    height: 100%;
 }
 
 .head {
@@ -20,6 +22,7 @@ body {
     top: 4.5px;
     right: 6px;
 }
+
 
 #project_title {
     position: absolute;
