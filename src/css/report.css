@@ -1,0 +1,149 @@
+
+.incorrect {
+    color: red;
+    /* border-radius: 2px; */
+    padding-left: 4px;
+    padding-right: 4px;
+    /* margin-bottom: 3px; */
+    font-style: italic;
+}
+
+td.correct {
+    color: rgb(119, 183, 119);
+}
+
+.active_correct {
+    color: rgb(119, 183, 119);
+    font-weight: bold;
+}
+
+.active_incorrect {
+    color: red;
+    /* border-radius: 2px; */
+    padding-left: 4px;
+    padding-right: 4px;
+    /* margin-bottom: 3px; */
+    font-style: italic;
+    font-weight: bold;
+}
+
+.text_area {
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 50px;
+    font-size: larger;
+    line-height: 32px;
+}
+
+.container {
+    position: relative
+}
+
+.error_detail {
+    width: 260px;
+    height: auto;
+    padding: 10px;
+    position: absolute;
+    top: 28px;
+    background-color: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 2px 2px 4px grey;
+    border-radius: 10px;
+    z-index: 999;
+}
+
+table {
+    margin-left: 15px;
+    margin-right: 16px;
+    margin-bottom: 15px;
+    margin-top: 5px;
+}
+
+table th {
+    width: 80px;
+}
+
+.phone_tab td {
+    text-align: center;
+}
+
+.score_container {
+    margin-top: 80px;
+    text-align: center;
+}
+
+.scores {
+    width: 580px;
+    height: auto;
+    background-color: white;
+     /* rgba(125, 221, 189, 0.522); */
+	margin: auto;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 3px 3px 6px grey;
+    padding-top: 30px;
+    padding-bottom: 40px;
+    padding-left: 10px;
+    padding-right: 60px;
+}
+
+.ielts_score_table {
+    margin: auto;
+}
+
+.overall_score_text {
+    text-align: right;
+    width: 160px;
+}
+
+.overall_score_value {
+    text-align: center;
+}
+
+.sub_score_text {
+    text-align: right;
+    width: 180px;
+    font-weight: bolder;
+    color: rgb(121, 121, 121)
+}
+
+.sub_score_value {
+    text-align: center;
+    font-weight: bolder;
+    color: rgb(121, 121, 121)
+}
+
+.score_bar {
+    width: 250px;
+    position: relative;
+}
+
+.progress_bar {
+    position: absolute;
+}
+
+.short_bar {
+    width: 100%;
+    height: 17px;
+    border-radius: 8px;
+    border: none;
+    background-color: lightgreen
+    /* (26, 108, 26); */
+}
+
+.long_bar {
+    width: 100%;
+    height: 17px;
+    border-radius: 8px;
+    border: none;
+    background-color: rgb(150, 150, 150);
+}
+
+
+/* <div className="score_bar">
+<div className="progress_bar" style={{ width: `${progressPercentage}%`}}>
+  <button className="short_bar"></button>
+</div>
+<button className="long_bar"></button>
+</div> */
