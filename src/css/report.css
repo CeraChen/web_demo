@@ -1,15 +1,36 @@
+.report_main {
+    margin-left: 6%;
+    margin-right: 6%;
+    margin-top: 30px;
+}
+
+.title {    
+    text-align: left;
+    font-weight: 700;
+    /* font-size: large; */
+}
+
+.correct:hover {
+    cursor: pointer;
+}
+
+.incorrect:hover {
+    cursor: pointer;
+}
+
+.active_correct:hover {
+    cursor: pointer;
+}
+
+.active_incorrect:hover {
+    cursor: pointer;
+}
 
 .incorrect {
     color: red;
-    /* border-radius: 2px; */
     padding-left: 4px;
     padding-right: 4px;
-    /* margin-bottom: 3px; */
     font-style: italic;
-}
-
-td.correct {
-    color: rgb(119, 183, 119);
 }
 
 .active_correct {
@@ -19,38 +40,37 @@ td.correct {
 
 .active_incorrect {
     color: red;
-    /* border-radius: 2px; */
     padding-left: 4px;
     padding-right: 4px;
-    /* margin-bottom: 3px; */
     font-style: italic;
     font-weight: bold;
 }
 
+
+td.correct {
+    color: rgb(119, 183, 119);
+}
+
 .text_area {
-    margin-left: 10%;
-    margin-right: 10%;
-    margin-top: 50px;
+    float: left;
+    width: 65%;
+    margin-left: 5%;
+    margin-top: 20px;
     font-size: larger;
     line-height: 32px;
 }
 
-.container {
-    position: relative
+
+.score_container {
+    float: left;
+    width: 27%;
+    margin-right: 3%;
+    margin-top: 20px;
+    text-align: center;
 }
 
-.error_detail {
-    width: 260px;
-    height: auto;
-    padding: 10px;
-    position: absolute;
-    top: 28px;
-    background-color: white;
-    border: none;
-    border-radius: 12px;
-    box-shadow: 2px 2px 4px grey;
-    border-radius: 10px;
-    z-index: 999;
+.container {
+    position: relative;
 }
 
 table {
@@ -68,56 +88,23 @@ table th {
     text-align: center;
 }
 
-.score_container {
-    margin-top: 80px;
-    text-align: center;
-}
 
-.scores {
-    width: 580px;
+.error_detail {
+    width: 260px;
     height: auto;
+    padding: 10px;
+    position: absolute;
+    /* top: 200px; */
+    top: 28px;
     background-color: white;
-     /* rgba(125, 221, 189, 0.522); */
-	margin: auto;
     border: none;
     border-radius: 12px;
-    box-shadow: 3px 3px 6px grey;
-    padding-top: 30px;
-    padding-bottom: 40px;
-    padding-left: 10px;
-    padding-right: 60px;
+    box-shadow: 2px 2px 4px grey;
+    border-radius: 10px;
+    z-index: 999;
 }
 
-.ielts_score_table {
-    margin: auto;
-}
 
-.overall_score_text {
-    text-align: right;
-    width: 160px;
-}
-
-.overall_score_value {
-    text-align: center;
-}
-
-.sub_score_text {
-    text-align: right;
-    width: 180px;
-    font-weight: bolder;
-    color: rgb(121, 121, 121)
-}
-
-.sub_score_value {
-    text-align: center;
-    font-weight: bolder;
-    color: rgb(121, 121, 121)
-}
-
-.score_bar {
-    width: 250px;
-    position: relative;
-}
 
 .progress_bar {
     position: absolute;
@@ -125,25 +112,59 @@ table th {
 
 .short_bar {
     width: 100%;
-    height: 17px;
     border-radius: 8px;
     border: none;
-    background-color: lightgreen
-    /* (26, 108, 26); */
 }
 
 .long_bar {
     width: 100%;
-    height: 17px;
     border-radius: 8px;
     border: none;
-    background-color: rgb(150, 150, 150);
 }
 
 
-/* <div className="score_bar">
-<div className="progress_bar" style={{ width: `${progressPercentage}%`}}>
-  <button className="short_bar"></button>
-</div>
-<button className="long_bar"></button>
-</div> */
+
+.score_item {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.score_label {
+    width: 100%;
+}
+
+.score_bar {
+    width: 100%;
+    position: relative;
+}
+
+.overall_score_text {
+    float: left;
+    margin-left: 10px;
+    font-weight: bolder;
+}
+
+.overall_score_value {
+    float: right;
+    margin-right: 10px;
+    font-weight: bolder;
+}
+
+
+.sub_score_text {
+    float: left;
+    margin-left: 10px;
+    /* text-align: right; */
+    /* width: 180px; */
+    font-weight: bolder;
+    color: rgb(121, 121, 121)
+}
+
+.sub_score_value {
+    float: right;
+    margin-right: 10px;
+    /* text-align: center; */
+    font-weight: bolder;
+    color: rgb(121, 121, 121)
+}
