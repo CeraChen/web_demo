@@ -241,6 +241,12 @@ export default class RecordBtn extends React.Component {
 
     }
 
+    componentWillUnmount() {
+        if(!this.state.isStop) {
+            this.startOrStop();
+        }
+    }
+
     toStartPrepare() {
         this.setState({
             isPreparing: true,

@@ -55,17 +55,10 @@ function Report() {
         if (spanRef.current) {
             const errorDetail = spanRef.current.querySelector(".error_detail");
             const errorDetailWidth = errorDetail.offsetWidth;
-            console.log("errorDetail.offsetWidth");
-            console.log(errorDetail.offsetWidth);
             const screenWidth = window.innerWidth;
-
             const word = document.getElementById(expandedItemIndex.toString());
             const wordLeft = word.offsetLeft;
 
-            console.log("spanRef.current.getBoundingClientRect().left");
-            console.log(spanRef.current.getBoundingClientRect().left);
-            console.log("wordLeft");
-            console.log(wordLeft);
 
             if(wordLeft < 0){
                 errorDetail.style.left = `${wordLeft}px`;

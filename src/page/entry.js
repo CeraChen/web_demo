@@ -54,19 +54,19 @@ export default class EntryPage extends React.Component{
                         <span className="module_text">HKDSE Paper 4 - mock test</span>
                     </div>
 
-                    <div className="mocktest">
-                        <Link to="/mocktest/A" style={{ textDecoration:'none', color: 'black'}}>
+                    <Link to="/mocktest/A" style={{ textDecoration:'none', color: 'black'}}>
+                        <button className="mocktest">
                             Part A - Group Discussion
-                        </Link>
-                    </div>
-                    <div className="mocktest">
-                        <Link to="/mocktest/B" style={{ textDecoration:'none', color: 'black'}}>
+                        </button>
+                    </Link>
+                    <Link to="/mocktest/B" style={{ textDecoration:'none', color: 'black'}}>
+                        <button className="mocktest">
                             Part B - Individual Response
-                        </Link>
-                    </div>
+                        </button>
+                    </Link>
                 </div>
 
-                <div className="sub_entry" id="module_practice">
+                {/* <div className="sub_entry" id="module_practice">
                     <div className="module_title">
                         <img className="module_icon" id="speaker_icon" src={speakIcon} alt="speak"></img>
                         <span className="module_text">Script reading - practice</span>
@@ -78,7 +78,7 @@ export default class EntryPage extends React.Component{
                     <div className="practice" id="sentence">
                         Sentences
                     </div>
-                </div>
+                </div> */}
 
                 <div className="logo">
                     <img className="ust_logo" src={USTlogo} alt="ust"></img>
