@@ -1,0 +1,68 @@
+
+.question_area {
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 10px;
+}
+
+.part {
+    text-align: left;
+    font-weight: 700;
+    font-size: large;
+}
+
+.guide {
+    margin-top: -10px;
+    font-style: italic;
+    text-align: left;
+    font-weight: 350;
+}
+
+.part_guide {
+    margin-top: -10px;
+    font-style: italic;
+    text-align: left;
+    font-weight: 350;
+}
+
+.button_area {
+    margin-top: 100px;
+    text-align: center;
+}
+
+.spark {
+    background-color: darkcyan;
+    color: white;
+    border: none;
+    border-radius: 70px;
+    border: solid;
+    border-color: aquamarine;
+    border-width: 7.5px;
+    /* box-shadow: 0 6px grey; */
+    text-align: center;
+    vertical-align: middle;
+    font-size: 25px;
+    font-weight: bold;
+    height: 70px;
+    width: 70px;
+    display: inline;
+    transform: translateY(-2.5px);
+}
+
+.interval {
+    background-color: darkcyan;
+    color: white;
+    border: none;
+    border-radius: 65px;
+    border: solid;
+    border-color: rgba(169, 169, 169);
+    border-width: 5px;
+    /* box-shadow: 0 6px grey; */
+    text-align: center;
+    vertical-align: middle;
+    font-size: 25px;
+    font-weight: bold;
+    height: 65px;
+    width: 65px;
+    display: inline;
+}
