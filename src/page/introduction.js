@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../css/introduction.css"
+import "../css/mocktest.css"
 
 
 const PART_A = 0;
@@ -70,7 +70,7 @@ function Intro( { part, q_num } ) {
 
     return(
         <div>
-            <div className="question_area">
+            <div className="heading">
                 <p className="part">{mPart}</p>
                 <p className="guide">{mGuide}</p>
                 <p className="part_guide">{mText}</p>
