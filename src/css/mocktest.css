@@ -133,48 +133,6 @@
 }
 
 
-#separator {
-    /* width: 10px;
-    background-color: rgba(0,0,0,0);
-    margin-left: 6px; */
-    
-    width: 8px; /* 设置分隔线的宽度 */
-    background-color: #e0e0e0; /* 设置分隔线的颜色 */
-    margin-left: 6px;
-    margin-right: 6px;
-    cursor: col-resize; /* 鼠标样式为调整宽度的指示器 */
-    display: flex;
-    align-items: center;
-    text-align: center;
-}
-
-#separator:hover {
-    width: 8px; /* 设置分隔线的宽度 */
-    background-color: #b2b2b2; /* 设置分隔线的颜色 */
-    margin-left: 6px;
-    margin-right: 6px;
-    cursor: col-resize; /* 鼠标样式为调整宽度的指示器 */
-}
-
-
-.indicator {
-    width: 100%;
-    height: 45px;
-    background-color: #fbfbfb;
-    display: flex;
-    align-items: center;
-}
-
-
-.indicate_icon {
-    stroke-width: 10px;
-    fill: #D5D5D5;
-}
-
-
-.indicate_icon:hover {
-    fill: #b2b2b2;
-}
 
 ::-webkit-scrollbar{
     width: 8px;/* 纵向滚动条*/
@@ -197,4 +155,47 @@
 
 ::-webkit-scrollbar-thumb:hover{
     background-color: #b2b2b2;
+}
+
+.video_subcontainer {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+}
+
+#video_player {
+    max-width: 98%;
+    max-height: 96%;
+}
+
+.indicate_icon {
+    stroke-width: 10px;
+    fill: #fbfbfb;
+}
+
+
+.indicate_icon:hover {
+    fill: #ffffff;
+}
+
+#switch_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: auto;
+    position: absolute;
+    /* right: 50px; */
+    left: 5px;
+    top: 48%;
+    background-color: #d7d7d7;
+    border-radius: 8px;
+}
+
+#switch_btn:hover {
+    background-color: #b2b2b2;
+}
+
+#switch_btn svg {
+    transform: translateX(-2.5px);
 }
