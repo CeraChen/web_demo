@@ -128,7 +128,7 @@
     padding-top: 10px;
     flex: 1;
     min-height: 0; /* 防止内容溢出，允许容器收缩 */
-    margin-left: 10px; /* 可根据需要调整左右间距 */
+    margin-left: 25px; /* 可根据需要调整左右间距 */
     height: 500px; /* 设置容器的固定高度 */
 }
 
@@ -149,7 +149,7 @@
 ::-webkit-scrollbar-thumb{
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0);
     background-color: #D5D5D5;
-    border-radius: 15px;
+    border-radius: 12px;
 }
 
 
@@ -160,7 +160,6 @@
 .video_subcontainer {
     text-align: center;
     width: 100%;
-    height: 100%;
 }
 
 #video_player {
@@ -183,10 +182,11 @@
     align-items: center;
     justify-content: center;
 
-    padding: auto;
+    padding-top: 5px;
+    padding-bottom: 5px;
     position: absolute;
     /* right: 50px; */
-    left: 5px;
+    left: 8px;
     top: 48%;
     background-color: #d7d7d7;
     border-radius: 8px;

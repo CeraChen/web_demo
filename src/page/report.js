@@ -16,10 +16,13 @@ export default class Report extends React.Component{
 
 
     render() {
+        console.log("get url");
+        console.log(this.getUrl({PART_A}));
         return (
             <div>
-                {this.getUrl(PART_A)}
+                {this.getUrl({PART_A})}
                 {/* <Link to="/partA/instruction">start</Link> */}
+                <div>hihi</div>
             </div>
         );
     }
