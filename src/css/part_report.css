@@ -1,3 +1,7 @@
+.main {
+    width: 100%;
+}
+
 .report_main {
     margin-left: 6%;
     margin-right: 6%;
@@ -54,7 +58,7 @@ td.correct {
 .text_area {
     float: left;
     width: 65%;
-    margin-left: 5%;
+    margin-left: 3%;
     margin-top: 20px;
     font-size: larger;
     line-height: 32px;
@@ -69,8 +73,20 @@ td.correct {
     text-align: center;
 }
 
+
+.script {
+    position: relative;
+    padding-top: 10px;
+    flex: 1;
+    min-height: 0; /* 防止内容溢出，允许容器收缩 */
+    overflow-y: auto; /* 允许纵向滚动 */
+    max-height: 400px; /* 设置容器的固定高度 */
+}
+
 .container {
     position: relative;
+    top: 0px;
+    left: 0px;
 }
 
 table {
@@ -84,6 +100,7 @@ table th {
     width: 80px;
 }
 
+
 .phone_tab td {
     text-align: center;
 }
@@ -94,14 +111,15 @@ table th {
     height: auto;
     padding: 10px;
     position: absolute;
-    /* top: 200px; */
+    /* top: 110%;
+    left: 0; */
     top: 28px;
     background-color: white;
     border: none;
-    border-radius: 12px;
-    box-shadow: 2px 2px 4px grey;
     border-radius: 10px;
-    z-index: 999;
+    box-shadow: 2px 2px 4px grey;
+    z-index: 1;
+    
 }
 
 
@@ -135,7 +153,7 @@ table th {
 }
 
 .score_bar {
-    width: 100%;
+    /* width: 100%; */
     position: relative;
 }
 
@@ -155,8 +173,6 @@ table th {
 .sub_score_text {
     float: left;
     margin-left: 10px;
-    /* text-align: right; */
-    /* width: 180px; */
     font-weight: bolder;
     color: rgb(121, 121, 121)
 }

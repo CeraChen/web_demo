@@ -7,40 +7,17 @@ import Intro from './page/introduction';
 import MockTest from './page/mocktest';
 import Report from './page/report';
 import React, { useState } from 'react';
+import PartReport from './page/part_result';
 
 // import MockTest_ from './page/mocktest_';
 
 const PART_A = 0;
 const PART_B = 1;
 const Q_NUM = 1;
+
     
 
 function App() {
-    var partAUrl = '';
-    var partBUrl = '';
-
-    const updateUrl = (part, newUrl) => {
-        switch(part) {
-            case PART_A:
-                partAUrl = newUrl;
-                break;
-            case PART_B:
-                partBUrl = newUrl;
-                break;
-        }
-    };
-
-    const getUrl = (part) => {
-        switch(part) {
-            case PART_A:
-                return partAUrl;
-            case PART_B:
-                return partBUrl;
-            default:
-                return null;
-        }
-    };
-
     var q_num = Math.floor(Math.random() * Q_NUM) + 1;
     return (
         <Routes>
@@ -49,12 +26,12 @@ function App() {
             <Route  path='/start' element = {<StartPage />} />
 
             <Route  path='/partA/introduction' element = {<Intro part={PART_A} q_num={q_num}/>} />
-            <Route  path='/partA/mocktest' element = {<MockTest part={PART_A} q_num={q_num} update_url={updateUrl}/>} />
+            <Route  path='/partA/mocktest' element = {<MockTest part={PART_A} q_num={q_num}/>} />
 
             <Route  path='/partB/introduction' element = {<Intro part={PART_B} q_num={q_num}/>} />
-            <Route  path='/partB/mocktest' element = {<MockTest part={PART_B} q_num={q_num} update_url={updateUrl}/>} />
+            <Route  path='/partB/mocktest' element = {<MockTest part={PART_B} q_num={q_num}/>} />
 
-            <Route  path='/report' element = {<Report q_num={q_num} get_url={getUrl}/>} />
+            <Route path='/report' element= {<Report q_num={q_num} />} />
         </Routes>
     );
 }

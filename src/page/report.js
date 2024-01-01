@@ -1,5 +1,6 @@
 import React from "react";
 import {Link} from "react-router-dom";
+import PartReport from "./part_result";
 
 const PART_A = 0;
 const PART_B = 1; 
@@ -11,18 +12,17 @@ export default class Report extends React.Component{
             q_num: props.q_num,
         };
         this.render = this.render.bind(this);
-        this.getUrl = (part) => props.get_url(part);
     }
 
 
     render() {
         console.log("get url");
-        console.log(this.getUrl({PART_A}));
+        console.log(localStorage.getItem('partAUrl'));
         return (
             <div>
-                {this.getUrl({PART_A})}
-                {/* <Link to="/partA/instruction">start</Link> */}
-                <div>hihi</div>
+                <div>{localStorage.getItem('partAUrl')}</div>
+                <div>{localStorage.getItem('partBUrl')}</div>
+                <PartReport part={PART_A}></PartReport>
             </div>
         );
     }

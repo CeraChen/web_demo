@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useRef } from "react"
-import '../css/report.css'
+import '../css/part_report.css'
 import response_json from '../text/response_sample2.json'
 
+
+const PART_A = 0;
+const PART_B = 1; 
 
 let boundary = 70;
 
@@ -24,9 +27,11 @@ function ScoreBar({ score , overall }) {
   }
 
 
-function Report() {
+function PartReport({ part }) {
     const [expandedItemIndex, setExpandedItemIndex] = useState(null);
     const spanRef = useRef();
+
+    var mPart = (part === PART_A)? "Part A" : "Part B";
 
 
     console.log(response_json);
@@ -92,7 +97,7 @@ function Report() {
 
     return (
         <div className="report_main">
-            <p id="part">Part A</p>
+            <p id="part">{mPart}</p>
             <div className="score_container">
                 <div className="ielts_scores">
                     <div className="score_item">
@@ -159,58 +164,59 @@ function Report() {
 
             <div className="text_area">
                 <p className="title">Your answer:</p>
-                {response_json["speech_score"]["word_score_list"].map((item, index) => {
-                    var syllable_marks = new Array(item.phone_score_list.length).fill(0);
-                    var syllables = new Array(item.phone_score_list.length).fill('');
-                    var last_pos = 0;
-                    for(var syllable of item.syllable_score_list) {
-                        syllable_marks[last_pos] = syllable.phone_count;
-                        syllables[last_pos] = syllable.letters;
-                        last_pos += syllable.phone_count;
-                    }
-                                
+                <div className="script">
+                    {response_json["speech_score"]["word_score_list"].map((item, index) => {
+                        var syllable_marks = new Array(item.phone_score_list.length).fill(0);
+                        var syllables = new Array(item.phone_score_list.length).fill('');
+                        var last_pos = 0;
+                        for(var syllable of item.syllable_score_list) {
+                            syllable_marks[last_pos] = syllable.phone_count;
+                            syllables[last_pos] = syllable.letters;
+                            last_pos += syllable.phone_count;
+                        }
+                                    
 
 
-                    return (
-                        <span className="container" ref={(expandedItemIndex === index)? spanRef : null}>
-                            {expandedItemIndex === index && (
-                                <span className="error_detail">
-                                    <table className="phone_tab">
-                                        <thead>
-                                            <tr>
-                                                <th>Syllable</th>
-                                                <th>Phone</th>
-                                                <th>Result</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {item.phone_score_list.map((phone, idx) => (
+                        return (
+                            <span className="container" ref={(expandedItemIndex === index)? spanRef : null}>
+                                {expandedItemIndex === index && (
+                                    <span className="error_detail">
+                                        <table className="phone_tab">
+                                            <thead>
                                                 <tr>
-                                                    {(syllable_marks[idx] > 0) && (<td rowSpan={syllable_marks[idx]}>{syllables[idx]}</td>)}
-                                                    <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{phone.phone}</td>
-                                                    <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{(phone.sound_most_like)? ((phone.sound_most_like === phone.phone)? 'Good' : phone.sound_most_like) : '[missing]'}</td>
+                                                    <th>Syllable</th>
+                                                    <th>Phone</th>
+                                                    <th>Result</th>
                                                 </tr>
-                                            )
-                                            )}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                {item.phone_score_list.map((phone, idx) => (
+                                                    <tr>
+                                                        {(syllable_marks[idx] > 0) && (<td rowSpan={syllable_marks[idx]}>{syllables[idx]}</td>)}
+                                                        <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{phone.phone}</td>
+                                                        <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{(phone.sound_most_like)? ((phone.sound_most_like === phone.phone)? 'Good' : phone.sound_most_like) : '[missing]'}</td>
+                                                    </tr>
+                                                )
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </span>
+                                )}
+                                <span id={index.toString()} 
+                                    className={(item.quality_score > boundary)?
+                                        ((expandedItemIndex === index)? "active_correct" : "correct") : 
+                                        ((expandedItemIndex === index)? "active_incorrect" : "incorrect")} 
+                                    onClick={() => handleSpanClick(index)}>
+                                    {item.word}
                                 </span>
-                            )}
-                            <span id={index.toString()} 
-                                className={(item.quality_score > boundary)?
-                                    ((expandedItemIndex === index)? "active_correct" : "correct") : 
-                                    ((expandedItemIndex === index)? "active_incorrect" : "incorrect")} 
-                                onClick={() => handleSpanClick(index)}>
-                                {item.word}
-                            </span>
-                            <span className="correct">{item.ending_punctuation} </span>
-                        </span>);
-                    }
-                )}
-                
+                                <span className="correct">{item.ending_punctuation} </span>
+                            </span>);
+                        }
+                    )}
+                </div>
             </div>
         </div>
     );
 }
 
-export default Report;
+export default PartReport;

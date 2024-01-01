@@ -157,14 +157,29 @@
     background-color: #b2b2b2;
 }
 
+
+
 .video_subcontainer {
     text-align: center;
     width: 100%;
+    height: 100%;
+    margin-top: 50px;
+}
+
+
+.camera_subcontainer {
+    text-align: center;
+    width: 100%;
+    height: 82%;
 }
 
 #video_player {
     max-width: 98%;
     max-height: 96%;
+}
+
+.button_container {
+    float: top;
 }
 
 .indicate_icon {

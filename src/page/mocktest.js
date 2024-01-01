@@ -9,7 +9,8 @@ const PART_B = 1;
 
 const PREPARING = 0;
 const PLAYING = 1;
-const ANSWERING = 2;
+const QUESTIONING = 2;
+const ANSWERING = 3;
 
 const intervalTime = 1000;
 const prepareTime = 1000 * 60 * 10;
@@ -33,16 +34,13 @@ export default class MockTest extends React.Component {
             part: props.part,
             q_num: props.q_num,
             text: questions.question_text["q" + props.q_num.toString()],
-            stage: (props.part === PART_A)? PREPARING : ANSWERING,
+            stage: (props.part === PART_A)? PREPARING : QUESTIONING,
         };
         this.render = this.render.bind(this);
         this.countDownOnce = this.countDownOnce.bind(this);
         this.skipPrepare = this.skipPrepare.bind(this);
         this.startRecordVideo = this.startRecordVideo.bind(this);
-        this.handleRecorderStop = this.handleRecorderStop.bind(this);
 
-
-        this.updateUrl = (part, newUrl) => props.update_url(part, newUrl);
 
         leftTime = prepareTime;
         mCount = 0;
@@ -69,6 +67,16 @@ export default class MockTest extends React.Component {
                 console.log("start timer");
             }
         }
+
+        if(this.state.stage === QUESTIONING ) {
+            const videoPlayer = document.getElementById("video_player");
+
+            videoPlayer.onended = () => {
+                this.setState({
+                    stage: ANSWERING,
+                });
+            };
+        }
     }
 
     componentWillUnmount() {
@@ -86,6 +94,7 @@ export default class MockTest extends React.Component {
         if(this.state.stage === PLAYING && this.state.stage !== prevState.stage) {
             console.log("playing");
             const paperContainer = document.getElementById("paper_container");
+            const videoContainer = document.getElementById("video_container");
             const videoPlayer = document.getElementById("video_player");
             const switchBtn = document.getElementById("switch_btn");
 
@@ -98,11 +107,16 @@ export default class MockTest extends React.Component {
             switchBtn.addEventListener('click', (event) => {
                 paperShown = !paperShown;
                 paperContainer.style.display = (paperShown)? 'inline' : 'none';
+                videoContainer.style.marginLeft = (paperShown)? "25px" : "0px";
                 switchBtn.style.transform = (paperShown)? "none" : "scaleX(-1)";
             });
         }
 
-        if(this.state.stage === ANSWERING && this.state.stage !== prevState.stage) {
+        if(this.state.stage === ANSWERING && this.state.stage !== prevState.stage ) {
+            if(this.state.part === PART_B) {                
+                const videoContainer = document.getElementById("video_container");
+                videoContainer.style.marginLeft = "0px";
+            }
             this.startRecordVideo();
         }
     }
@@ -164,11 +178,30 @@ export default class MockTest extends React.Component {
     startRecordVideo() {
         const videoPlayer = document.getElementById('video_player');
         videoPlayer.style.transform = "scaleX(-1)";
+
+        const finishBtn = document.getElementById('finish_btn');
+        videoPlayer.onplay = () => {  
+            finishBtn.className = "button";
+            finishBtn.onclick = this.stopRecordVideo;
+        }
         
-        const onstopFunction = () => {
-            console.log("on stop");
-            this.handleRecorderStop();
+        const onstopFunction = () => {                
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            mURL = url;
+            console.log("update url");
+            console.log(url.blob);
+            console.log(mURL.toString());
+            
+            localStorage.setItem((this.state.part === PART_A)? 'partAUrl' : 'partBUrl', mURL);
+            
+            recordedChunks = [];
+    
+            const a = document.createElement('a');
+            a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
+            a.click();
         };
+
         navigator.mediaDevices.getUserMedia({ audio: true, video: true })
                 .then(function (stream) {
                     console.log("get");
@@ -181,16 +214,6 @@ export default class MockTest extends React.Component {
                     };
 
                     mediaRecorder.onstop = onstopFunction;
-                    // function () {
-                    //     const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                    //     const url = URL.createObjectURL(blob);
-                    //     mURL = url;
-                    //     console.log(url);
-                    //     console.log(mURL);
-
-                    //     () => {this.updateUrl(this.state.part, mURL);}
-                    //     recordedChunks = [];
-                    // };
 
                     mediaRecorder.start();
 
@@ -214,28 +237,9 @@ export default class MockTest extends React.Component {
         }
     }
 
-    handleRecorderStop () {                
-        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        mURL = url;
-        console.log("update url");
-        console.log(url);
-        console.log(mURL.toString());
-
-        this.updateUrl(this.state.part, mURL.toString());
-        
-        this.updateUrl(this.state.part, "partA");
-        recordedChunks = [];
-
-        // const a = document.createElement('a');
-        // a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
-        // a.click();
-    }
-
 
     render() {
         var mPart = (this.state.part === PART_A)? "Part A" : "Part B";
-        var mGuide = (this.state.part === PART_A)? "Now you have 2 mins to answer." : "Now you have 1 min to answer."
         var mQuestionArea = (this.state.part === PART_A)? 
             (
                 <div className="question_area">
@@ -298,10 +302,28 @@ export default class MockTest extends React.Component {
                             <div id="video_container">
                                 <p className="guide">Starter video:</p>
                                 <div className="video_subcontainer">
-                                    <video id="video_player" src="https://rr4---sn-i3b7knzl.googlevideo.com/videoplayback?expire=1703949630&ei=3uCPZf6jI-GcvcAP7KeFwAo&ip=43.129.29.153&id=o-AAFXlTtNe8dMwECQKEk4wSxKlXlS_jIyGdj7hkFYVFd0&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=yB&mm=31%2C26&mn=sn-i3b7knzl%2Csn-un57sn7y&ms=au%2Conr&mv=u&mvi=4&pl=21&spc=UWF9f6u0q2pfRW-4Rk1-WMveD8QFvEQ&vprv=1&svpuc=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=48.018&lmt=1672869798672213&mt=1703927117&fvip=2&fexp=24007246&c=ANDROID&txp=6219224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AJfQdSswRAIgD-Klh0sH8kS7TyxJRZyjWRH9xQdygMcc8cjGQl6b2pICIHnL-3EsNuxGRE5dEz8TzChTs6eFDFXb3qKcwIGPcY4M&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl&lsig=AAO5W4owRAIgV7ZX8trF4sEkJl3pyBTyD0z_r55GUMZSxtvZyxqgefsCIGfJ5edyYTNALjFtW_KDLoAjrYGaPvSpWKZZEcXt3Gjx" autoPlay></video>
+                                    <video id="video_player" src="https://upos-hz-mirrorakam.akamaized.net/upgcxcode/78/87/885328778/885328778_nb3-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1704103857&gen=playurlv2&os=akam&oi=804486655&trid=b4a00e029d1b40ab87e9602e0fe48a13h&mid=0&platform=html5&upsig=7cc79b218371930b22a81e7462782974&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform&hdnts=exp=1704103857~hmac=553cfc0af2b57a429204fc8ed8a5d20f4403898eca8dfdf726ca685f1c24a5af&bvc=vod&nettype=0&f=h_0_0&bw=44965&logo=80000000" autoPlay></video>
+                                    {/* "https://rr4---sn-i3b7knzl.googlevideo.com/videoplayback?expire=1703949630&ei=3uCPZf6jI-GcvcAP7KeFwAo&ip=43.129.29.153&id=o-AAFXlTtNe8dMwECQKEk4wSxKlXlS_jIyGdj7hkFYVFd0&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=yB&mm=31%2C26&mn=sn-i3b7knzl%2Csn-un57sn7y&ms=au%2Conr&mv=u&mvi=4&pl=21&spc=UWF9f6u0q2pfRW-4Rk1-WMveD8QFvEQ&vprv=1&svpuc=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=48.018&lmt=1672869798672213&mt=1703927117&fvip=2&fexp=24007246&c=ANDROID&txp=6219224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AJfQdSswRAIgD-Klh0sH8kS7TyxJRZyjWRH9xQdygMcc8cjGQl6b2pICIHnL-3EsNuxGRE5dEz8TzChTs6eFDFXb3qKcwIGPcY4M&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl&lsig=AAO5W4owRAIgV7ZX8trF4sEkJl3pyBTyD0z_r55GUMZSxtvZyxqgefsCIGfJ5edyYTNALjFtW_KDLoAjrYGaPvSpWKZZEcXt3Gjx" autoPlay></video> */}
                                     {/* "https://rr4---sn-i3b7knld.googlevideo.com/videoplayback?expire=1703942923&ei=q8aPZbzzOoGa1d8PzsawMA&ip=43.129.29.153&id=o-ALxqmNCnTAT36RnxDFI-D7pUJIUTOGm51vjCOA46-b7i&itag=136&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=I0&mm=31%2C29&mn=sn-i3b7knld%2Csn-i3belnlz&ms=au%2Crdu&mv=m&mvi=4&pl=21&initcwndbps=623750&vprv=1&svpuc=1&mime=video%2Fmp4&gir=yes&clen=12345656&dur=237.070&lmt=1703028113368785&mt=1703920860&fvip=2&keepalive=yes&fexp=24007246&c=IOS&txp=4535434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRgIhAMrBZ6GVs4QRHCEp0-OK69jfliPlt_4cYZ2ZHC-j_9UIAiEA7zM9lUYBx_YmZGQ78RMitbacPdP4wvSxuum_qBZ55Vg%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AAO5W4owRQIhAPEH6osM_v-0UoE9KXvSbPX134lBOX5zoNQZxrw6YHvbAiAgS38KCuAeLXcNBRMpJ8XjLz89ZiZIFNQFdZDvLiOf6g%3D%3D" autoPlay></video> */}
                                 </div> 
                             </div>
+                        </div>
+                    </div>
+                );
+                break;
+
+            case QUESTIONING:
+                mHeading = (
+                    <div className="heading">
+                        <p className="part">{mPart}</p>
+                        <p className="guide">After listening to the question, you will have 1 min to answer.</p>
+                    </div>
+                );
+
+                mBoard = (
+                    <div className="board">
+                        <div className="video_subcontainer">
+                            <video id="video_player" src="https://upos-hz-mirrorakam.akamaized.net/upgcxcode/78/87/885328778/885328778_nb3-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1704103857&gen=playurlv2&os=akam&oi=804486655&trid=b4a00e029d1b40ab87e9602e0fe48a13h&mid=0&platform=html5&upsig=7cc79b218371930b22a81e7462782974&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform&hdnts=exp=1704103857~hmac=553cfc0af2b57a429204fc8ed8a5d20f4403898eca8dfdf726ca685f1c24a5af&bvc=vod&nettype=0&f=h_0_0&bw=44965&logo=80000000" autoPlay></video>
                         </div>
                     </div>
                 );
@@ -320,19 +342,19 @@ export default class MockTest extends React.Component {
                     </div>
                 );
                 
-                mBoard = (
+                mBoard =(
                     <div className="board">
                         <div className="main_container">
-                            <div id="paper_container">
+                            {(this.state.part === PART_A) && <div id="paper_container">
                                 {mQuestionArea}
-                            </div>
+                            </div>}
                             <div id="video_container">
                                 <p className="guide">Now it is your turn:</p>
-                                <div className="video_subcontainer">
+                                <div className="camera_subcontainer">
                                     <video id="video_player" ></video>
                                 </div>                                
                                 <div className="button_container">
-                                    <button className="button" onClick={this.stopRecordVideo}>finish</button>
+                                    <button className="disable_button" id="finish_btn">finish</button>
                                 </div>
                             </div>
                         </div>

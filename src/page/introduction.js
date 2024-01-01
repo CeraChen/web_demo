@@ -6,11 +6,11 @@ import "../css/mocktest.css"
 const PART_A = 0;
 const PART_B = 1;
 
-const countDownTime = 5000;
+const countDownTime = [5000, 8000];
 const sparkTime = 200;
 const intervalTime = 1000 - sparkTime;
 
-let leftTime = countDownTime;
+let leftTime;
 let mTimer = null;
 
 
@@ -61,11 +61,11 @@ function Intro( { part, q_num } ) {
 
 
     useEffect(() => {
-        leftTime = countDownTime;
+        leftTime = countDownTime[part];
         mTimer = setTimeout(spark, 0);
         return () => {
         };
-      }, []);
+      }, [part]);
 
 
     return(

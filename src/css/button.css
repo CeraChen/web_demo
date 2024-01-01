@@ -2,6 +2,32 @@
     text-align: center;
 }
 
+.disable_button {
+    visibility: hidden;
+    
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: darkgray;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px grey;
+    text-align: center;
+    vertical-align: middle;
+    font-size: medium;
+    font-weight: bold;
+    height: 45px;
+    display: inline;
+    width: 120px;
+}
+
+.disable_button:disabled {
+    cursor: not-allowed;
+}
+
+
 .button:not(#pause_resume_button) {
     margin-left: 50px;
     margin-right: 50px;
