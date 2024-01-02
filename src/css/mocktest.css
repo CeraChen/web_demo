@@ -2,7 +2,7 @@
 .heading {
     margin-left: 50px;
     margin-right: 50px;
-    margin-top: 10px;
+    padding-top: 10px;
 }
 
 .part {
@@ -162,7 +162,7 @@
 .video_subcontainer {
     text-align: center;
     width: 100%;
-    height: 100%;
+    height: 80%;
     margin-top: 50px;
 }
 
@@ -171,6 +171,14 @@
     text-align: center;
     width: 100%;
     height: 82%;
+}
+
+.question_subcontainer {    
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
 }
 
 #video_player {

@@ -2,13 +2,53 @@
     width: 100%;
 }
 
+.part_tooltip {
+    position: absolute;
+    top: 120%;
+    left: 0;
+    visibility: hidden;
+    font-size: small;
+    font-style: italic;
+}
+
+
+.chosen {
+    font-weight: 700;
+    font-size: large;
+    color: black;
+    /* text-decoration: underline; */
+}
+
+.chosen:hover {
+    cursor: default;
+}
+
+.unchosen {
+    font-weight: 500;
+    font-size: large;
+    color: lightgray;
+}
+
+.unchosen:hover {
+    cursor: pointer;
+}
+
+.part_title {
+    text-align: left;
+    padding-top: 10px;
+    position: relative;
+}
+
+.part_title span {
+    margin-right: 20px;
+}
+
 .report_main {
     margin-left: 6%;
     margin-right: 6%;
-    margin-top: 30px;
 }
 
-.title {    
+.report_title {    
     text-align: left;
     font-weight: 700;
     /* font-size: large; */
@@ -58,6 +98,7 @@ td.correct {
 .text_area {
     float: left;
     width: 65%;
+    height: auto;
     margin-left: 3%;
     margin-top: 20px;
     font-size: larger;
@@ -68,6 +109,7 @@ td.correct {
 .score_container {
     float: left;
     width: 27%;
+    height: auto;
     margin-right: 3%;
     margin-top: 20px;
     text-align: center;
@@ -77,10 +119,6 @@ td.correct {
 .script {
     position: relative;
     padding-top: 10px;
-    flex: 1;
-    min-height: 0; /* 防止内容溢出，允许容器收缩 */
-    overflow-y: auto; /* 允许纵向滚动 */
-    max-height: 400px; /* 设置容器的固定高度 */
 }
 
 .container {

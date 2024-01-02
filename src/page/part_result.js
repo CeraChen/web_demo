@@ -96,8 +96,7 @@ function PartReport({ part }) {
 
 
     return (
-        <div className="report_main">
-            <p id="part">{mPart}</p>
+        <div className={(mPart === PART_A)? "partA" : "partB"}>
             <div className="score_container">
                 <div className="ielts_scores">
                     <div className="score_item">
@@ -163,7 +162,7 @@ function PartReport({ part }) {
             </div>
 
             <div className="text_area">
-                <p className="title">Your answer:</p>
+                <p className="report_title">Your answer:</p>
                 <div className="script">
                     {response_json["speech_score"]["word_score_list"].map((item, index) => {
                         var syllable_marks = new Array(item.phone_score_list.length).fill(0);

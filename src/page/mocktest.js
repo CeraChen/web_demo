@@ -14,6 +14,7 @@ const ANSWERING = 3;
 
 const intervalTime = 1000;
 const prepareTime = 1000 * 60 * 10;
+const answerTime = 1000 * 60;
 const mSVG = <svg t="1703230099825" className="indicate_icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4207" width="27" height="30"><path d="M474.496 512l338.752-338.752-90.496-90.496L293.504 512l429.248 429.248 90.496-90.496z" p-id="4208"></path></svg>;
 
 let mTimer = null;
@@ -42,7 +43,7 @@ export default class MockTest extends React.Component {
         this.startRecordVideo = this.startRecordVideo.bind(this);
 
 
-        leftTime = prepareTime;
+        leftTime = (props.part === PART_A)? prepareTime : answerTime;
         mCount = 0;
     }
 
@@ -95,6 +96,7 @@ export default class MockTest extends React.Component {
             console.log("playing");
             const paperContainer = document.getElementById("paper_container");
             const videoContainer = document.getElementById("video_container");
+            const subContainer = document.getElementById("subcontainer");
             const videoPlayer = document.getElementById("video_player");
             const switchBtn = document.getElementById("switch_btn");
 
@@ -108,6 +110,7 @@ export default class MockTest extends React.Component {
                 paperShown = !paperShown;
                 paperContainer.style.display = (paperShown)? 'inline' : 'none';
                 videoContainer.style.marginLeft = (paperShown)? "25px" : "0px";
+                // subContainer.className = (paperShown)? "video_container" : "question_container";
                 switchBtn.style.transform = (paperShown)? "none" : "scaleX(-1)";
             });
         }
@@ -116,6 +119,25 @@ export default class MockTest extends React.Component {
             if(this.state.part === PART_B) {                
                 const videoContainer = document.getElementById("video_container");
                 videoContainer.style.marginLeft = "0px";
+
+
+                const countdown = document.getElementById("countdown");
+                if(countdown && (mTimer === null)){ 
+                    var mins = parseInt(leftTime/(1000 * 60));
+                    var secs = parseInt((leftTime % (1000 * 60))/1000);
+                    mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
+                    secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
+                    try{
+                        countdown.innerText = mins + ':' + secs;
+                    } catch(error){
+                        console.log(error);
+                    }
+    
+                    mTimer = setTimeout(this.countDownOnce, intervalTime);
+                    startTime = Date.now();
+                    console.log("start timer");
+                }
+
             }
             this.startRecordVideo();
         }
@@ -134,7 +156,7 @@ export default class MockTest extends React.Component {
         };
         leftTime -= intervalTime;
         
-        var countdown = document.getElementById("countdown");
+        const countdown = document.getElementById("countdown");
         var mins = parseInt(leftTime/(1000 * 60));
         var secs = parseInt((leftTime % (1000 * 60))/1000);
         mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
@@ -148,9 +170,15 @@ export default class MockTest extends React.Component {
             if(leftTime <= 0){
                 console.log("countdown finishes!");
                 mTimer = null;
-                this.setState({
-                    stage: PLAYING,
-                });
+
+                if(this.state.part === PART_A) {
+                    this.setState({
+                        stage: PLAYING,
+                    });
+                }
+                else {
+                    this.stopRecordVideo();
+                }
 
             }else{
                 mTimer = setTimeout(this.countDownOnce, nextTime);
@@ -301,8 +329,8 @@ export default class MockTest extends React.Component {
                             </div>
                             <div id="video_container">
                                 <p className="guide">Starter video:</p>
-                                <div className="video_subcontainer">
-                                    <video id="video_player" src="https://upos-hz-mirrorakam.akamaized.net/upgcxcode/78/87/885328778/885328778_nb3-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1704103857&gen=playurlv2&os=akam&oi=804486655&trid=b4a00e029d1b40ab87e9602e0fe48a13h&mid=0&platform=html5&upsig=7cc79b218371930b22a81e7462782974&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform&hdnts=exp=1704103857~hmac=553cfc0af2b57a429204fc8ed8a5d20f4403898eca8dfdf726ca685f1c24a5af&bvc=vod&nettype=0&f=h_0_0&bw=44965&logo=80000000" autoPlay></video>
+                                <div className="video_subcontainer" id="subcontainer">
+                                    <video id="video_player" src="https://rr2---sn-i3b7knse.googlevideo.com/videoplayback?expire=1704196427&ei=66STZY_KNKudvcAP6pez0AU&ip=43.129.69.57&id=o-AA210obC0oPJ7OFy0UtAzVWgEaWiorVnUVkTC7yDiKYy&itag=136&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=3x&mm=31%2C29&mn=sn-i3b7knse%2Csn-i3belnl7&ms=au%2Crdu&mv=m&mvi=2&pl=19&initcwndbps=1991250&vprv=1&svpuc=1&mime=video%2Fmp4&gir=yes&clen=317735&dur=7.499&lmt=1703023368730012&mt=1704174543&fvip=4&keepalive=yes&fexp=24007246&c=IOS&txp=6219224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRgIhAP8W63-4p0Iec6C_HS3W0muBvY1jhnktwYz9iddUUBJeAiEAxQBcbL3pN4i2hpd2boCC_H81V-DecNYg4WE2J-UoRTI%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AAO5W4owRgIhAMKuOMFmhlGWjqlxLo5pez-YxyZVUS8nRAyz76rJ2B5RAiEAms9xNabHH-u9dr9iCGemflHHsijWpRigqMc0xoaMa5o%3D" autoPlay></video>
                                     {/* "https://rr4---sn-i3b7knzl.googlevideo.com/videoplayback?expire=1703949630&ei=3uCPZf6jI-GcvcAP7KeFwAo&ip=43.129.29.153&id=o-AAFXlTtNe8dMwECQKEk4wSxKlXlS_jIyGdj7hkFYVFd0&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=yB&mm=31%2C26&mn=sn-i3b7knzl%2Csn-un57sn7y&ms=au%2Conr&mv=u&mvi=4&pl=21&spc=UWF9f6u0q2pfRW-4Rk1-WMveD8QFvEQ&vprv=1&svpuc=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=48.018&lmt=1672869798672213&mt=1703927117&fvip=2&fexp=24007246&c=ANDROID&txp=6219224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AJfQdSswRAIgD-Klh0sH8kS7TyxJRZyjWRH9xQdygMcc8cjGQl6b2pICIHnL-3EsNuxGRE5dEz8TzChTs6eFDFXb3qKcwIGPcY4M&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl&lsig=AAO5W4owRAIgV7ZX8trF4sEkJl3pyBTyD0z_r55GUMZSxtvZyxqgefsCIGfJ5edyYTNALjFtW_KDLoAjrYGaPvSpWKZZEcXt3Gjx" autoPlay></video> */}
                                     {/* "https://rr4---sn-i3b7knld.googlevideo.com/videoplayback?expire=1703942923&ei=q8aPZbzzOoGa1d8PzsawMA&ip=43.129.29.153&id=o-ALxqmNCnTAT36RnxDFI-D7pUJIUTOGm51vjCOA46-b7i&itag=136&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=I0&mm=31%2C29&mn=sn-i3b7knld%2Csn-i3belnlz&ms=au%2Crdu&mv=m&mvi=4&pl=21&initcwndbps=623750&vprv=1&svpuc=1&mime=video%2Fmp4&gir=yes&clen=12345656&dur=237.070&lmt=1703028113368785&mt=1703920860&fvip=2&keepalive=yes&fexp=24007246&c=IOS&txp=4535434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRgIhAMrBZ6GVs4QRHCEp0-OK69jfliPlt_4cYZ2ZHC-j_9UIAiEA7zM9lUYBx_YmZGQ78RMitbacPdP4wvSxuum_qBZ55Vg%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AAO5W4owRQIhAPEH6osM_v-0UoE9KXvSbPX134lBOX5zoNQZxrw6YHvbAiAgS38KCuAeLXcNBRMpJ8XjLz89ZiZIFNQFdZDvLiOf6g%3D%3D" autoPlay></video> */}
                                 </div> 
@@ -322,8 +350,8 @@ export default class MockTest extends React.Component {
 
                 mBoard = (
                     <div className="board">
-                        <div className="video_subcontainer">
-                            <video id="video_player" src="https://upos-hz-mirrorakam.akamaized.net/upgcxcode/78/87/885328778/885328778_nb3-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1704103857&gen=playurlv2&os=akam&oi=804486655&trid=b4a00e029d1b40ab87e9602e0fe48a13h&mid=0&platform=html5&upsig=7cc79b218371930b22a81e7462782974&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform&hdnts=exp=1704103857~hmac=553cfc0af2b57a429204fc8ed8a5d20f4403898eca8dfdf726ca685f1c24a5af&bvc=vod&nettype=0&f=h_0_0&bw=44965&logo=80000000" autoPlay></video>
+                        <div className="question_subcontainer">
+                            <video id="video_player" src="https://rr2---sn-i3b7knse.googlevideo.com/videoplayback?expire=1704196427&ei=66STZY_KNKudvcAP6pez0AU&ip=43.129.69.57&id=o-AA210obC0oPJ7OFy0UtAzVWgEaWiorVnUVkTC7yDiKYy&itag=136&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=3x&mm=31%2C29&mn=sn-i3b7knse%2Csn-i3belnl7&ms=au%2Crdu&mv=m&mvi=2&pl=19&initcwndbps=1991250&vprv=1&svpuc=1&mime=video%2Fmp4&gir=yes&clen=317735&dur=7.499&lmt=1703023368730012&mt=1704174543&fvip=4&keepalive=yes&fexp=24007246&c=IOS&txp=6219224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRgIhAP8W63-4p0Iec6C_HS3W0muBvY1jhnktwYz9iddUUBJeAiEAxQBcbL3pN4i2hpd2boCC_H81V-DecNYg4WE2J-UoRTI%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AAO5W4owRgIhAMKuOMFmhlGWjqlxLo5pez-YxyZVUS8nRAyz76rJ2B5RAiEAms9xNabHH-u9dr9iCGemflHHsijWpRigqMc0xoaMa5o%3D" autoPlay></video>
                         </div>
                     </div>
                 );
@@ -354,7 +382,13 @@ export default class MockTest extends React.Component {
                                     <video id="video_player" ></video>
                                 </div>                                
                                 <div className="button_container">
-                                    <button className="disable_button" id="finish_btn">finish</button>
+                                    {(this.state.part === PART_A) &&
+                                    <button className="disable_button" id="finish_btn">finish</button>}
+
+                                    {(this.state.part === PART_B) &&
+                                    <button className="disable_button" id="finish_btn">
+                                        <span id="countdown"></span><span className="label">finish</span>
+                                    </button>}
                                 </div>
                             </div>
                         </div>

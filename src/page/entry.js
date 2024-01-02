@@ -56,7 +56,7 @@ export default class EntryPage extends React.Component{
 
                     <Link to="/check" style={{ textDecoration:'none', color: 'black'}}>
                         <button className="mocktest">
-                            Start testing!
+                            Strat Part A & B mock testing
                         </button>
                     </Link>
                     {/* <Link to="/mocktest/A" style={{ textDecoration:'none', color: 'black'}}>
