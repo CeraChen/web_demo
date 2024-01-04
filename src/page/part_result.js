@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useRef } from "react"
 import '../css/part_report.css'
-import response_json from '../text/response_sample2.json'
+import response_json_A from '../text/response_sample2.json'
+import response_json_B from '../text/response_sample1.json'
+import arpabet from '../text/arpabet.json'
 
 
 const PART_A = 0;
 const PART_B = 1; 
 
-let boundary = 70;
+const boundary = 70;
 
 function ScoreBar({ score , overall }) {
     const progressPercentage = (score / 9) * 100;
@@ -32,8 +34,8 @@ function PartReport({ part }) {
     const spanRef = useRef();
 
     var mPart = (part === PART_A)? "Part A" : "Part B";
-
-
+    var response_json = (part === PART_A)? response_json_A : response_json_B;
+    
     console.log(response_json);
 
     const handleSpanClick = (index) => {
@@ -192,7 +194,7 @@ function PartReport({ part }) {
                                                 {item.phone_score_list.map((phone, idx) => (
                                                     <tr>
                                                         {(syllable_marks[idx] > 0) && (<td rowSpan={syllable_marks[idx]}>{syllables[idx]}</td>)}
-                                                        <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{phone.phone}</td>
+                                                        <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{arpabet[phone.phone] || phone.phone}</td>
                                                         <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{(phone.sound_most_like)? ((phone.sound_most_like === phone.phone)? 'Good' : phone.sound_most_like) : '[missing]'}</td>
                                                     </tr>
                                                 )

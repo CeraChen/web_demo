@@ -3,6 +3,15 @@ import {Link} from "react-router-dom";
 
 
 export default class StartPage extends React.Component{
+    componentDidMount() {
+        const videoPlayer = document.getElementById("video_player");
+        videoPlayer.onended = () => {
+            const a = document.createElement('a');
+            a.href = "/partA/introduction";
+            a.click();
+        }
+    }
+
     render() {
         return (
             <div>
@@ -15,10 +24,10 @@ export default class StartPage extends React.Component{
                 <div className="board">
                     <div className="video_container">
                         <div className="camera_subcontainer">
-                            <video id="video_player" src="https://rr4---sn-i3belnl7.googlevideo.com/videoplayback?expire=1704276958&ei=ft-UZZOEIN-L1d8P2fylmAo&ip=43.129.69.57&id=o-ALeMMSmTWpk3tOkWwjfTU5tQFcDX-sJZwVEM5OkZWudc&itag=22&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=3x&mm=31%2C26&mn=sn-i3belnl7%2Csn-un57enez&ms=au%2Conr&mv=m&mvi=4&pl=19&initcwndbps=1510000&spc=UWF9f68krDKOeb0Sl0V0PI0zKkkznhM&vprv=1&svpuc=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=7.592&lmt=1703023372525434&mt=1704254955&fvip=2&fexp=24007246&c=ANDROID&txp=6218224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AJfQdSswRQIgHmVrn64hJP1r3ECHPtgbKkdSUSqMbKsD0JOSqnsgJk4CIQDZETa3Qet0-DESADxrY6KQSz9iHBTSS7jvYvBhIBNo0Q%3D%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AAO5W4owRAIgNqu0Sq4Ae9-9CNXKTKUYAlVfl7ohkD8mC3CYrQbgBu0CIBuRmYipxxDJAqfo14GxFvJURb_953jIixZXhpNxkU4s" autoPlay></video>
-                            <button className="button">
+                            <video id="video_player" src="https://rr3---sn-i3belney.googlevideo.com/videoplayback?expire=1704385551&ei=r4eWZePXD5KM0-kP65SsoAM&ip=43.129.69.57&id=o-AGIqdKu9moRjTictpABShCaMcMRd1_3O_kTfwcPc9kJq&itag=243&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=Vq&mm=31%2C29&mn=sn-i3belney%2Csn-i3b7knzs&ms=au%2Crdu&mv=m&mvi=3&pl=19&initcwndbps=1035000&vprv=1&svpuc=1&mime=video%2Fwebm&gir=yes&clen=304587&dur=12.666&lmt=1704290657428042&mt=1704362696&fvip=3&keepalive=yes&fexp=24007246&c=IOS&txp=5537434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRAIgc49sQt726jNBvVAiO2WWyiOoyA8iE-rwpRjrEsqlAFUCIDjZDDyqQygT03pYwb9dd0tl3ZGPX3dWprwDR5U3durv&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AAO5W4owRQIhALGeyxHDFb5qNV1Yzybms1PBoBx41S3G_W_JU5CHMoZ7AiBPjKG1Zoi2vNX_213zZGzgBX9JdVNxOu3AwkUO9_Zn8A%3D%3D" autoPlay></video>
+                            {/* <button className="button">
                                 <Link to="/partA/introduction">start</Link>
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 </div>

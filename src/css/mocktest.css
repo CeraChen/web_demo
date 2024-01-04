@@ -132,6 +132,20 @@
     height: 500px; /* 设置容器的固定高度 */
 }
 
+#left_video_container {
+    flex: 1;
+    min-height: 0; /* 防止内容溢出，允许容器收缩 */
+    height: 500px; /* 设置容器的固定高度 */
+}
+
+#right_video_container {
+    padding-top: 10px;
+    flex: 1;
+    min-height: 0; /* 防止内容溢出，允许容器收缩 */
+    margin-left: 25px; /* 可根据需要调整左右间距 */
+    height: 500px; /* 设置容器的固定高度 */
+}
+
 
 
 ::-webkit-scrollbar{
@@ -184,6 +198,15 @@
 #video_player {
     max-width: 98%;
     max-height: 96%;
+}
+
+#left_video_player {
+    width: 90%;
+}
+
+#right_video_player {
+    width: 90%;
+    max-height: 80%;
 }
 
 .button_container {
