@@ -2,6 +2,9 @@ import React from "react";
 import questions from '../text/questions.json';
 import '../css/mocktest.css';
 import '../css/button.css';
+import mQuestionVideo_B from "../video/DSE_Examiner_video_3.mp4";
+import mQuestionVideo_A from "../video/DSE_Examiner_video_2.mp4"
+import mStarterVideo from "../video/DSE_Student_video_1.mp4";
 
 
 const PART_A = 0;
@@ -26,6 +29,8 @@ let mStream = null;
 let mediaRecorder; // 用于存储 MediaRecorder 对象
 let recordedChunks = []; // 存储录制的视频块
 let mURL = null;
+let videoStartTime;
+let videoStopTime;
 
 
 export default class MockTest extends React.Component {
@@ -70,9 +75,9 @@ export default class MockTest extends React.Component {
         }
         
         if(this.state.stage === QUESTIONING ) {
-            const videoPlayer = document.getElementById("video_player");
+            const leftVideoPlayer = document.getElementById("left_video_player");
 
-            videoPlayer.onended = () => {
+            leftVideoPlayer.onended = () => {
                 if (mStream) {
                     mStream.getTracks().forEach((track) => track.stop());
                     console.log("release");
@@ -83,7 +88,7 @@ export default class MockTest extends React.Component {
                 });
             };
 
-            // this.startCamera();
+            this.startCamera();
         }
     }
 
@@ -145,6 +150,14 @@ export default class MockTest extends React.Component {
                     console.log("start timer");
                 }
 
+
+                const leftVideoPlayer = document.getElementById("left_video_player");
+                leftVideoPlayer.onended = () => {                    
+                    const a = document.createElement('a');
+                    a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
+                    a.click();
+                }
+
             }
             this.startRecordVideo();
         }
@@ -184,6 +197,9 @@ export default class MockTest extends React.Component {
                     });
                 }
                 else {
+                    const finishBtn = document.getElementById('finish_btn');
+                    finishBtn.className = "disable_button";
+                    finishBtn.style.visibility = "visible";
                     this.stopRecordVideo();
                 }
 
@@ -229,14 +245,36 @@ export default class MockTest extends React.Component {
         videoPlayer.style.transform = "scaleX(-1)";
 
         const finishBtn = document.getElementById('finish_btn');
+
+        videoPlayer.onstart = () => {
+            videoStartTime = Date.now();
+        }
+
         videoPlayer.onplay = () => {  
             finishBtn.className = "button";
             finishBtn.onclick = this.stopRecordVideo;
         }
         
-        const onstopFunction = () => {                
+        const onstopFunction = () => {
+            videoStopTime = Date.now();                
             const blob = new Blob(recordedChunks, { type: 'video/webm' });
             const url = URL.createObjectURL(blob);
+            
+            const formData = new FormData();
+            formData.append('video', blob);
+            formData.append('duration', (videoStopTime - videoStartTime));
+
+            // fetch('/upload', {
+            //     method: 'POST',
+            //     body: formData
+            // })
+            // .then(function(response) {
+            //     console.log('上传成功');
+            // })
+            // .catch(function(error) {
+            //     console.error('上传失败:', error);
+            // });
+
             mURL = url;
             console.log("update url");
             console.log(url.blob);
@@ -245,10 +283,14 @@ export default class MockTest extends React.Component {
             localStorage.setItem((this.state.part === PART_A)? 'partAUrl' : 'partBUrl', mURL);
             
             recordedChunks = [];
-    
-            const a = document.createElement('a');
-            a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
-            a.click();
+            
+            if(this.state.part === PART_A || leftTime > 0) {
+                const a = document.createElement('a');
+                a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
+                // url;
+                // a.download = "video.webm"
+                a.click();
+            }
         };
 
 
@@ -352,7 +394,7 @@ export default class MockTest extends React.Component {
                             <div id="video_container">
                                 <p className="guide">Starter video:</p>
                                 <div className="video_subcontainer" id="subcontainer">
-                                    <video id="video_player" src="https://rr3---sn-i3belney.googlevideo.com/videoplayback?expire=1704385551&ei=r4eWZePXD5KM0-kP65SsoAM&ip=43.129.69.57&id=o-AGIqdKu9moRjTictpABShCaMcMRd1_3O_kTfwcPc9kJq&itag=243&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=Vq&mm=31%2C29&mn=sn-i3belney%2Csn-i3b7knzs&ms=au%2Crdu&mv=m&mvi=3&pl=19&initcwndbps=1035000&vprv=1&svpuc=1&mime=video%2Fwebm&gir=yes&clen=304587&dur=12.666&lmt=1704290657428042&mt=1704362696&fvip=3&keepalive=yes&fexp=24007246&c=IOS&txp=5537434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRAIgc49sQt726jNBvVAiO2WWyiOoyA8iE-rwpRjrEsqlAFUCIDjZDDyqQygT03pYwb9dd0tl3ZGPX3dWprwDR5U3durv&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AAO5W4owRQIhALGeyxHDFb5qNV1Yzybms1PBoBx41S3G_W_JU5CHMoZ7AiBPjKG1Zoi2vNX_213zZGzgBX9JdVNxOu3AwkUO9_Zn8A%3D%3D" autoPlay></video>
+                                    <video id="video_player" src={mStarterVideo} autoPlay></video>
                                     {/* "https://rr4---sn-i3b7knzl.googlevideo.com/videoplayback?expire=1703949630&ei=3uCPZf6jI-GcvcAP7KeFwAo&ip=43.129.29.153&id=o-AAFXlTtNe8dMwECQKEk4wSxKlXlS_jIyGdj7hkFYVFd0&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=yB&mm=31%2C26&mn=sn-i3b7knzl%2Csn-un57sn7y&ms=au%2Conr&mv=u&mvi=4&pl=21&spc=UWF9f6u0q2pfRW-4Rk1-WMveD8QFvEQ&vprv=1&svpuc=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=48.018&lmt=1672869798672213&mt=1703927117&fvip=2&fexp=24007246&c=ANDROID&txp=6219224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AJfQdSswRAIgD-Klh0sH8kS7TyxJRZyjWRH9xQdygMcc8cjGQl6b2pICIHnL-3EsNuxGRE5dEz8TzChTs6eFDFXb3qKcwIGPcY4M&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl&lsig=AAO5W4owRAIgV7ZX8trF4sEkJl3pyBTyD0z_r55GUMZSxtvZyxqgefsCIGfJ5edyYTNALjFtW_KDLoAjrYGaPvSpWKZZEcXt3Gjx" autoPlay></video> */}
                                     {/* "https://rr4---sn-i3b7knld.googlevideo.com/videoplayback?expire=1703942923&ei=q8aPZbzzOoGa1d8PzsawMA&ip=43.129.29.153&id=o-ALxqmNCnTAT36RnxDFI-D7pUJIUTOGm51vjCOA46-b7i&itag=136&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=I0&mm=31%2C29&mn=sn-i3b7knld%2Csn-i3belnlz&ms=au%2Crdu&mv=m&mvi=4&pl=21&initcwndbps=623750&vprv=1&svpuc=1&mime=video%2Fmp4&gir=yes&clen=12345656&dur=237.070&lmt=1703028113368785&mt=1703920860&fvip=2&keepalive=yes&fexp=24007246&c=IOS&txp=4535434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRgIhAMrBZ6GVs4QRHCEp0-OK69jfliPlt_4cYZ2ZHC-j_9UIAiEA7zM9lUYBx_YmZGQ78RMitbacPdP4wvSxuum_qBZ55Vg%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AAO5W4owRQIhAPEH6osM_v-0UoE9KXvSbPX134lBOX5zoNQZxrw6YHvbAiAgS38KCuAeLXcNBRMpJ8XjLz89ZiZIFNQFdZDvLiOf6g%3D%3D" autoPlay></video> */}
                                 </div> 
@@ -372,24 +414,24 @@ export default class MockTest extends React.Component {
 
                 mBoard = (
                     <div className="board">
-                        {/* <div className="main_container">
+                        <div className="main_container">
                             <div id="left_video_container">
-                                <p className="guide">Starter video:</p>
+                                <p className="guide">Examiner:</p>
                                 <div className="video_subcontainer">
-                                    <video id="left_video_player" src="https://rr3---sn-i3belney.googlevideo.com/videoplayback?expire=1704385551&ei=r4eWZePXD5KM0-kP65SsoAM&ip=43.129.69.57&id=o-AGIqdKu9moRjTictpABShCaMcMRd1_3O_kTfwcPc9kJq&itag=243&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=Vq&mm=31%2C29&mn=sn-i3belney%2Csn-i3b7knzs&ms=au%2Crdu&mv=m&mvi=3&pl=19&initcwndbps=1035000&vprv=1&svpuc=1&mime=video%2Fwebm&gir=yes&clen=304587&dur=12.666&lmt=1704290657428042&mt=1704362696&fvip=3&keepalive=yes&fexp=24007246&c=IOS&txp=5537434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRAIgc49sQt726jNBvVAiO2WWyiOoyA8iE-rwpRjrEsqlAFUCIDjZDDyqQygT03pYwb9dd0tl3ZGPX3dWprwDR5U3durv&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AAO5W4owRQIhALGeyxHDFb5qNV1Yzybms1PBoBx41S3G_W_JU5CHMoZ7AiBPjKG1Zoi2vNX_213zZGzgBX9JdVNxOu3AwkUO9_Zn8A%3D%3D" autoPlay></video>
+                                    <video id="left_video_player" src={mQuestionVideo_A} autoPlay></video>
                                 </div> 
                             </div>
                             <div id="right_video_container">
-                                <p className="guide">Starter video:</p>
+                                <p className="guide">You:</p>
                                 <div className="video_subcontainer">
                                     <video id="right_video_player" autoPlay muted playsInline></video>
                                 </div> 
                             </div>
-                        </div> */}
-
-                        <div className="question_subcontainer">
-                            <video id="video_player" src="https://rr3---sn-i3belney.googlevideo.com/videoplayback?expire=1704385551&ei=r4eWZePXD5KM0-kP65SsoAM&ip=43.129.69.57&id=o-AGIqdKu9moRjTictpABShCaMcMRd1_3O_kTfwcPc9kJq&itag=243&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=Vq&mm=31%2C29&mn=sn-i3belney%2Csn-i3b7knzs&ms=au%2Crdu&mv=m&mvi=3&pl=19&initcwndbps=1035000&vprv=1&svpuc=1&mime=video%2Fwebm&gir=yes&clen=304587&dur=12.666&lmt=1704290657428042&mt=1704362696&fvip=3&keepalive=yes&fexp=24007246&c=IOS&txp=5537434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRAIgc49sQt726jNBvVAiO2WWyiOoyA8iE-rwpRjrEsqlAFUCIDjZDDyqQygT03pYwb9dd0tl3ZGPX3dWprwDR5U3durv&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AAO5W4owRQIhALGeyxHDFb5qNV1Yzybms1PBoBx41S3G_W_JU5CHMoZ7AiBPjKG1Zoi2vNX_213zZGzgBX9JdVNxOu3AwkUO9_Zn8A%3D%3D" autoPlay></video>
                         </div>
+
+                        {/* <div className="question_subcontainer">
+                            <video id="video_player" src="https://upos-hz-mirrorakam.akamaized.net/upgcxcode/16/19/1392991916/1392991916-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1704723640&gen=playurlv2&os=akam&oi=804486655&trid=e0a9bee4159a421eb404d51539881341h&mid=0&platform=html5&upsig=6ee250ee3ea8c16ef5484be8e8004ff6&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform&hdnts=exp=1704723640~hmac=3cdfef4deb6ceb7c86de6577ff09e9d618c1758f540d2655746011af1a46c619&bvc=vod&nettype=0&f=h_0_0&bw=50731&logo=80000000" autoPlay></video>
+                        </div> */}
                     </div>
                 );
                 break;
@@ -407,7 +449,8 @@ export default class MockTest extends React.Component {
                     </div>
                 );
                 
-                mBoard =(
+                mBoard = (this.state.part === PART_A)?
+                (
                     <div className="board">
                         <div className="main_container">
                             {(this.state.part === PART_A) && <div id="paper_container">
@@ -416,7 +459,34 @@ export default class MockTest extends React.Component {
                             <div id="video_container">
                                 <p className="guide">Now it is your turn:</p>
                                 <div className="camera_subcontainer">
-                                    <video id="video_player" ></video>
+                                    <video id="video_player" muted></video>
+                                </div>                                
+                                <div className="button_container">
+                                    {(this.state.part === PART_A) &&
+                                    <button className="disable_button" id="finish_btn">finish</button>}
+
+                                    {(this.state.part === PART_B) &&
+                                    <button className="disable_button" id="finish_btn">
+                                        <span id="countdown"></span><span className="label">finish</span>
+                                    </button>}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ) :
+                (
+                    <div className="board">
+                        <div className="main_container">
+                            <div id="left_video_container">
+                                <p className="guide">Starter video:</p>
+                                <div className="video_subcontainer">
+                                    <video id="left_video_player" src={mQuestionVideo_B} autoPlay></video>
+                                </div> 
+                            </div>
+                            <div id="video_container">
+                                <p className="guide">Starter video:</p>
+                                <div className="camera_subcontainer">
+                                    <video id="video_player" autoPlay muted playsInline></video>
                                 </div>                                
                                 <div className="button_container">
                                     {(this.state.part === PART_A) &&

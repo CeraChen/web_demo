@@ -94,7 +94,7 @@ html, body {
 
 
 
-.check_container {    
+.check_container {  
     position: fixed;
     top: 50%;
     left: 50%;
@@ -108,8 +108,8 @@ html, body {
 }
 
 .continue {
-    margin-top: 22px;
-    margin-bottom: 22px;
+    margin-top: 15px;
+    margin-bottom: 18px;
     background-color: darkcyan;
     color: white;
     border: none;
@@ -136,6 +136,32 @@ html, body {
     transform: translateY(3px);
 }
 
+.video_area {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
 #display {
+    max-height: 450px;
+    width: auto;
     transform: scaleX(-1);
+}
+
+#contour {
+    position: fixed;
+    top: 53%;
+    left: 50%;
+    transform: translate(-50%, -50%) scaleX(1.1);
+    text-align: center;
+    fill: white;
+    width: 73%;
+    height: auto;
+}
+
+.contour_guide {
+    margin-top: 40px;
+    font-style: italic;
+    text-align: left;
+    font-weight: 350;
 }

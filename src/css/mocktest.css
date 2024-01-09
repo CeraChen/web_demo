@@ -5,6 +5,18 @@
     padding-top: 10px;
 }
 
+.part_start_intro {
+    margin-top: 50px;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 50px;
+}
+
+.subtitle {
+    text-align: left;
+    font-weight: 500;    
+}
+
 .part {
     text-align: left;
     font-weight: 700;

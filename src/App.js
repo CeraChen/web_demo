@@ -18,7 +18,7 @@ const Q_NUM = 1;
     
 
 function App() {
-    var q_num = Math.floor(Math.random() * Q_NUM) + 1;
+    var q_num = 2; //Math.floor(Math.random() * Q_NUM) + 1;
     return (
         <Routes>
             <Route  path='/' element = {<EntryPage />} />
