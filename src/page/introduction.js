@@ -6,7 +6,7 @@ import "../css/mocktest.css"
 const PART_A = 0;
 const PART_B = 1;
 
-const countDownTime = [5000, 8000];
+const countDownTime = [5000, 5000];
 const sparkTime = 200;
 const intervalTime = 1000 - sparkTime;
 

@@ -17,7 +17,9 @@ const ANSWERING = 3;
 
 const intervalTime = 1000;
 const prepareTime = 1000 * 60 * 10;
-const answerTime = 1000 * 60;
+const answerTimePartB = 1000 * 60;
+const answerTimePartA = 1000 * 60 * 2;
+
 const mSVG = <svg t="1703230099825" className="indicate_icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4207" width="27" height="30"><path d="M474.496 512l338.752-338.752-90.496-90.496L293.504 512l429.248 429.248 90.496-90.496z" p-id="4208"></path></svg>;
 
 let mTimer = null;
@@ -26,11 +28,17 @@ let mCount, startTime, leftTime;
 let paperShown = true;
 let mStream = null;
 
-let mediaRecorder; // 用于存储 MediaRecorder 对象
-let recordedChunks = []; // 存储录制的视频块
-let mURL = null;
-let videoStartTime;
-let videoStopTime;
+// let mediaRecorder; // 用于存储 MediaRecorder 对象
+let videoRecorder;
+let audioRecorder;
+let videoChunks = [];
+let audioChunks = [];
+let videoStopped = false;
+let audioStopped = false;
+// let recordedChunks = []; // 存储录制的视频块
+// let mURL = null;
+// let videoStartTime;
+// let videoStopTime;
 
 
 export default class MockTest extends React.Component {
@@ -41,19 +49,41 @@ export default class MockTest extends React.Component {
             q_num: props.q_num,
             text: questions.question_text["q" + props.q_num.toString()],
             stage: (props.part === PART_A)? PREPARING : QUESTIONING,
+            // exit_confirmed: false,
         };
         this.render = this.render.bind(this);
         this.countDownOnce = this.countDownOnce.bind(this);
         this.skipPrepare = this.skipPrepare.bind(this);
         this.startRecordVideo = this.startRecordVideo.bind(this);
+        this.handleMediaStop = this.handleMediaStop.bind(this);
 
 
-        leftTime = (props.part === PART_A)? prepareTime : answerTime;
+        leftTime = (props.part === PART_A)? prepareTime : answerTimePartB;
         mCount = 0;
     }
 
+    // handleBeforeUnload = (event) => {
+    //     if (this.state.exit_confirmed) {
+    //         event.preventDefault();
+    //         event.returnValue = '';
+        
+    //         const confirmationMessage = '您是否确定要离开此页面？您的数据可能不会保存。';
+    //         return confirmationMessage;
+    //     }
+    // }
+    
+    // handleExitClick = () => {
+    //     this.setState({ exit_confirmed: true });
+    // }
+    
+    // handleStayClick = () => {
+    //     this.setState({ exit_confirmed: false });
+    // }
+
 
     componentDidMount() {
+        // window.addEventListener('beforeunload', this.handleBeforeUnload);
+
         if(this.state.stage === PREPARING) {
             console.log("did mount...");
             var countdown = document.getElementById("countdown");
@@ -101,6 +131,7 @@ export default class MockTest extends React.Component {
         }
 
         this.stopRecordVideo();
+        // window.removeEventListener('beforeunload', this.handleBeforeUnload);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -132,25 +163,6 @@ export default class MockTest extends React.Component {
                 const videoContainer = document.getElementById("video_container");
                 videoContainer.style.marginLeft = "0px";
 
-
-                const countdown = document.getElementById("countdown");
-                if(countdown && (mTimer === null)){ 
-                    var mins = parseInt(leftTime/(1000 * 60));
-                    var secs = parseInt((leftTime % (1000 * 60))/1000);
-                    mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
-                    secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
-                    try{
-                        countdown.innerText = mins + ':' + secs;
-                    } catch(error){
-                        console.log(error);
-                    }
-    
-                    mTimer = setTimeout(this.countDownOnce, intervalTime);
-                    startTime = Date.now();
-                    console.log("start timer");
-                }
-
-
                 const leftVideoPlayer = document.getElementById("left_video_player");
                 leftVideoPlayer.onended = () => {                    
                     const a = document.createElement('a');
@@ -159,6 +171,29 @@ export default class MockTest extends React.Component {
                 }
 
             }
+
+            if(this.state.part === PART_A) {
+                leftTime = answerTimePartA;
+            }
+
+            const countdown = document.getElementById("countdown");
+            if(countdown && (mTimer === null)){ 
+                var mins = parseInt(leftTime/(1000 * 60));
+                var secs = parseInt((leftTime % (1000 * 60))/1000);
+                mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
+                secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
+                try{
+                    countdown.innerText = mins + ':' + secs;
+                } catch(error){
+                    console.log(error);
+                }
+
+                mTimer = setTimeout(this.countDownOnce, intervalTime);
+                startTime = Date.now();
+                console.log("start timer");
+            }
+
+
             this.startRecordVideo();
         }
     }
@@ -191,7 +226,7 @@ export default class MockTest extends React.Component {
                 console.log("countdown finishes!");
                 mTimer = null;
 
-                if(this.state.part === PART_A) {
+                if(this.state.part === PART_A  && this.state.stage === PREPARING) {
                     this.setState({
                         stage: PLAYING,
                     });
@@ -240,29 +275,17 @@ export default class MockTest extends React.Component {
                 });
     }
 
-    startRecordVideo() {
-        const videoPlayer = document.getElementById('video_player');
-        videoPlayer.style.transform = "scaleX(-1)";
+    handleMediaStop() {        
+        videoStopped = false;
+        audioStopped = false;
 
-        const finishBtn = document.getElementById('finish_btn');
-
-        videoPlayer.onstart = () => {
-            videoStartTime = Date.now();
-        }
-
-        videoPlayer.onplay = () => {  
-            finishBtn.className = "button";
-            finishBtn.onclick = this.stopRecordVideo;
-        }
-        
-        const onstopFunction = () => {
-            videoStopTime = Date.now();                
-            const blob = new Blob(recordedChunks, { type: 'video/webm' });
-            const url = URL.createObjectURL(blob);
+        const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav'});
             
-            const formData = new FormData();
-            formData.append('video', blob);
-            formData.append('duration', (videoStopTime - videoStartTime));
+            
+        const formData = new FormData();
+        formData.append('video', videoBlob);
+        formData.append('audio', audioBlob);
 
             // fetch('/upload', {
             //     method: 'POST',
@@ -275,21 +298,58 @@ export default class MockTest extends React.Component {
             //     console.error('上传失败:', error);
             // });
 
-            mURL = url;
-            console.log("update url");
-            console.log(url.blob);
-            console.log(mURL.toString());
             
-            localStorage.setItem((this.state.part === PART_A)? 'partAUrl' : 'partBUrl', mURL);
+            // localStorage.setItem((this.state.part === PART_A)? 'partAUrl' : 'partBUrl', mURL);
             
-            recordedChunks = [];
+        videoChunks = [];
+        audioChunks = [];
+        
+        // const videoUrl = URL.createObjectURL(videoBlob);
+        // const audioUrl = URL.createObjectURL(audioBlob);
+
+        // const a = document.createElement('a');
+        // a.href = videoUrl;
+        // a.download = "video.webm"
+        // a.click();
+        // URL.revokeObjectURL(videoUrl);
+
+        // a.href = audioUrl;
+        // a.download = "audio.wav"
+        // a.click();
+        // URL.revokeObjectURL(audioUrl);
             
-            if(this.state.part === PART_A || leftTime > 0) {
-                const a = document.createElement('a');
-                a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
-                // url;
-                // a.download = "video.webm"
-                a.click();
+        if(this.state.part === PART_A || leftTime > 0) {
+            const a = document.createElement('a');
+            a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
+            // url;
+            // a.download = "video.webm"
+            a.click();
+        }
+
+    }
+
+    startRecordVideo() {
+        const videoPlayer = document.getElementById('video_player');
+        videoPlayer.style.transform = "scaleX(-1)";
+
+        const finishBtn = document.getElementById('finish_btn');
+
+        videoPlayer.onplay = () => {  
+            finishBtn.className = "button";
+            finishBtn.onclick = this.stopRecordVideo;
+        }
+
+        const onstopFunctionAudio = () => {
+            audioStopped = true;
+            if(videoStopped && audioStopped) {
+                this.handleMediaStop();
+            }
+        }
+        
+        const onstopFunctionVideo = () => {   
+            videoStopped = true;
+            if(videoStopped && audioStopped) {
+                this.handleMediaStop();
             }
         };
 
@@ -299,15 +359,37 @@ export default class MockTest extends React.Component {
                     console.log("get");
                     mStream = stream;
 
-                    mediaRecorder = new MediaRecorder(stream);
+                    // mediaRecorder = new MediaRecorder(stream);
+                    videoRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
+                    audioRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                    
+                    const audioOptions = {
+                        sampleSize: 16,  // 16-bit 采样大小
+                        sampleRate: 16000,  // 16KHz 采样率
+                        channelCount: 1  // 单声道（单声道为1，立体声为2）
+                    };
+                    const audioTrack = stream.getAudioTracks()[0];
+                    audioTrack.applyConstraints(audioOptions);
 
-                    mediaRecorder.ondataavailable = function (event) {
-                        recordedChunks.push(event.data);
+
+                    videoRecorder.ondataavailable = (event) => {
+                        videoChunks.push(event.data);
+                    };
+                  
+                    audioRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
                     };
 
-                    mediaRecorder.onstop = onstopFunction;
 
-                    mediaRecorder.start();
+                    // mediaRecorder.ondataavailable = function (event) {
+                    //     recordedChunks.push(event.data);
+                    // };
+
+                    videoRecorder.onstop = onstopFunctionVideo;
+                    audioRecorder.onstop = onstopFunctionAudio;
+
+                    videoRecorder.start();
+                    audioRecorder.start();
 
                     
                     videoPlayer.srcObject = mStream;
@@ -324,8 +406,12 @@ export default class MockTest extends React.Component {
             mStream.getTracks().forEach((track) => track.stop());
             console.log("release");
         }
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
+        if (videoRecorder && videoRecorder.state !== 'inactive') {
+            videoRecorder.stop();
+        }
+        
+        if (audioRecorder && audioRecorder.state !== 'inactive') {
+            audioRecorder.stop();
         }
     }
 
@@ -392,7 +478,7 @@ export default class MockTest extends React.Component {
                                 {mQuestionArea}
                             </div>
                             <div id="video_container">
-                                <p className="guide">Starter video:</p>
+                                <p className="guide">You can listen to the 1st discussant's response:</p>
                                 <div className="video_subcontainer" id="subcontainer">
                                     <video id="video_player" src={mStarterVideo} autoPlay></video>
                                     {/* "https://rr4---sn-i3b7knzl.googlevideo.com/videoplayback?expire=1703949630&ei=3uCPZf6jI-GcvcAP7KeFwAo&ip=43.129.29.153&id=o-AAFXlTtNe8dMwECQKEk4wSxKlXlS_jIyGdj7hkFYVFd0&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=yB&mm=31%2C26&mn=sn-i3b7knzl%2Csn-un57sn7y&ms=au%2Conr&mv=u&mvi=4&pl=21&spc=UWF9f6u0q2pfRW-4Rk1-WMveD8QFvEQ&vprv=1&svpuc=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=48.018&lmt=1672869798672213&mt=1703927117&fvip=2&fexp=24007246&c=ANDROID&txp=6219224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AJfQdSswRAIgD-Klh0sH8kS7TyxJRZyjWRH9xQdygMcc8cjGQl6b2pICIHnL-3EsNuxGRE5dEz8TzChTs6eFDFXb3qKcwIGPcY4M&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl&lsig=AAO5W4owRAIgV7ZX8trF4sEkJl3pyBTyD0z_r55GUMZSxtvZyxqgefsCIGfJ5edyYTNALjFtW_KDLoAjrYGaPvSpWKZZEcXt3Gjx" autoPlay></video> */}
@@ -457,18 +543,18 @@ export default class MockTest extends React.Component {
                                 {mQuestionArea}
                             </div>}
                             <div id="video_container">
-                                <p className="guide">Now it is your turn:</p>
+                                <p className="guide">Now it is your turn to speak:</p>
                                 <div className="camera_subcontainer">
                                     <video id="video_player" muted></video>
                                 </div>                                
                                 <div className="button_container">
-                                    {(this.state.part === PART_A) &&
+                                    {/* {(this.state.part === PART_A) &&
                                     <button className="disable_button" id="finish_btn">finish</button>}
 
-                                    {(this.state.part === PART_B) &&
+                                    {(this.state.part === PART_B) && */}
                                     <button className="disable_button" id="finish_btn">
                                         <span id="countdown"></span><span className="label">finish</span>
-                                    </button>}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -478,24 +564,24 @@ export default class MockTest extends React.Component {
                     <div className="board">
                         <div className="main_container">
                             <div id="left_video_container">
-                                <p className="guide">Starter video:</p>
+                                <p className="guide">Examiner:</p>
                                 <div className="video_subcontainer">
                                     <video id="left_video_player" src={mQuestionVideo_B} autoPlay></video>
                                 </div> 
                             </div>
                             <div id="video_container">
-                                <p className="guide">Starter video:</p>
+                                <p className="guide">Please give your answer:</p>
                                 <div className="camera_subcontainer">
                                     <video id="video_player" autoPlay muted playsInline></video>
                                 </div>                                
                                 <div className="button_container">
-                                    {(this.state.part === PART_A) &&
+                                    {/* {(this.state.part === PART_A) &&
                                     <button className="disable_button" id="finish_btn">finish</button>}
 
-                                    {(this.state.part === PART_B) &&
+                                    {(this.state.part === PART_B) && */}
                                     <button className="disable_button" id="finish_btn">
                                         <span id="countdown"></span><span className="label">finish</span>
-                                    </button>}
+                                    </button>
                                 </div>
                             </div>
                         </div>
