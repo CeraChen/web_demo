@@ -287,6 +287,8 @@ export default class MockTest extends React.Component {
         formData.append('video', videoBlob);
         formData.append('audio', audioBlob);
 
+        // time, speechace score, part A/B
+
             // fetch('/upload', {
             //     method: 'POST',
             //     body: formData
