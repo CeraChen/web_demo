@@ -13,9 +13,8 @@ export default class StartPage extends React.Component{
                         method: 'POST',
                     });
                     const data = await response.json();
-                    console.log(data.id_A, data.id_B);
-                    return [data.id_A, data.id_B];
-
+                    console.log(data[0], data[1]);
+                    return [data[0], data[1]];
             } catch (error) {
                 throw new Error('Failed to fetch exam key');
             }

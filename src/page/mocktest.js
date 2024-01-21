@@ -305,9 +305,6 @@ export default class MockTest extends React.Component {
             console.error('Fail to upload! ', error);
         });
 
-            
-            // localStorage.setItem((this.state.part === PART_A)? 'partAUrl' : 'partBUrl', mURL);
-            
         videoChunks = [];
         audioChunks = [];
         
