@@ -7,6 +7,7 @@ import mQuestionVideo_A from "../video/DSE_Examiner_video_2.mp4"
 import mStarterVideo from "../video/DSE_Student_video_1.mp4";
 
 
+
 const PART_A = 0;
 const PART_B = 1;
 
@@ -286,19 +287,23 @@ export default class MockTest extends React.Component {
         const formData = new FormData();
         formData.append('video', videoBlob);
         formData.append('audio', audioBlob);
+        formData.append('id', localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
+        formData.append('part', this.state.part);
+        console.log(localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
 
-        // time, speechace score, part A/B
 
-            // fetch('/upload', {
-            //     method: 'POST',
-            //     body: formData
-            // })
-            // .then(function(response) {
-            //     console.log('上传成功');
-            // })
-            // .catch(function(error) {
-            //     console.error('上传失败:', error);
-            // });
+        // upload the formdata to the backend
+        // replace '/upload_data' with 'http://{your_ip}:{your_port}/upload_data' 
+        fetch('/upload_data', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function(response) {
+            console.log('Successfully upload!');
+        })
+        .catch(function(error) {
+            console.error('Fail to upload! ', error);
+        });
 
             
             // localStorage.setItem((this.state.part === PART_A)? 'partAUrl' : 'partBUrl', mURL);

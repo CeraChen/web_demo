@@ -29,12 +29,13 @@ function ScoreBar({ score , overall }) {
   }
 
 
-function PartReport({ part }) {
+function PartReport({ part, reuslt_json }) {
     const [expandedItemIndex, setExpandedItemIndex] = useState(null);
     const spanRef = useRef();
 
-    var mPart = (part === PART_A)? "Part A" : "Part B";
-    var response_json = (part === PART_A)? response_json_A : response_json_B;
+    const mPart = (part === PART_A)? "Part A" : "Part B";
+    const response_json = reuslt_json;
+    // var response_json = (part === PART_A)? response_json_A : response_json_B;
     
     console.log(response_json);
 
@@ -83,10 +84,12 @@ function PartReport({ part }) {
         
         }
     };
+    
 
     useEffect(() => {
         getErrorDetailPosition();
     }, [expandedItemIndex]);
+
 
 
     useEffect(() => {
