@@ -177,7 +177,9 @@ function CheckPage() {
         })
         .catch(function(error) {
             console.error('Fail to detect! ', error);
-            mTimer = setTimeout(detectCurrentFrame, detectionIntervalTime);
+            if(mTimer == null) {
+                mTimer = setTimeout(detectCurrentFrame, detectionIntervalTime);
+            }
         });
         
     }
@@ -194,6 +196,7 @@ function CheckPage() {
                     { startMedia && mSVG }
                 </div>   
                 { startMedia && <button id="continue" className="cannot_continue">Continue</button>}
+                {/* { startMedia && <button id="continue" className="can_continue" onClick={nextPage}>Continue</button>} */}
             </div>
         </div>
     );
