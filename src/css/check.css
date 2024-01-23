@@ -107,7 +107,7 @@ html, body {
     font-weight: bold;
 }
 
-.continue {
+.can_continue {
     margin-top: 15px;
     margin-bottom: 18px;
     background-color: darkcyan;
@@ -122,6 +122,23 @@ html, body {
     height: 42px;
     width: 100px;
     display: inline;
+}
+
+.cannot_continue {
+    margin-top: 15px;
+    margin-bottom: 18px;
+    background-color: darkgray;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 6px grey;
+    text-align: center;
+    vertical-align: middle;
+    font-size: medium;
+    font-weight: bold;
+    height: 42px;
+    display: inline;
+    width: 100px;
 }
 
 .continue:hover {
@@ -159,7 +176,7 @@ html, body {
     height: auto;
 }
 
-.contour_guide {
+#contour_guide {
     margin-top: 40px;
     font-style: italic;
     text-align: left;

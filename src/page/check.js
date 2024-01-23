@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import '../css/check.css'
 
+let mTimer = null;
+const detectionIntervalTime = 1000;
+
 
 
 
@@ -66,6 +69,18 @@ function CheckPage() {
     }, [showDialog]);
 
 
+    
+    useEffect(() => {
+        if(startMedia) {   
+            if(mTimer !== null) {
+                clearTimeout(mTimer);
+                mTimer = null;
+            }                
+            mTimer = setTimeout(detectCurrentFrame, detectionIntervalTime);
+        }
+    }, [startMedia]);
+
+
     function getMedia() {
         navigator.mediaDevices.getUserMedia({ audio: true, video: true })
             // {
@@ -92,7 +107,79 @@ function CheckPage() {
     }
 
     function nextPage() {
+        if(mTimer !== null) {
+            clearTimeout(mTimer);
+            mTimer = null;
+        }
         navigate("../start");
+    }
+
+
+    function detectCurrentFrame() {         
+        if(mTimer !== null) {
+            clearTimeout(mTimer);
+            mTimer = null;
+        }            
+
+        console.log("to get a frame");        
+        const videoElement = videoRef.current;
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+        const imageData = canvas.toDataURL();
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.remove();
+
+        
+        // send the current video frame to the backend and wait for detetction
+        // replace '/detect_face' with 'http://{your_ip}:{your_port}/detect_face' 
+        fetch('http://localhost:5000/detect_face', {
+            method: 'POST',
+            body: JSON.stringify({
+                "camera_frame": imageData
+            }),
+            headers: {
+              'Content-Type': 'application/json'
+            },
+        })
+        .then(function(response) {
+            URL.revokeObjectURL(imageData);
+            return response.json();
+        })
+        .then(function(data) {
+            const result = data.result;
+            const info = data.info;
+        
+            console.log('Result:', result);
+            console.log('Info:', info);
+
+            const contourSVG = document.getElementById("contour");
+            const contourGuide = document.getElementById("contour_guide");
+            const continueBtn = document.getElementById("continue");
+            if(result) {
+                contourSVG.style.fill = "green";
+                contourGuide.textContent = "Your upper body fits the contour. Please click \"continue\""
+                continueBtn.className = "can_continue";
+                continueBtn.onclick = nextPage;
+            }
+            else {
+                const infos = info.join('\n');
+                contourSVG.style.fill = "red";
+                contourGuide.textContent = infos
+                continueBtn.className = "cannot_continue";
+                continueBtn.onclick = null;
+
+                mTimer = setTimeout(detectCurrentFrame, detectionIntervalTime);
+            }
+        })
+        .catch(function(error) {
+            console.error('Fail to detect! ', error);
+            mTimer = setTimeout(detectCurrentFrame, detectionIntervalTime);
+        });
+        
     }
 
     return (
@@ -100,13 +187,13 @@ function CheckPage() {
             { showDialog && <Dialog handleClick={handleDialogResult}></Dialog> }
             
             <div className="check_container">
-                { startMedia && <p className="contour_guide">Please make sure your upper body approximately fits the contour, then click "continue"</p> } 
+                { startMedia && <p id="contour_guide">Please make sure your upper body approximately fits the contour, then click "continue"</p> } 
                 <div className="video_area">
                     { !startMedia && <p className="call_camera">Calling camera ...</p>}
                     <video id="display" ref={videoRef} autoPlay muted playsInline></video> 
                     { startMedia && mSVG }
                 </div>   
-                { startMedia && <button className="continue" onClick={nextPage}>Continue</button>}
+                { startMedia && <button id="continue" className="cannot_continue">Continue</button>}
             </div>
         </div>
     );
