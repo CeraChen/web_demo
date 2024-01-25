@@ -110,13 +110,28 @@ export default class MockTest extends React.Component {
 
             leftVideoPlayer.onended = () => {
                 if (mStream) {
-                    mStream.getTracks().forEach((track) => track.stop());
-                    console.log("release");
+                    const tracks = mStream.getTracks();
+                    const trackPromises = tracks.map((track) => track.stop());
+
+                    Promise.all(trackPromises)
+                            .then(() => {
+                                console.log("all tracks stopped!");
+                                this.setState({
+                                    stage: ANSWERING,
+                                });
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                            });
+
+
+                    // mStream.getTracks().forEach((track) => track.stop());
+                    // console.log("release");
                 }
 
-                this.setState({
-                    stage: ANSWERING,
-                });
+                // this.setState({
+                //     stage: ANSWERING,
+                // });
             };
 
             this.startCamera();
