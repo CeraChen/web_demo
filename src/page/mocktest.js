@@ -110,7 +110,7 @@ export default class MockTest extends React.Component {
             const leftVideoPlayer = document.getElementById("left_video_player");
 
             leftVideoPlayer.onended = () => {
-                if (mStream) {
+                try {
                     const tracks = mStream.getTracks();
                     const trackPromises = tracks.map((track) => track.stop());
 
@@ -128,6 +128,9 @@ export default class MockTest extends React.Component {
 
                     // mStream.getTracks().forEach((track) => track.stop());
                     // console.log("release");
+                } catch(error) {
+                    console.log("errors when releasing tracks (Part B switching)")
+                    console.log(error);
                 }
 
                 // this.setState({
@@ -140,11 +143,14 @@ export default class MockTest extends React.Component {
     }
 
     componentWillUnmount() {
+        console.log("will unmount");
         //弹窗阻止退出
 
-        if(mTimer !== null) {
+        try {
             clearTimeout(mTimer);
-            mTimer = null;
+        } catch(error) {
+            console.log("error when clearing timer");
+            console.log(error);
         }
 
         this.stopRecordVideo();
@@ -217,7 +223,12 @@ export default class MockTest extends React.Component {
     
     countDownOnce(){
         console.log("enter");
-        clearTimeout(mTimer);
+        try {
+            clearTimeout(mTimer);
+        } catch(error) {
+            console.log("error when clearing timer");
+            console.log(error);
+        }
 
         mCount ++;
         var offset = Date.now() - (startTime + mCount * intervalTime);
@@ -268,9 +279,11 @@ export default class MockTest extends React.Component {
 
 
     skipPrepare() {
-        if(mTimer !== null) {
+        try {
             clearTimeout(mTimer);
-            mTimer = null;
+        } catch(error) {
+            console.log("error when clearing timer");
+            console.log(error);
         }
 
         this.setState({
@@ -312,7 +325,7 @@ export default class MockTest extends React.Component {
 
         // upload the formdata to the backend
         // replace '/upload_data' with 'http://{your_ip}:{your_port}/upload_data' 
-        fetch('/upload_data', {
+        fetch('http://143.89.162.149:4000/upload_data', {
             method: 'POST',
             body: formData
         })
@@ -398,6 +411,7 @@ export default class MockTest extends React.Component {
                     mStream = stream;
 
                     // mediaRecorder = new MediaRecorder(stream);
+                    
                     videoRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
                     audioRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
                     
@@ -440,9 +454,12 @@ export default class MockTest extends React.Component {
 
     stopRecordVideo() {
         console.log("stop record once");
-        if (mStream) {            
+        try {            
             mStream.getTracks().forEach((track) => track.stop());
             console.log("release");
+        } catch(error) {
+            console.log("errors when releasing tracks");
+            console.log(error);
         }
         if (videoRecorder && videoRecorder.state !== 'inactive') {
             videoRecorder.stop();

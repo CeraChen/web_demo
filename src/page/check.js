@@ -148,7 +148,7 @@ function CheckPage() {
             
             // send the current video frame to the backend and wait for detetction
             // replace '/detect_face' with 'http://{your_ip}:{your_port}/detect_face' 
-            fetch('http://localhost:5000/detect_face', {
+            fetch('http://143.89.162.149:4000/detect_face', {
                 method: 'POST',
                 body: JSON.stringify({
                     "camera_frame": imageData
