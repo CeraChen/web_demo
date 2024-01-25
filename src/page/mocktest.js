@@ -37,8 +37,8 @@ let audioChunks = [];
 let videoStopped = false;
 let audioStopped = false;
 // let recordedChunks = []; // 存储录制的视频块
-let mVideoUrl = null;
-let mAudioUrl = null;
+// let videoUrl = null;
+// let audioUrl = null;
 // let videoStartTime;
 // let videoStopTime;
 
@@ -299,12 +299,12 @@ export default class MockTest extends React.Component {
         const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav'});
         
-        mVideoUrl = URL.createObjectURL(videoBlob);
-        mAudioUrl = URL.createObjectURL(audioBlob);
+        const videoUrl = URL.createObjectURL(videoBlob);
+        const audioUrl = URL.createObjectURL(audioBlob);
             
         const formData = new FormData();
-        formData.append('video', mVideoUrl);
-        formData.append('audio', mAudioUrl);
+        formData.append('video', videoUrl);
+        formData.append('audio', audioUrl);
         formData.append('id', localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
         formData.append('part', this.state.part);
         console.log(localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
@@ -318,21 +318,21 @@ export default class MockTest extends React.Component {
         })
         .then(function(response) {
             console.log('Successfully upload!');
-            URL.revokeObjectURL(mVideoUrl);
-            URL.revokeObjectURL(mAudioUrl);
+            URL.revokeObjectURL(videoUrl);
+            URL.revokeObjectURL(audioUrl);
             console.log('Release urls!');
         })
         .catch(function(error) {
             console.error('Fail to upload! ', error);
             try {                
-                URL.revokeObjectURL(mVideoUrl);
+                URL.revokeObjectURL(videoUrl);
                 console.log('Release video url!');
             } catch(error) {
                 console.log(error);
             }
 
             try {                
-                URL.revokeObjectURL(mAudioUrl);
+                URL.revokeObjectURL(audioUrl);
                 console.log('Release audio url!');
             } catch(error) {
                 console.log(error);
