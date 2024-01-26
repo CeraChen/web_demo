@@ -141,12 +141,12 @@ html, body {
     width: 100px;
 }
 
-.continue:hover {
+.can_continue:hover {
     cursor: pointer;
     background-color: rgb(85, 218, 173);
 }
 
-.continue:active {    
+.can_continue:active {    
     background-color: aquamarine;
     color: lightgray;
     box-shadow: 0 3px #666;

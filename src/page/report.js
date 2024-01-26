@@ -40,7 +40,7 @@ export default class Report extends React.Component{
                 console.log('fetch', mPart);
                 // ask for the speechace result from the backend
                 // replace '/get_part_result' with 'http://{your_ip}:{your_port}/get_part_result' 
-                const response = await fetch('http://143.89.162.149:4000/get_part_result', {
+                const response = await fetch('/get_part_result', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

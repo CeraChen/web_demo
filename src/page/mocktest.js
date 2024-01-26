@@ -148,6 +148,7 @@ export default class MockTest extends React.Component {
 
         try {
             clearTimeout(mTimer);
+            mTimer = null;
         } catch(error) {
             console.log("error when clearing timer");
             console.log(error);
@@ -225,6 +226,7 @@ export default class MockTest extends React.Component {
         console.log("enter");
         try {
             clearTimeout(mTimer);
+            mTimer = null;
         } catch(error) {
             console.log("error when clearing timer");
             console.log(error);
@@ -281,6 +283,7 @@ export default class MockTest extends React.Component {
     skipPrepare() {
         try {
             clearTimeout(mTimer);
+            mTimer = null;
         } catch(error) {
             console.log("error when clearing timer");
             console.log(error);
@@ -305,10 +308,7 @@ export default class MockTest extends React.Component {
                 });
     }
 
-    handleMediaStop() {        
-        videoStopped = false;
-        audioStopped = false;
-
+    handleMediaStop() {    
         const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav'});
         
@@ -325,7 +325,7 @@ export default class MockTest extends React.Component {
 
         // upload the formdata to the backend
         // replace '/upload_data' with 'http://{your_ip}:{your_port}/upload_data' 
-        fetch('http://143.89.162.149:4000/upload_data', {
+        fetch('/upload_data', {
             method: 'POST',
             body: formData
         })
@@ -409,11 +409,6 @@ export default class MockTest extends React.Component {
                 .then(function (stream) {
                     console.log("get");
                     mStream = stream;
-
-                    // mediaRecorder = new MediaRecorder(stream);
-                    
-                    videoRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
-                    audioRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
                     
                     const audioOptions = {
                         sampleSize: 16,  // 16-bit 采样大小
@@ -422,6 +417,12 @@ export default class MockTest extends React.Component {
                     };
                     const audioTrack = stream.getAudioTracks()[0];
                     audioTrack.applyConstraints(audioOptions);
+
+                    
+                    // mediaRecorder = new MediaRecorder(stream);
+                    
+                    videoRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
+                    audioRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
 
 
                     videoRecorder.ondataavailable = (event) => {
@@ -440,15 +441,26 @@ export default class MockTest extends React.Component {
                     videoRecorder.onstop = onstopFunctionVideo;
                     audioRecorder.onstop = onstopFunctionAudio;
 
-                    videoRecorder.start();
-                    audioRecorder.start();
-
                     
                     videoPlayer.srcObject = mStream;
                     videoPlayer.play();
+                        
+
+                    videoRecorder.start();
+                    videoStopped = false;
+                    
+                    try {
+                        audioRecorder.start();
+                        audioStopped = false;
+                    } catch(errors) {
+                        console.log(errors);
+                        audioStopped = true;
+                    }
+                    
+                    
                     })
                     .catch(function (error) {
-                    console.error('Error accessing camera:', error);
+                        console.error(error);
                     });
     }
 

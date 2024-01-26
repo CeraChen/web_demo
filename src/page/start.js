@@ -9,7 +9,7 @@ export default class StartPage extends React.Component{
         const fetchExamKey = async () => {
             console.log(Date.now());
             try {
-                    const response = await fetch('http://143.89.162.149:4000/create_test', {
+                    const response = await fetch('/create_test', {
                         method: 'POST',
                     });
                     const data = await response.json();

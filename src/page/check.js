@@ -148,7 +148,7 @@ function CheckPage() {
             
             // send the current video frame to the backend and wait for detetction
             // replace '/detect_face' with 'http://{your_ip}:{your_port}/detect_face' 
-            fetch('http://143.89.162.149:4000/detect_face', {
+            fetch('/detect_face', {
                 method: 'POST',
                 body: JSON.stringify({
                     "camera_frame": imageData
@@ -212,8 +212,8 @@ function CheckPage() {
                     <video id="display" ref={videoRef} autoPlay muted playsInline></video> 
                     { startMedia && mSVG }
                 </div>   
-                { startMedia && <button id="continue" className="cannot_continue">Continue</button>}
-                {/* { startMedia && <button id="continue" className="can_continue" onClick={nextPage}>Continue</button>} */}
+                {/* { startMedia && <button id="continue" className="cannot_continue">Continue</button>} */}
+                { startMedia && <button id="continue" className="can_continue" onClick={nextPage}>Continue</button>}
             </div>
         </div>
     );
