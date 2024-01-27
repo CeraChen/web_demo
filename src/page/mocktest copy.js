@@ -258,8 +258,7 @@ export default class MockTest extends React.Component {
 
                 if(this.state.part === PART_A  && this.state.stage === PREPARING) {
                     this.setState({
-                        // stage: PLAYING,
-                        stage: ANSWERING,
+                        stage: PLAYING,
                     });
                 }
                 else {
@@ -291,8 +290,7 @@ export default class MockTest extends React.Component {
         }
 
         this.setState({
-            // stage: PLAYING,
-            stage: ANSWERING,
+            stage: PLAYING,
         });
     }
 
@@ -332,13 +330,13 @@ export default class MockTest extends React.Component {
             body: formData
         })
         .then(function(response) {
-            console.log('Upload!');
+            console.log('Successfully upload!');
             URL.revokeObjectURL(videoUrl);
             URL.revokeObjectURL(audioUrl);
             console.log('Release urls!');
         })
         .catch(function(error) {
-            console.log('Fail to upload! ', error);
+            console.error('Fail to upload! ', error);
             try {                
                 URL.revokeObjectURL(videoUrl);
                 console.log('Release video url!');
@@ -371,16 +369,12 @@ export default class MockTest extends React.Component {
         // a.click();
         // URL.revokeObjectURL(audioUrl);
             
-        // if(this.state.part === PART_A || leftTime > 0) {
-        if(this.state.part === PART_A) {
+        if(this.state.part === PART_A || leftTime > 0) {
             const a = document.createElement('a');
             a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
             // url;
             // a.download = "video.webm"
             a.click();
-        }
-        else {
-            console.log("id B:", localStorage.getItem("id_B"));
         }
 
     }
