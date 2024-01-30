@@ -258,7 +258,7 @@ export default class MockTest extends React.Component {
     }
     
     countDownOnce(){
-        console.log("enter");
+        // console.log("enter");
         try {
             clearTimeout(mTimer);
             mTimer = null;
@@ -286,7 +286,7 @@ export default class MockTest extends React.Component {
         try{
             countdown.innerText = mins + ':' + secs;
 
-            console.log("Offset: " + offset + "ms, next count in " + nextTime + "ms, left prepare time" + leftTime + "ms");
+            // console.log("Offset: " + offset + "ms, next count in " + nextTime + "ms, left prepare time" + leftTime + "ms");
             if(leftTime <= 0){
                 console.log("countdown finishes!");
                 mTimer = null;
@@ -306,7 +306,7 @@ export default class MockTest extends React.Component {
 
             }else{
                 mTimer = setTimeout(this.countDownOnce, nextTime);
-                console.log("continue");
+                // console.log("continue");
             }
 
         } catch(error){
@@ -392,8 +392,8 @@ export default class MockTest extends React.Component {
             // a.click();
             // URL.revokeObjectURL(audioUrl);
                 
-            if(this.state.part === PART_A || leftTime > 0) {
-            // if(this.state.part === PART_A) {
+            // if(this.state.part === PART_A || leftTime > 0) {
+            if(this.state.part === PART_A) {
                 const a = document.createElement('a');
                 a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
                 // a.href = URL.createObjectURL(videoBlob);
@@ -402,6 +402,7 @@ export default class MockTest extends React.Component {
             }
             else {
                 console.log("id B:", localStorage.getItem("id_B"));
+                console.log("if id B is null or undefined, the dataset cannot receive data successfully");
             }
         }
 

@@ -9,10 +9,10 @@ import response_json_B from '../text/response_sample1.json'
 const PART_A = 0;
 const PART_B = 1; 
 
-const MAX_FETCH_TIMES = 1;
+const MAX_FETCH_TIMES = 5;
 const waitingInterval = 5000;
 let mTimer = null;
-let fetchCount = 0;
+let fetchCount;
 
 function WaitDialog() {
     return (        
@@ -40,6 +40,8 @@ export default class Report extends React.Component{
         this.switchPartResult = this.switchPartResult.bind(this);
         this.fetchPartResult = this.fetchPartResult.bind(this);
         this.fetchResults = this.fetchResults.bind(this);
+
+        fetchCount = 0;
     }
 
     switchPartResult() {
