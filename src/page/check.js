@@ -19,7 +19,7 @@ function Dialog( {handleClick} ) {
                 The recorded video and audio data will only be used for the purpose of further development and improvement of this system.</p>
                 <p className="permission_inquiry">If you agree to grant permission, please click "Accept". If you disagree, please click "Deny", and the page will automatically return.</p>
                 <div className="button_container">
-                    <button className="allow" onClick={allow}>Allow</button>
+                    <button className="allow" onClick={allow}>Accept</button>
                     <button className="deny" onClick={deny}>Deny</button>
                 </div>
             </div>

@@ -314,12 +314,9 @@ export default class MockTest extends React.Component {
         const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav'});
         
-        const videoUrl = URL.createObjectURL(videoBlob);
-        const audioUrl = URL.createObjectURL(audioBlob);
-            
         const formData = new FormData();
-        formData.append('video', videoUrl);
-        formData.append('audio', audioUrl);
+        formData.append('video', videoBlob);
+        formData.append('audio', audioBlob);
         formData.append('id', localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
         formData.append('part', this.state.part);
         console.log(localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
@@ -332,26 +329,10 @@ export default class MockTest extends React.Component {
             body: formData
         })
         .then(function(response) {
-            console.log('Upload!');
-            URL.revokeObjectURL(videoUrl);
-            URL.revokeObjectURL(audioUrl);
-            console.log('Release urls!');
+            console.log('Send uplaoding data!');
         })
         .catch(function(error) {
             console.log('Fail to upload! ', error);
-            try {                
-                URL.revokeObjectURL(videoUrl);
-                console.log('Release video url!');
-            } catch(error) {
-                console.log(error);
-            }
-
-            try {                
-                URL.revokeObjectURL(audioUrl);
-                console.log('Release audio url!');
-            } catch(error) {
-                console.log(error);
-            }
         });
 
         videoChunks = [];
@@ -397,16 +378,20 @@ export default class MockTest extends React.Component {
         }
 
         const onstopFunctionAudio = () => {
-            audioStopped = true;
-            if(videoStopped && audioStopped) {
-                this.handleMediaStop();
+            if(!audioStopped) {                
+                audioStopped = true;
+                if(videoStopped && audioStopped) {
+                    this.handleMediaStop();
+                }
             }
         }
         
         const onstopFunctionVideo = () => {   
-            videoStopped = true;
-            if(videoStopped && audioStopped) {
-                this.handleMediaStop();
+            if(!videoStopped) {                
+                videoStopped = true;
+                if(videoStopped && audioStopped) {
+                    this.handleMediaStop();
+                }
             }
         };
 
