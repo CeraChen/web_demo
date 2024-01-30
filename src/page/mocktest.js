@@ -3,18 +3,21 @@ import questions from '../text/questions.json';
 import '../css/mocktest.css';
 import '../css/button.css';
 import mQuestionVideo_B from "../video/DSE_Examiner_video_3.mp4";
-import mQuestionVideo_A from "../video/DSE_Examiner_video_2.mp4"
+import mQuestionVideo_A from "../video/DSE_Examiner_video_2.mp4";
 import mStarterVideo from "../video/DSE_Student_video_1.mp4";
+import mInterruptVideo from "../video/DSE_Student_video_1.mp4";
 
 
 
 const PART_A = 0;
 const PART_B = 1;
 
-const PREPARING = 0;
-const PLAYING = 1;
-const QUESTIONING = 2;
-const ANSWERING = 3;
+const OPENING = 0;
+const PREPARING = 1;
+const INTERRUPTING = 2;
+const PLAYING = 3;
+const QUESTIONING = 4;
+const ANSWERING = 5;
 
 const intervalTime = 1000;
 const prepareTime = 1000 * 60 * 10;
@@ -41,6 +44,42 @@ let audioStopped = false;
 // let audioUrl = null;
 // let videoStartTime;
 // let videoStopTime;
+
+
+function addDurationToWavMetadata(audioBlob, duration) {
+    const wavBlob = new Blob([audioBlob], { type: 'audio/wav' });
+    const metadataChunk = createWavMetadataChunk(duration);
+  
+    const blobArray = [metadataChunk, wavBlob];
+    const wavWithMetadataBlob = new Blob(blobArray, { type: 'audio/wav' });
+  
+    return wavWithMetadataBlob;
+}
+  
+function createWavMetadataChunk(duration) {
+    const durationString = Math.round(duration).toString();
+    const metadataString = 'Duration: ' + durationString + ' seconds';
+    const metadataArray = new Uint8Array(metadataString.length);
+    for (let i = 0; i < metadataString.length; i++) {
+      metadataArray[i] = metadataString.charCodeAt(i);
+    }
+  
+    const chunkSize = metadataArray.length + 8;
+    const chunkArray = new Uint8Array(chunkSize);
+    chunkArray[0] = 0x4D; // 'M'
+    chunkArray[1] = 0x45; // 'E'
+    chunkArray[2] = 0x54; // 'T'
+    chunkArray[3] = 0x41; // 'A'
+    chunkArray[4] = metadataArray.length & 0xFF;
+    chunkArray[5] = (metadataArray.length >> 8) & 0xFF;
+    chunkArray[6] = (metadataArray.length >> 16) & 0xFF;
+    chunkArray[7] = (metadataArray.length >> 24) & 0xFF;
+    for (let i = 0; i < metadataArray.length; i++) {
+      chunkArray[i + 8] = metadataArray[i];
+    }
+  
+    return chunkArray;
+}
 
 
 export default class MockTest extends React.Component {
@@ -159,11 +198,32 @@ export default class MockTest extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
+        if(this.state.stage === INTERRUPTING && this.state.stage !== prevState.stage) {
+            console.log("interrupted");
+            const paperContainer = document.getElementById("paper_container");
+            const videoContainer = document.getElementById("video_container");
+            const videoPlayer = document.getElementById("video_player");
+            const switchBtn = document.getElementById("switch_btn");
+
+            videoPlayer.onended = () => {
+                this.setState({
+                    stage: PLAYING,
+                });
+            };
+
+            switchBtn.addEventListener('click', (event) => {
+                paperShown = !paperShown;
+                paperContainer.style.display = (paperShown)? 'inline' : 'none';
+                videoContainer.style.marginLeft = (paperShown)? "25px" : "0px";
+                // subContainer.className = (paperShown)? "video_container" : "question_container";
+                switchBtn.style.transform = (paperShown)? "none" : "scaleX(-1)";
+            });
+        }
+
         if(this.state.stage === PLAYING && this.state.stage !== prevState.stage) {
             console.log("playing");
             const paperContainer = document.getElementById("paper_container");
             const videoContainer = document.getElementById("video_container");
-            const subContainer = document.getElementById("subcontainer");
             const videoPlayer = document.getElementById("video_player");
             const switchBtn = document.getElementById("switch_btn");
 
@@ -312,58 +372,73 @@ export default class MockTest extends React.Component {
 
     handleMediaStop() {    
         const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav'});
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm'});
         
-        const formData = new FormData();
-        formData.append('video', videoBlob);
-        formData.append('audio', audioBlob);
-        formData.append('id', localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
-        formData.append('part', this.state.part);
-        console.log(localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
+        const audioContext = new AudioContext();
+        const reader = new FileReader();
+
+        const handleWavReady = (wavBlob) => {            
+            const formData = new FormData();
+            formData.append('video', videoBlob);
+            formData.append('audio', wavBlob);
+            formData.append('id', localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
+            formData.append('part', this.state.part);
+            console.log(localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
 
 
-        // upload the formdata to the backend
-        // replace '/upload_data' with 'http://{your_ip}:{your_port}/upload_data' 
-        fetch('/upload_data', {
-            method: 'POST',
-            body: formData
-        })
-        .then(function(response) {
-            console.log('Send uplaoding data!');
-        })
-        .catch(function(error) {
-            console.log('Fail to upload! ', error);
-        });
+            // upload the formdata to the backend
+            // replace '/upload_data' with 'http://{your_ip}:{your_port}/upload_data' 
+            fetch('/upload_data', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(response) {
+                console.log('Send uplaoding data!');
+            })
+            .catch(function(error) {
+                console.log('Fail to upload! ', error);
+            });
 
-        videoChunks = [];
-        audioChunks = [];
-        
-        // const videoUrl = URL.createObjectURL(videoBlob);
-        // const audioUrl = URL.createObjectURL(audioBlob);
-
-        // const a = document.createElement('a');
-        // a.href = videoUrl;
-        // a.download = "video.webm"
-        // a.click();
-        // URL.revokeObjectURL(videoUrl);
-
-        // a.href = audioUrl;
-        // a.download = "audio.wav"
-        // a.click();
-        // URL.revokeObjectURL(audioUrl);
+            videoChunks = [];
+            audioChunks = [];
             
-        // if(this.state.part === PART_A || leftTime > 0) {
-        if(this.state.part === PART_A) {
-            const a = document.createElement('a');
-            a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
-            // url;
+            // const videoUrl = URL.createObjectURL(videoBlob);
+            // const audioUrl = URL.createObjectURL(audioBlob);
+
+            // const a = document.createElement('a');
+            // a.href = videoUrl;
             // a.download = "video.webm"
-            a.click();
-        }
-        else {
-            console.log("id B:", localStorage.getItem("id_B"));
+            // a.click();
+            // URL.revokeObjectURL(videoUrl);
+
+            // a.href = audioUrl;
+            // a.download = "audio.wav"
+            // a.click();
+            // URL.revokeObjectURL(audioUrl);
+                
+            if(this.state.part === PART_A || leftTime > 0) {
+            // if(this.state.part === PART_A) {
+                const a = document.createElement('a');
+                a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
+                // url;
+                // a.download = "video.webm"
+                a.click();
+            }
+            else {
+                console.log("id B:", localStorage.getItem("id_B"));
+            }
         }
 
+        reader.onload = function () {
+            const buffer = reader.result;
+            audioContext.decodeAudioData(buffer, function (audioBuffer) {
+                const duration = audioBuffer.duration;
+                const wavBlob = addDurationToWavMetadata(audioBlob, duration);
+                handleWavReady(wavBlob);
+            });
+        };
+
+        reader.readAsArrayBuffer(audioBlob);
     }
 
     startRecordVideo() {
@@ -531,7 +606,9 @@ export default class MockTest extends React.Component {
                 );
                 break;
 
+            case INTERRUPTING:
             case PLAYING:
+                var mVideo = (this.state.stage === INTERRUPTING)? mInterruptVideo : mStarterVideo;
                 mHeading = (
                     <div className="heading">
                         <p className="part">{mPart}</p>
@@ -552,7 +629,7 @@ export default class MockTest extends React.Component {
                             <div id="video_container">
                                 <p className="guide">You can listen to the 1st discussant's response:</p>
                                 <div className="video_subcontainer" id="subcontainer">
-                                    <video id="video_player" src={mStarterVideo} autoPlay></video>
+                                    <video id="video_player" src={mVideo} autoPlay></video>
                                     {/* "https://rr4---sn-i3b7knzl.googlevideo.com/videoplayback?expire=1703949630&ei=3uCPZf6jI-GcvcAP7KeFwAo&ip=43.129.29.153&id=o-AAFXlTtNe8dMwECQKEk4wSxKlXlS_jIyGdj7hkFYVFd0&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=yB&mm=31%2C26&mn=sn-i3b7knzl%2Csn-un57sn7y&ms=au%2Conr&mv=u&mvi=4&pl=21&spc=UWF9f6u0q2pfRW-4Rk1-WMveD8QFvEQ&vprv=1&svpuc=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=48.018&lmt=1672869798672213&mt=1703927117&fvip=2&fexp=24007246&c=ANDROID&txp=6219224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AJfQdSswRAIgD-Klh0sH8kS7TyxJRZyjWRH9xQdygMcc8cjGQl6b2pICIHnL-3EsNuxGRE5dEz8TzChTs6eFDFXb3qKcwIGPcY4M&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl&lsig=AAO5W4owRAIgV7ZX8trF4sEkJl3pyBTyD0z_r55GUMZSxtvZyxqgefsCIGfJ5edyYTNALjFtW_KDLoAjrYGaPvSpWKZZEcXt3Gjx" autoPlay></video> */}
                                     {/* "https://rr4---sn-i3b7knld.googlevideo.com/videoplayback?expire=1703942923&ei=q8aPZbzzOoGa1d8PzsawMA&ip=43.129.29.153&id=o-ALxqmNCnTAT36RnxDFI-D7pUJIUTOGm51vjCOA46-b7i&itag=136&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=I0&mm=31%2C29&mn=sn-i3b7knld%2Csn-i3belnlz&ms=au%2Crdu&mv=m&mvi=4&pl=21&initcwndbps=623750&vprv=1&svpuc=1&mime=video%2Fmp4&gir=yes&clen=12345656&dur=237.070&lmt=1703028113368785&mt=1703920860&fvip=2&keepalive=yes&fexp=24007246&c=IOS&txp=4535434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRgIhAMrBZ6GVs4QRHCEp0-OK69jfliPlt_4cYZ2ZHC-j_9UIAiEA7zM9lUYBx_YmZGQ78RMitbacPdP4wvSxuum_qBZ55Vg%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AAO5W4owRQIhAPEH6osM_v-0UoE9KXvSbPX134lBOX5zoNQZxrw6YHvbAiAgS38KCuAeLXcNBRMpJ8XjLz89ZiZIFNQFdZDvLiOf6g%3D%3D" autoPlay></video> */}
                                 </div> 
@@ -580,7 +657,7 @@ export default class MockTest extends React.Component {
                                 </div> 
                             </div>
                             <div id="right_video_container">
-                                <p className="guide">You:</p>
+                                <p className="guide">Please listen to the question:</p>
                                 <div className="video_subcontainer">
                                     <video id="right_video_player" autoPlay muted playsInline></video>
                                 </div> 
@@ -604,6 +681,8 @@ export default class MockTest extends React.Component {
                                 {mSVG}
                                 {/* {(paperShown)? "hide" : "view"} */}
                             </div>}
+                        {(this.state.part === PART_B) &&
+                            <p className="guide">Please click the timer below your video when you finish and would like to move on.</p>}
                     </div>
                 );
                 
