@@ -408,12 +408,15 @@ export default class MockTest extends React.Component {
                     };
                     const audioTrack = stream.getAudioTracks()[0];
                     audioTrack.applyConstraints(audioOptions);
+                    
 
+                    const videoTrack = stream.getVideoTracks()[0];
+
+                    videoRecorder = new MediaRecorder(new MediaStream([videoTrack]), { mimeType: 'video/webm; codecs=vp9' });
+                    audioRecorder = new MediaRecorder(new MediaStream([audioTrack]), { mimeType: 'audio/webm' });
                     
-                    // mediaRecorder = new MediaRecorder(stream);
-                    
-                    videoRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
-                    audioRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+                    // videoRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
+                    // audioRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
 
 
                     videoRecorder.ondataavailable = (event) => {
@@ -437,13 +440,24 @@ export default class MockTest extends React.Component {
                     videoPlayer.play();
                         
 
-                    videoRecorder.start();
-                    videoStopped = false;
+                    // videoRecorder.start();
+                    // videoStopped = false;
+                    try {
+                        videoRecorder.start();
+                        videoStopped = false;
+                        console.log("video recording starts")
+                    } catch(errors) {
+                        console.log("video recording fails")
+                        console.log(errors);
+                        videoStopped = true;
+                    }
                     
                     try {
                         audioRecorder.start();
                         audioStopped = false;
+                        console.log("audio recording starts")
                     } catch(errors) {
+                        console.log("audio recording fails")
                         console.log(errors);
                         audioStopped = true;
                     }
