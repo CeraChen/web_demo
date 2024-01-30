@@ -160,14 +160,14 @@ export default class Report extends React.Component{
         }
 
         if(fetchCount > MAX_FETCH_TIMES || (this.state.result_json_A && this.state.result_json_B)) {
+            if(!(this.state.result_json_A && this.state.result_json_B)) {
+                mTimer = setTimeout(this.fetchResults, waitingInterval);
+            }
+            
             if(this.state.waiting) {                
                 this.setState({
                     waiting: false,
                 });
-            }
-
-            if(!(this.state.result_json_A && this.state.result_json_B)) {
-                mTimer = setTimeout(this.fetchResults, waitingInterval);
             }
         }
         else {
