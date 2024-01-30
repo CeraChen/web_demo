@@ -25,7 +25,7 @@ export default class EntryPage extends React.Component{
             <div className="whole_page">
                 <div className="head">
                     <img id="project_icon" src={mIcon} alt="icon"/> 
-                    <span className="project_title">SpeechAIlab</span>
+                    <span className="project_title">Gavis</span>
                 </div>
                 <div className="side_navigation">
                     <div className="navi_item">
@@ -56,7 +56,7 @@ export default class EntryPage extends React.Component{
 
                     <Link to="/check" style={{ textDecoration:'none', color: 'black'}}>
                         <button className="mocktest">
-                            Strat Part A & B mock testing
+                            Start Part A & B mock testing
                         </button>
                     </Link>
                     {/* <Link to="/mocktest/A" style={{ textDecoration:'none', color: 'black'}}>

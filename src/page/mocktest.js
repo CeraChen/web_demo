@@ -123,8 +123,6 @@ export default class MockTest extends React.Component {
 
 
     componentDidMount() {
-        // window.addEventListener('beforeunload', this.handleBeforeUnload);
-
         if(this.state.stage === PREPARING) {
             console.log("did mount...");
             var countdown = document.getElementById("countdown");
@@ -211,13 +209,13 @@ export default class MockTest extends React.Component {
                 });
             };
 
-            switchBtn.addEventListener('click', (event) => {
+            switchBtn.onclick = () => {
                 paperShown = !paperShown;
                 paperContainer.style.display = (paperShown)? 'inline' : 'none';
                 videoContainer.style.marginLeft = (paperShown)? "25px" : "0px";
                 // subContainer.className = (paperShown)? "video_container" : "question_container";
                 switchBtn.style.transform = (paperShown)? "none" : "scaleX(-1)";
-            });
+            };
         }
 
         if(this.state.stage === PLAYING && this.state.stage !== prevState.stage) {
@@ -233,13 +231,13 @@ export default class MockTest extends React.Component {
                 });
             };
 
-            switchBtn.addEventListener('click', (event) => {
+            switchBtn.onclick = () => {
                 paperShown = !paperShown;
                 paperContainer.style.display = (paperShown)? 'inline' : 'none';
                 videoContainer.style.marginLeft = (paperShown)? "25px" : "0px";
                 // subContainer.className = (paperShown)? "video_container" : "question_container";
                 switchBtn.style.transform = (paperShown)? "none" : "scaleX(-1)";
-            });
+            };
         }
 
         if(this.state.stage === ANSWERING && this.state.stage !== prevState.stage ) {
@@ -258,6 +256,18 @@ export default class MockTest extends React.Component {
 
             if(this.state.part === PART_A) {
                 leftTime = answerTimePartA;
+
+                const paperContainer = document.getElementById("paper_container");
+                const videoContainer = document.getElementById("video_container");
+                const switchBtn = document.getElementById("switch_btn");
+
+                switchBtn.onclick = () => {
+                    paperShown = !paperShown;
+                    paperContainer.style.display = (paperShown)? 'inline' : 'none';
+                    videoContainer.style.marginLeft = (paperShown)? "25px" : "0px";
+                    // subContainer.className = (paperShown)? "video_container" : "question_container";
+                    switchBtn.style.transform = (paperShown)? "none" : "scaleX(-1)";
+                };
             }
 
             const countdown = document.getElementById("countdown");
@@ -377,10 +387,11 @@ export default class MockTest extends React.Component {
         const audioContext = new AudioContext();
         const reader = new FileReader();
 
-        const handleWavReady = (wavBlob) => {            
+        const handleWavReady = (wavBlob, duration) => {            
             const formData = new FormData();
             formData.append('video', videoBlob);
             formData.append('audio', wavBlob);
+            formData.append('duration', duration);
             formData.append('id', localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
             formData.append('part', this.state.part);
             console.log(localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
@@ -420,8 +431,8 @@ export default class MockTest extends React.Component {
             // if(this.state.part === PART_A) {
                 const a = document.createElement('a');
                 a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
-                // url;
-                // a.download = "video.webm"
+                // a.href = URL.createObjectURL(wavBlob);
+                // a.download = "test.wav"
                 a.click();
             }
             else {
@@ -433,8 +444,10 @@ export default class MockTest extends React.Component {
             const buffer = reader.result;
             audioContext.decodeAudioData(buffer, function (audioBuffer) {
                 const duration = audioBuffer.duration;
+                console.log("duration");
+                console.log(duration);
                 const wavBlob = addDurationToWavMetadata(audioBlob, duration);
-                handleWavReady(wavBlob);
+                handleWavReady(wavBlob, duration);
             });
         };
 
@@ -586,11 +599,29 @@ export default class MockTest extends React.Component {
         var mBoard;
 
         switch(this.state.stage) {
+            case OPENING:
+                mHeading = (
+                    <div className="heading">
+                        <p className="part">{mPart}</p>
+                        <p className="guide">Please listen to the examiner:</p>
+                    </div>
+                );
+
+                mBoard = (
+                    <div className="board">
+                        <div className="question_subcontainer">
+                            <video id="video_player" src="https://upos-hz-mirrorakam.akamaized.net/upgcxcode/16/19/1392991916/1392991916-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1704723640&gen=playurlv2&os=akam&oi=804486655&trid=e0a9bee4159a421eb404d51539881341h&mid=0&platform=html5&upsig=6ee250ee3ea8c16ef5484be8e8004ff6&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform&hdnts=exp=1704723640~hmac=3cdfef4deb6ceb7c86de6577ff09e9d618c1758f540d2655746011af1a46c619&bvc=vod&nettype=0&f=h_0_0&bw=50731&logo=80000000" autoPlay></video>
+                        </div>
+                    </div>
+                );
+                break;
+
+
             case PREPARING:
                 mHeading = (
                     <div className="heading">
                         <p className="part">{mPart}</p>
-                        <p className="guide">You will have 10 mins to read the article and questions and prepare.</p>
+                        <p className="guide">You have 10 mins to read the article and questions and prepare.</p>
                         {mQuestionArea}
                     </div>
                 );
