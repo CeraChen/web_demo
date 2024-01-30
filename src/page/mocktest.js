@@ -46,41 +46,6 @@ let audioStopped = false;
 // let videoStopTime;
 
 
-function addDurationToWavMetadata(audioBlob, duration) {
-    const wavBlob = new Blob([audioBlob], { type: 'audio/wav' });
-    const metadataChunk = createWavMetadataChunk(duration);
-  
-    const blobArray = [metadataChunk, wavBlob];
-    const wavWithMetadataBlob = new Blob(blobArray, { type: 'audio/wav' });
-  
-    return wavWithMetadataBlob;
-}
-  
-function createWavMetadataChunk(duration) {
-    const durationString = Math.round(duration).toString();
-    const metadataString = 'Duration: ' + durationString + ' seconds';
-    const metadataArray = new Uint8Array(metadataString.length);
-    for (let i = 0; i < metadataString.length; i++) {
-      metadataArray[i] = metadataString.charCodeAt(i);
-    }
-  
-    const chunkSize = metadataArray.length + 8;
-    const chunkArray = new Uint8Array(chunkSize);
-    chunkArray[0] = 0x4D; // 'M'
-    chunkArray[1] = 0x45; // 'E'
-    chunkArray[2] = 0x54; // 'T'
-    chunkArray[3] = 0x41; // 'A'
-    chunkArray[4] = metadataArray.length & 0xFF;
-    chunkArray[5] = (metadataArray.length >> 8) & 0xFF;
-    chunkArray[6] = (metadataArray.length >> 16) & 0xFF;
-    chunkArray[7] = (metadataArray.length >> 24) & 0xFF;
-    for (let i = 0; i < metadataArray.length; i++) {
-      chunkArray[i + 8] = metadataArray[i];
-    }
-  
-    return chunkArray;
-}
-
 
 export default class MockTest extends React.Component {
     constructor(props) {
@@ -387,7 +352,7 @@ export default class MockTest extends React.Component {
         const audioContext = new AudioContext();
         const reader = new FileReader();
 
-        const handleWavReady = (duration) => {            
+        const handleDurationReady = (duration) => {            
             const formData = new FormData();
             formData.append('video', videoBlob);
             formData.append('audio', audioBlob);
@@ -431,8 +396,8 @@ export default class MockTest extends React.Component {
             // if(this.state.part === PART_A) {
                 const a = document.createElement('a');
                 a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
-                // a.href = URL.createObjectURL(wavBlob);
-                // a.download = "test.wav"
+                // a.href = URL.createObjectURL(videoBlob);
+                // a.download = "test.webm"
                 a.click();
             }
             else {
@@ -446,8 +411,7 @@ export default class MockTest extends React.Component {
                 const duration = audioBuffer.duration;
                 console.log("duration");
                 console.log(duration);
-                // const wavBlob = addDurationToWavMetadata(audioBlob, duration);
-                handleWavReady(duration);
+                handleDurationReady(duration);
             });
         };
 
@@ -610,7 +574,7 @@ export default class MockTest extends React.Component {
                 mBoard = (
                     <div className="board">
                         <div className="question_subcontainer">
-                            <video id="video_player" src="https://upos-hz-mirrorakam.akamaized.net/upgcxcode/16/19/1392991916/1392991916-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1704723640&gen=playurlv2&os=akam&oi=804486655&trid=e0a9bee4159a421eb404d51539881341h&mid=0&platform=html5&upsig=6ee250ee3ea8c16ef5484be8e8004ff6&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform&hdnts=exp=1704723640~hmac=3cdfef4deb6ceb7c86de6577ff09e9d618c1758f540d2655746011af1a46c619&bvc=vod&nettype=0&f=h_0_0&bw=50731&logo=80000000" autoPlay></video>
+                            <video id="video_player" src="" autoPlay></video>
                         </div>
                     </div>
                 );
@@ -661,8 +625,6 @@ export default class MockTest extends React.Component {
                                 <p className="guide">You can listen to the 1st discussant's response:</p>
                                 <div className="video_subcontainer" id="subcontainer">
                                     <video id="video_player" src={mVideo} autoPlay></video>
-                                    {/* "https://rr4---sn-i3b7knzl.googlevideo.com/videoplayback?expire=1703949630&ei=3uCPZf6jI-GcvcAP7KeFwAo&ip=43.129.29.153&id=o-AAFXlTtNe8dMwECQKEk4wSxKlXlS_jIyGdj7hkFYVFd0&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=yB&mm=31%2C26&mn=sn-i3b7knzl%2Csn-un57sn7y&ms=au%2Conr&mv=u&mvi=4&pl=21&spc=UWF9f6u0q2pfRW-4Rk1-WMveD8QFvEQ&vprv=1&svpuc=1&mime=video%2Fmp4&cnr=14&ratebypass=yes&dur=48.018&lmt=1672869798672213&mt=1703927117&fvip=2&fexp=24007246&c=ANDROID&txp=6219224&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Ccnr%2Cratebypass%2Cdur%2Clmt&sig=AJfQdSswRAIgD-Klh0sH8kS7TyxJRZyjWRH9xQdygMcc8cjGQl6b2pICIHnL-3EsNuxGRE5dEz8TzChTs6eFDFXb3qKcwIGPcY4M&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl&lsig=AAO5W4owRAIgV7ZX8trF4sEkJl3pyBTyD0z_r55GUMZSxtvZyxqgefsCIGfJ5edyYTNALjFtW_KDLoAjrYGaPvSpWKZZEcXt3Gjx" autoPlay></video> */}
-                                    {/* "https://rr4---sn-i3b7knld.googlevideo.com/videoplayback?expire=1703942923&ei=q8aPZbzzOoGa1d8PzsawMA&ip=43.129.29.153&id=o-ALxqmNCnTAT36RnxDFI-D7pUJIUTOGm51vjCOA46-b7i&itag=136&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&mh=I0&mm=31%2C29&mn=sn-i3b7knld%2Csn-i3belnlz&ms=au%2Crdu&mv=m&mvi=4&pl=21&initcwndbps=623750&vprv=1&svpuc=1&mime=video%2Fmp4&gir=yes&clen=12345656&dur=237.070&lmt=1703028113368785&mt=1703920860&fvip=2&keepalive=yes&fexp=24007246&c=IOS&txp=4535434&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cvprv%2Csvpuc%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=AJfQdSswRgIhAMrBZ6GVs4QRHCEp0-OK69jfliPlt_4cYZ2ZHC-j_9UIAiEA7zM9lUYBx_YmZGQ78RMitbacPdP4wvSxuum_qBZ55Vg%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AAO5W4owRQIhAPEH6osM_v-0UoE9KXvSbPX134lBOX5zoNQZxrw6YHvbAiAgS38KCuAeLXcNBRMpJ8XjLz89ZiZIFNQFdZDvLiOf6g%3D%3D" autoPlay></video> */}
                                 </div> 
                             </div>
                         </div>
