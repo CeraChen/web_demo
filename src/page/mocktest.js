@@ -387,10 +387,10 @@ export default class MockTest extends React.Component {
         const audioContext = new AudioContext();
         const reader = new FileReader();
 
-        const handleWavReady = (wavBlob, duration) => {            
+        const handleWavReady = (duration) => {            
             const formData = new FormData();
             formData.append('video', videoBlob);
-            formData.append('audio', wavBlob);
+            formData.append('audio', audioBlob);
             formData.append('duration', duration);
             formData.append('id', localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
             formData.append('part', this.state.part);
@@ -446,8 +446,8 @@ export default class MockTest extends React.Component {
                 const duration = audioBuffer.duration;
                 console.log("duration");
                 console.log(duration);
-                const wavBlob = addDurationToWavMetadata(audioBlob, duration);
-                handleWavReady(wavBlob, duration);
+                // const wavBlob = addDurationToWavMetadata(audioBlob, duration);
+                handleWavReady(duration);
             });
         };
 
