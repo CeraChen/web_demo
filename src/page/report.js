@@ -9,8 +9,10 @@ import response_json_B from '../text/response_sample1.json'
 const PART_A = 0;
 const PART_B = 1; 
 
+const MAX_FETCH_TIMES = 1;
 const waitingInterval = 5000;
 let mTimer = null;
+let fetchCount = 0;
 
 function WaitDialog() {
     return (        
@@ -147,7 +149,8 @@ export default class Report extends React.Component{
     }
 
 
-    fetchResults() {        
+    fetchResults() {     
+        fetchCount += 1;   
         try {
             clearTimeout(mTimer);
             mTimer = null;
@@ -156,7 +159,7 @@ export default class Report extends React.Component{
             console.log(error);
         }
 
-        if(this.state.result_json_A && this.state.result_json_B) {
+        if(fetchCount > MAX_FETCH_TIMES || (this.state.result_json_A && this.state.result_json_B)) {
             if(this.state.waiting) {                
                 this.setState({
                     waiting: false,
