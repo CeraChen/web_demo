@@ -384,7 +384,7 @@ export default class MockTest extends React.Component {
                 body: formData
             })
             .then(function(response) {
-                console.log('Send uplaoding data!');
+                console.log('Send uploading data!');
                 jumpToNextPage()
             })
             .catch(function(error) {
