@@ -212,8 +212,8 @@ function CheckPage() {
                     <video id="display" ref={videoRef} autoPlay muted playsInline></video> 
                     { startMedia && mSVG }
                 </div>   
-                {/* { startMedia && <button id="continue" className="cannot_continue">Continue</button>} */}
-                { startMedia && <button id="continue" className="can_continue" onClick={nextPage}>Continue</button>}
+                { startMedia && <button id="continue" className="cannot_continue">Continue</button>}
+                {/* { startMedia && <button id="continue" className="can_continue" onClick={nextPage}>Continue</button>} */}
             </div>
         </div>
     );

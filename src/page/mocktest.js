@@ -293,8 +293,8 @@ export default class MockTest extends React.Component {
 
                 if(this.state.part === PART_A  && this.state.stage === PREPARING) {
                     this.setState({
-                        // stage: PLAYING,
-                        stage: ANSWERING,
+                        stage: PLAYING,
+                        // stage: ANSWERING,
                     });
                 }
                 else {
@@ -326,8 +326,8 @@ export default class MockTest extends React.Component {
         }
 
         this.setState({
-            // stage: PLAYING,
-            stage: ANSWERING,
+            stage: PLAYING,
+            // stage: ANSWERING,
         });
     }
 
