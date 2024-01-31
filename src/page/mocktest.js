@@ -352,6 +352,21 @@ export default class MockTest extends React.Component {
         const audioContext = new AudioContext();
         const reader = new FileReader();
 
+        const jumpToNextPage = () => {
+            if(this.state.part === PART_A || leftTime > 0) {
+            // if(this.state.part === PART_A) {
+                const a = document.createElement('a');
+                a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
+                // a.href = URL.createObjectURL(videoBlob);
+                // a.download = "test.webm"
+                a.click();
+            }
+            else {
+                console.log("id B:", localStorage.getItem("id_B"));
+                console.log("if id B is null or undefined, the dataset cannot receive data successfully");
+            }
+        }
+
         const handleDurationReady = (duration) => {            
             const formData = new FormData();
             formData.append('video', videoBlob);
@@ -370,6 +385,7 @@ export default class MockTest extends React.Component {
             })
             .then(function(response) {
                 console.log('Send uplaoding data!');
+                jumpToNextPage()
             })
             .catch(function(error) {
                 console.log('Fail to upload! ', error);
@@ -392,18 +408,7 @@ export default class MockTest extends React.Component {
             // a.click();
             // URL.revokeObjectURL(audioUrl);
                 
-            // if(this.state.part === PART_A || leftTime > 0) {
-            if(this.state.part === PART_A) {
-                const a = document.createElement('a');
-                a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
-                // a.href = URL.createObjectURL(videoBlob);
-                // a.download = "test.webm"
-                a.click();
-            }
-            else {
-                console.log("id B:", localStorage.getItem("id_B"));
-                console.log("if id B is null or undefined, the dataset cannot receive data successfully");
-            }
+            
         }
 
         reader.onload = function () {

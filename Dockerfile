@@ -1,3 +1,9 @@
 FROM node:14-alpine
-COPY ./ ./gavis_frontend
-CMD npm start
+
+WORKDIR /app
+
+COPY . /app
+
+RUN npm install
+
+CMD ["npm", "start"]
