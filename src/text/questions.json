@@ -21,6 +21,20 @@
                 {"id": 8, "text": "Who benefits most from redevelopment?"}
             ]
         },
-        "q2": "question 2"
+        "q2": {
+            "source": "The article below appeared in last Friday’s newspaper:",
+            "title": "The Growing Concern of Mobile Phone Gaming Addiction",
+            "content": "Mobile phone gaming has surged in popularity, captivating millions worldwide. However, this rise has sparked worries about addiction and its consequences, affecting various age groups. This addiction can harm mental health, leading to increased stress and anxiety. Prolonged screen time contributes to physical health issues like eye strain and disrupted sleep patterns. Relationships can suffer as individuals immersed in virtual worlds struggle to connect on a personal level, leading to isolation. Addressing mobile phone gaming addiction requires education, awareness, and responsible gaming features implemented by developers. As technology advances, finding a balance between the benefits and risks of mobile gaming becomes crucial for individuals and society.\n\nYour group aims to compose a letter to the newspaper editor addressing the arguments presented by Chris Wong. Engage in a discussion with your group about the content to incorporate in your letter regarding this article. You may want to talk about:",
+            "partA": [
+                {"id": 1, "text": "The seriousness of mobile gaming as an issue in Hong Kong"},
+                {"id": 2, "text": "Reasons behind the popularity of mobile gaming"},
+                {"id": 3, "text": "Appropriate reactions from schools and parents to mobile phone gaming"},
+                {"id": 4, "text": "Anything else you think is important"}
+            ],
+            "partB": [
+                {"id": 1, "text": "Why is mobile gaming a concern for educators?"},
+                {"id": 2, "text": "Can mobile gaming be beneficial to students?"}
+            ]
+        }
     }
 }

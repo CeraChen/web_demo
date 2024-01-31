@@ -1,19 +1,757 @@
-import React, { useState, useCallback } from "react";
-import RecordBtn from '../recordBtn';
-import { useParams } from 'react-router-dom';
+import React from "react";
+import questions from '../text/questions.json';
+import '../css/mocktest.css';
+import '../css/button.css';
+import mQuestionVideo_B from "../video/DSE_Examiner_video_3.mp4";
+import mQuestionVideo_A from "../video/DSE_Examiner_video_2.mp4";
+import mStarterVideo from "../video/DSE_Student_video_1.mp4";
+import mInterruptVideo from "../video/DSE_Student_video_1.mp4";
 
-let PART_A = 0;
-let PART_B = 1; 
 
-// export default class MockTest extends React.Component {
-function MockTest() {
-    const { part } = useParams(); //this.props.match.params;
-    var mPart = (part === 'A')? PART_A : PART_B;
-    return (
-        <div>
-            <RecordBtn part={mPart} q_num={1}/>
-        </div>
-    );
+
+const PART_A = 0;
+const PART_B = 1;
+
+const OPENING = 0;
+const PREPARING = 1;
+const INTERRUPTING = 2;
+const PLAYING = 3;
+const QUESTIONING = 4;
+const ANSWERING = 5;
+
+const intervalTime = 1000;
+const prepareTime = 1000 * 60 * 10;
+const answerTimePartB = 1000 * 60;
+const answerTimePartA = 1000 * 60 * 2;
+
+const mSVG = <svg t="1703230099825" className="indicate_icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4207" width="27" height="30"><path d="M474.496 512l338.752-338.752-90.496-90.496L293.504 512l429.248 429.248 90.496-90.496z" p-id="4208"></path></svg>;
+
+let mTimer = null;
+let mCount, startTime, leftTime;
+// let isDragging = false;
+let paperShown = true;
+let mStream = null;
+
+// let mediaRecorder; // 用于存储 MediaRecorder 对象
+let videoRecorder;
+let audioRecorder;
+let videoChunks = [];
+let audioChunks = [];
+let videoStopped = false;
+let audioStopped = false;
+// let recordedChunks = []; // 存储录制的视频块
+// let videoUrl = null;
+// let audioUrl = null;
+// let videoStartTime;
+// let videoStopTime;
+
+
+
+export default class MockTest extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            part: props.part,
+            q_num: props.q_num,
+            text: questions.question_text["q" + props.q_num.toString()],
+            stage: (props.part === PART_A)? PREPARING : QUESTIONING,
+            // exit_confirmed: false,
+        };
+        this.render = this.render.bind(this);
+        this.countDownOnce = this.countDownOnce.bind(this);
+        this.skipPrepare = this.skipPrepare.bind(this);
+        this.startRecordVideo = this.startRecordVideo.bind(this);
+        this.handleMediaStop = this.handleMediaStop.bind(this);
+
+
+        leftTime = (props.part === PART_A)? prepareTime : answerTimePartB;
+        mCount = 0;
+    }
+
+    // handleBeforeUnload = (event) => {
+    //     if (this.state.exit_confirmed) {
+    //         event.preventDefault();
+    //         event.returnValue = '';
+        
+    //         const confirmationMessage = '您是否确定要离开此页面？您的数据可能不会保存。';
+    //         return confirmationMessage;
+    //     }
+    // }
+    
+    // handleExitClick = () => {
+    //     this.setState({ exit_confirmed: true });
+    // }
+    
+    // handleStayClick = () => {
+    //     this.setState({ exit_confirmed: false });
+    // }
+
+
+    componentDidMount() {
+        if(this.state.stage === PREPARING) {
+            console.log("did mount...");
+            var countdown = document.getElementById("countdown");
+            if(countdown && (mTimer === null)){ 
+                var mins = parseInt(leftTime/(1000 * 60));
+                var secs = parseInt((leftTime % (1000 * 60))/1000);
+                mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
+                secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
+                try{
+                    countdown.innerText = mins + ':' + secs;
+                } catch(error){
+                    console.log(error);
+                }
+
+                mTimer = setTimeout(this.countDownOnce, intervalTime);
+                startTime = Date.now();
+                console.log("start timer");
+            }
+        }
+        
+        if(this.state.stage === QUESTIONING ) {
+            const leftVideoPlayer = document.getElementById("left_video_player");
+
+            leftVideoPlayer.onended = () => {
+                try {
+                    const tracks = mStream.getTracks();
+                    const trackPromises = tracks.map((track) => track.stop());
+
+                    Promise.all(trackPromises)
+                            .then(() => {
+                                console.log("all tracks stopped!");
+                                this.setState({
+                                    stage: ANSWERING,
+                                });
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                            });
+
+
+                    // mStream.getTracks().forEach((track) => track.stop());
+                    // console.log("release");
+                } catch(error) {
+                    console.log("errors when releasing tracks (Part B switching)")
+                    console.log(error);
+                }
+
+                // this.setState({
+                //     stage: ANSWERING,
+                // });
+            };
+
+            this.startCamera();
+        }
+    }
+
+    componentWillUnmount() {
+        console.log("will unmount");
+        //弹窗阻止退出
+
+        try {
+            clearTimeout(mTimer);
+            mTimer = null;
+        } catch(error) {
+            console.log("error when clearing timer");
+            console.log(error);
+        }
+
+        this.stopRecordVideo();
+        // window.removeEventListener('beforeunload', this.handleBeforeUnload);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(this.state.stage === INTERRUPTING && this.state.stage !== prevState.stage) {
+            console.log("interrupted");
+            const paperContainer = document.getElementById("paper_container");
+            const videoContainer = document.getElementById("video_container");
+            const videoPlayer = document.getElementById("video_player");
+            const switchBtn = document.getElementById("switch_btn");
+
+            videoPlayer.onended = () => {
+                this.setState({
+                    stage: PLAYING,
+                });
+            };
+
+            switchBtn.onclick = () => {
+                paperShown = !paperShown;
+                paperContainer.style.display = (paperShown)? 'inline' : 'none';
+                videoContainer.style.marginLeft = (paperShown)? "25px" : "0px";
+                // subContainer.className = (paperShown)? "video_container" : "question_container";
+                switchBtn.style.transform = (paperShown)? "none" : "scaleX(-1)";
+            };
+        }
+
+        if(this.state.stage === PLAYING && this.state.stage !== prevState.stage) {
+            console.log("playing");
+            const paperContainer = document.getElementById("paper_container");
+            const videoContainer = document.getElementById("video_container");
+            const videoPlayer = document.getElementById("video_player");
+            const switchBtn = document.getElementById("switch_btn");
+
+            videoPlayer.onended = () => {
+                this.setState({
+                    stage: ANSWERING,
+                });
+            };
+
+            switchBtn.onclick = () => {
+                paperShown = !paperShown;
+                paperContainer.style.display = (paperShown)? 'inline' : 'none';
+                videoContainer.style.marginLeft = (paperShown)? "25px" : "0px";
+                // subContainer.className = (paperShown)? "video_container" : "question_container";
+                switchBtn.style.transform = (paperShown)? "none" : "scaleX(-1)";
+            };
+        }
+
+        if(this.state.stage === ANSWERING && this.state.stage !== prevState.stage ) {
+            if(this.state.part === PART_B) {                
+                const videoContainer = document.getElementById("video_container");
+                videoContainer.style.marginLeft = "0px";
+
+                const leftVideoPlayer = document.getElementById("left_video_player");
+                leftVideoPlayer.onended = () => {                    
+                    const a = document.createElement('a');
+                    a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
+                    a.click();
+                }
+
+            }
+
+            if(this.state.part === PART_A) {
+                leftTime = answerTimePartA;
+
+                const paperContainer = document.getElementById("paper_container");
+                const videoContainer = document.getElementById("video_container");
+                const switchBtn = document.getElementById("switch_btn");
+
+                switchBtn.onclick = () => {
+                    paperShown = !paperShown;
+                    paperContainer.style.display = (paperShown)? 'inline' : 'none';
+                    videoContainer.style.marginLeft = (paperShown)? "25px" : "0px";
+                    // subContainer.className = (paperShown)? "video_container" : "question_container";
+                    switchBtn.style.transform = (paperShown)? "none" : "scaleX(-1)";
+                };
+            }
+
+            const countdown = document.getElementById("countdown");
+            if(countdown && (mTimer === null)){ 
+                var mins = parseInt(leftTime/(1000 * 60));
+                var secs = parseInt((leftTime % (1000 * 60))/1000);
+                mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
+                secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
+                try{
+                    countdown.innerText = mins + ':' + secs;
+                } catch(error){
+                    console.log(error);
+                }
+
+                mTimer = setTimeout(this.countDownOnce, intervalTime);
+                startTime = Date.now();
+                console.log("start timer");
+            }
+
+
+            this.startRecordVideo();
+        }
+    }
+    
+    countDownOnce(){
+        // console.log("enter");
+        try {
+            clearTimeout(mTimer);
+            mTimer = null;
+        } catch(error) {
+            console.log("error when clearing timer");
+            console.log(error);
+        }
+
+        mCount ++;
+        var offset = Date.now() - (startTime + mCount * intervalTime);
+        
+        var nextTime = intervalTime - offset;
+        if (nextTime < 0) { 
+            nextTime = 0 
+        };
+        leftTime -= intervalTime;
+        
+        const countdown = document.getElementById("countdown");
+        var mins = parseInt(leftTime/(1000 * 60));
+        var secs = parseInt((leftTime % (1000 * 60))/1000);
+        mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
+        secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
+
+        
+        try{
+            countdown.innerText = mins + ':' + secs;
+
+            // console.log("Offset: " + offset + "ms, next count in " + nextTime + "ms, left prepare time" + leftTime + "ms");
+            if(leftTime <= 0){
+                console.log("countdown finishes!");
+                mTimer = null;
+
+                if(this.state.part === PART_A  && this.state.stage === PREPARING) {
+                    this.setState({
+                        stage: PLAYING,
+                        // stage: ANSWERING,
+                    });
+                }
+                else {
+                    const finishBtn = document.getElementById('finish_btn');
+                    finishBtn.className = "disable_button";
+                    finishBtn.style.visibility = "visible";
+                    this.stopRecordVideo();
+                }
+
+            }else{
+                mTimer = setTimeout(this.countDownOnce, nextTime);
+                // console.log("continue");
+            }
+
+        } catch(error){
+            console.log(error);
+        }
+
+    }
+
+
+    skipPrepare() {
+        try {
+            clearTimeout(mTimer);
+            mTimer = null;
+        } catch(error) {
+            console.log("error when clearing timer");
+            console.log(error);
+        }
+
+        this.setState({
+            stage: PLAYING,
+            // stage: ANSWERING,
+        });
+    }
+
+    startCamera() {
+        console.log("start right");
+        const rightVideoPlayer = document.getElementById('right_video_player');
+        rightVideoPlayer.style.transform = "scaleX(-1)";
+
+        navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+                .then(function (stream) {
+                    mStream = stream;
+                    rightVideoPlayer.srcObject = stream;})
+                .catch(function (error) {
+                    console.log(error)
+                });
+    }
+
+    handleMediaStop() {    
+        const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm'});
+        
+        const audioContext = new AudioContext();
+        const reader = new FileReader();
+
+        const jumpToNextPage = () => {
+            if(this.state.part === PART_A || leftTime > 0) {
+            // if(this.state.part === PART_A) {
+                const a = document.createElement('a');
+                a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
+                // a.href = URL.createObjectURL(videoBlob);
+                // a.download = "test.webm"
+                a.click();
+            }
+            else {
+                console.log("id B:", localStorage.getItem("id_B"));
+                console.log("if id B is null or undefined, the dataset cannot receive data successfully");
+            }
+        }
+
+        const handleDurationReady = (duration) => {            
+            const formData = new FormData();
+            formData.append('video', videoBlob);
+            formData.append('audio', audioBlob);
+            formData.append('duration', duration);
+            formData.append('id', localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
+            formData.append('part', this.state.part);
+            console.log(localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
+
+
+            // upload the formdata to the backend
+            // replace '/upload_data' with 'http://{your_ip}:{your_port}/upload_data' 
+            fetch('/upload_data', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(response) {
+                console.log('Send uploading data!');
+                jumpToNextPage()
+            })
+            .catch(function(error) {
+                console.log('Fail to upload! ', error);
+            });
+
+            videoChunks = [];
+            audioChunks = [];
+            
+            // const videoUrl = URL.createObjectURL(videoBlob);
+            // const audioUrl = URL.createObjectURL(audioBlob);
+
+            // const a = document.createElement('a');
+            // a.href = videoUrl;
+            // a.download = "video.webm"
+            // a.click();
+            // URL.revokeObjectURL(videoUrl);
+
+            // a.href = audioUrl;
+            // a.download = "audio.wav"
+            // a.click();
+            // URL.revokeObjectURL(audioUrl);
+                
+            
+        }
+
+        reader.onload = function () {
+            const buffer = reader.result;
+            audioContext.decodeAudioData(buffer, function (audioBuffer) {
+                const duration = audioBuffer.duration;
+                console.log("duration");
+                console.log(duration);
+                handleDurationReady(duration);
+            });
+        };
+
+        reader.readAsArrayBuffer(audioBlob);
+    }
+
+    startRecordVideo() {
+        const videoPlayer = document.getElementById('video_player');
+        videoPlayer.style.transform = "scaleX(-1)";
+
+        const finishBtn = document.getElementById('finish_btn');
+
+        videoPlayer.onplay = () => {  
+            finishBtn.className = "button";
+            finishBtn.onclick = this.stopRecordVideo;
+        }
+
+        const onstopFunctionAudio = () => {
+            if(!audioStopped) {                
+                audioStopped = true;
+                if(videoStopped && audioStopped) {
+                    this.handleMediaStop();
+                }
+            }
+        }
+        
+        const onstopFunctionVideo = () => {   
+            if(!videoStopped) {                
+                videoStopped = true;
+                if(videoStopped && audioStopped) {
+                    this.handleMediaStop();
+                }
+            }
+        };
+
+
+        navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+                .then(function (stream) {
+                    console.log("get");
+                    mStream = stream;
+                    
+                    const audioOptions = {
+                        sampleSize: 16,  // 16-bit 采样大小
+                        sampleRate: 16000,  // 16KHz 采样率
+                        channelCount: 1  // 单声道（单声道为1，立体声为2）
+                    };
+                    const audioTrack = stream.getAudioTracks()[0];
+                    audioTrack.applyConstraints(audioOptions);
+                    
+
+                    const videoTrack = stream.getVideoTracks()[0];
+
+                    videoRecorder = new MediaRecorder(new MediaStream([videoTrack]), { mimeType: 'video/webm; codecs=vp9' });
+                    audioRecorder = new MediaRecorder(new MediaStream([audioTrack]), { mimeType: 'audio/webm' });
+                    
+                    // videoRecorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
+                    // audioRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+
+                    videoRecorder.ondataavailable = (event) => {
+                        videoChunks.push(event.data);
+                    };
+                  
+                    audioRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                    };
+
+
+                    // mediaRecorder.ondataavailable = function (event) {
+                    //     recordedChunks.push(event.data);
+                    // };
+
+                    videoRecorder.onstop = onstopFunctionVideo;
+                    audioRecorder.onstop = onstopFunctionAudio;
+
+                    
+                    videoPlayer.srcObject = mStream;
+                    videoPlayer.play();
+                        
+
+                    // videoRecorder.start();
+                    // videoStopped = false;
+                    try {
+                        videoRecorder.start();
+                        videoStopped = false;
+                        console.log("video recording starts")
+                    } catch(errors) {
+                        console.log("video recording fails")
+                        console.log(errors);
+                        videoStopped = true;
+                    }
+                    
+                    try {
+                        audioRecorder.start();
+                        audioStopped = false;
+                        console.log("audio recording starts")
+                    } catch(errors) {
+                        console.log("audio recording fails")
+                        console.log(errors);
+                        audioStopped = true;
+                    }
+                    
+                    
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+    }
+
+    stopRecordVideo() {
+        console.log("stop record once");
+        try {            
+            mStream.getTracks().forEach((track) => track.stop());
+            console.log("release");
+        } catch(error) {
+            console.log("errors when releasing tracks");
+            console.log(error);
+        }
+        if (videoRecorder && videoRecorder.state !== 'inactive') {
+            videoRecorder.stop();
+        }
+        
+        if (audioRecorder && audioRecorder.state !== 'inactive') {
+            audioRecorder.stop();
+        }
+    }
+
+
+    render() {
+        var mPart = (this.state.part === PART_A)? "Part A" : "Part B";
+        var mQuestionArea = (this.state.part === PART_A)? 
+            (
+                <div className="question_area">
+                    <p className="source">{this.state.text["source"]}</p>
+                    <p className="title">{this.state.text["title"]}</p>
+                    <p className="content">{this.state.text["content"]}</p>
+                    <ul>
+                        {this.state.text["partA"].map(item => <li key={item.id} className="partA_questions">{item.text}</li>)}
+                    </ul>
+                </div>
+            ) :
+            (
+                <div className="question_area">
+                    <p className="partB_question">{this.state.text["partB"][parseInt(Math.random()*this.state.text["partB"].length)]["text"]}</p>
+                </div>
+            );
+
+        var mHeading;
+        var mBoard;
+
+        switch(this.state.stage) {
+            case OPENING:
+                mHeading = (
+                    <div className="heading">
+                        <p className="part">{mPart}</p>
+                        <p className="guide">Please listen to the examiner:</p>
+                    </div>
+                );
+
+                mBoard = (
+                    <div className="board">
+                        <div className="question_subcontainer">
+                            <video id="video_player" src="" autoPlay></video>
+                        </div>
+                    </div>
+                );
+                break;
+
+
+            case PREPARING:
+                mHeading = (
+                    <div className="heading">
+                        <p className="part">{mPart}</p>
+                        <p className="guide">You have 10 mins to read the article and questions and prepare.</p>
+                        {mQuestionArea}
+                    </div>
+                );
+
+                mBoard = (
+                    <div className="board">
+                        <div className="btn_div">
+                            <button className="button" onClick={this.skipPrepare}>
+                                <span id="countdown"></span><span className="label">skip</span>
+                            </button>
+                        </div>
+                    </div>
+                );
+                break;
+
+            case INTERRUPTING:
+            case PLAYING:
+                var mVideo = (this.state.stage === INTERRUPTING)? mInterruptVideo : mStarterVideo;
+                mHeading = (
+                    <div className="heading">
+                        <p className="part">{mPart}</p>
+                        {(this.state.part === PART_A) && 
+                            <div id="switch_btn">
+                                {mSVG}
+                                {/* {(paperShown)? "hide" : "view"} */}
+                            </div>}
+                    </div>
+                );
+
+                mBoard = (
+                    <div className="board">
+                        <div className="main_container">
+                            <div id="paper_container">
+                                {mQuestionArea}
+                            </div>
+                            <div id="video_container">
+                                <p className="guide">You can listen to the 1st discussant's response:</p>
+                                <div className="video_subcontainer" id="subcontainer">
+                                    <video id="video_player" src={mVideo} autoPlay></video>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                );
+                break;
+
+            case QUESTIONING:
+                mHeading = (
+                    <div className="heading">
+                        <p className="part">{mPart}</p>
+                        <p className="guide">After listening to the question, you will have 1 min to answer.</p>
+                    </div>
+                );
+
+                mBoard = (
+                    <div className="board">
+                        <div className="main_container">
+                            <div id="left_video_container">
+                                <p className="guide">Examiner:</p>
+                                <div className="video_subcontainer">
+                                    <video id="left_video_player" src={mQuestionVideo_A} autoPlay></video>
+                                </div> 
+                            </div>
+                            <div id="right_video_container">
+                                <p className="guide">Please listen to the question:</p>
+                                <div className="video_subcontainer">
+                                    <video id="right_video_player" autoPlay muted playsInline></video>
+                                </div> 
+                            </div>
+                        </div>
+
+                        {/* <div className="question_subcontainer">
+                            <video id="video_player" src="https://upos-hz-mirrorakam.akamaized.net/upgcxcode/16/19/1392991916/1392991916-1-16.mp4?e=ig8euxZM2rNcNbRVhwdVhwdlhWdVhwdVhoNvNC8BqJIzNbfq9rVEuxTEnE8L5F6VnEsSTx0vkX8fqJeYTj_lta53NCM=&uipk=5&nbs=1&deadline=1704723640&gen=playurlv2&os=akam&oi=804486655&trid=e0a9bee4159a421eb404d51539881341h&mid=0&platform=html5&upsig=6ee250ee3ea8c16ef5484be8e8004ff6&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform&hdnts=exp=1704723640~hmac=3cdfef4deb6ceb7c86de6577ff09e9d618c1758f540d2655746011af1a46c619&bvc=vod&nettype=0&f=h_0_0&bw=50731&logo=80000000" autoPlay></video>
+                        </div> */}
+                    </div>
+                );
+                break;
+            
+            case ANSWERING:
+            default:
+                mHeading = (
+                    <div className="heading">
+                        <p className="part">{mPart}</p>
+                        {(this.state.part === PART_A) && 
+                            <div id="switch_btn">
+                                {mSVG}
+                                {/* {(paperShown)? "hide" : "view"} */}
+                            </div>}
+                        {(this.state.part === PART_B) &&
+                            <p className="guide">Please click the timer below your video when you finish and would like to move on.</p>}
+                    </div>
+                );
+                
+                mBoard = (this.state.part === PART_A)?
+                (
+                    <div className="board">
+                        <div className="main_container">
+                            {(this.state.part === PART_A) && <div id="paper_container">
+                                {mQuestionArea}
+                            </div>}
+                            <div id="video_container">
+                                <p className="guide">Now it is your turn to speak:</p>
+                                <div className="camera_subcontainer">
+                                    <video id="video_player" muted></video>
+                                </div>                                
+                                <div className="button_container">
+                                    {/* {(this.state.part === PART_A) &&
+                                    <button className="disable_button" id="finish_btn">finish</button>}
+
+                                    {(this.state.part === PART_B) && */}
+                                    <button className="disable_button" id="finish_btn">
+                                        <span id="countdown"></span><span className="label">finish</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ) :
+                (
+                    <div className="board">
+                        <div className="main_container">
+                            <div id="left_video_container">
+                                <p className="guide">Examiner:</p>
+                                <div className="video_subcontainer">
+                                    <video id="left_video_player" src={mQuestionVideo_B} autoPlay></video>
+                                </div> 
+                            </div>
+                            <div id="video_container">
+                                <p className="guide">Please give your answer:</p>
+                                <div className="camera_subcontainer">
+                                    <video id="video_player" autoPlay muted playsInline></video>
+                                </div>                                
+                                <div className="button_container">
+                                    {/* {(this.state.part === PART_A) &&
+                                    <button className="disable_button" id="finish_btn">finish</button>}
+
+                                    {(this.state.part === PART_B) && */}
+                                    <button className="disable_button" id="finish_btn">
+                                        <span id="countdown"></span><span className="label">finish</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+
+        }
+
+
+
+        
+        return(
+            <div className="main">
+                {mHeading}
+                {mBoard}
+            </div>
+
+            // <div onClick={this.updateUrl(this.state.part, "hihi")}>
+            //     <Link to={nextPage}>Intro counting down</Link>
+            // </div>
+        );
+    }
 }
-
-export default MockTest;

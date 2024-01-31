@@ -1,0 +1,113 @@
+.btn_div {
+    text-align: center;
+}
+
+.disable_button {
+    visibility: hidden;
+    
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: darkgray;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px grey;
+    text-align: center;
+    vertical-align: middle;
+    font-size: medium;
+    font-weight: bold;
+    height: 45px;
+    display: inline;
+    width: 120px;
+}
+
+.disable_button:disabled {
+    cursor: not-allowed;
+}
+
+
+.button:not(#pause_resume_button) {
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: darkcyan;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px grey;
+    text-align: center;
+    vertical-align: middle;
+    font-size: medium;
+    font-weight: bold;
+    height: 45px;
+    display: inline;
+}
+
+.button:not(#replay_button, #stop_replay_button, #pause_resume_button) {
+    width: 120px;
+}
+
+
+#pause_resume_button:active {    
+    background-color: mistyrose;
+    color: lightgray;
+    box-shadow: 0 4px #666;
+    transform: translateY(4px);
+}
+
+.button_icon {
+    fill: white;
+    transform: "translate(0px, 15px)";
+    position: relative;
+    top: 3px;
+}
+
+.button:active .button_icon {
+    fill: lightgray;
+}
+
+.button:not(#pause_resume_button):hover {
+    background-color: rgb(85, 218, 173);
+    cursor: pointer;
+}
+
+
+.button:hover .button_icon{
+    display: none;
+}
+
+.button:hover #countdown{
+    display: none;
+}
+
+#countdown {
+    display: inline;
+}
+
+.label {
+    display: none;
+    vertical-align: middle;
+}
+
+.button:hover .label{
+    display: inline;
+    font-size: large;
+}
+
+.button:hover #duration {
+    display: none;
+}
+
+.button:hover #timing {
+    display: none;
+}
+
+.button:not(#pause_resume_button):active {    
+    background-color: aquamarine;
+    color: lightgray;
+    box-shadow: 0 4px #666;
+    transform: translateY(4px);
+}

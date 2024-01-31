@@ -1,0 +1,309 @@
+.waiting_dialog {
+    width: auto;
+    height: auto;
+    position: fixed;
+    top: 46%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 10px;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.waiting_dialog_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 20px;
+    margin-bottom: 35px;
+    text-align: center;
+}
+
+
+.spinner {
+    margin-top: 5px;
+    width: 32px;
+    height: 32px;
+    border: 9px solid rgb(237, 239, 239);
+    border-top: 9px solid darkcyan;
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+.heading {
+    margin-left: 50px;
+    margin-right: 50px;
+    padding-top: 10px;
+}
+
+.part_start_intro {
+    margin-top: 50px;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 50px;
+}
+
+.subtitle {
+    text-align: left;
+    font-weight: 500;    
+}
+
+.part {
+    text-align: left;
+    font-weight: 700;
+    font-size: large;
+}
+
+.guide {
+    margin-top: -10px;
+    font-style: italic;
+    text-align: left;
+    font-weight: 350;
+}
+
+.part_guide {
+    margin-top: -10px;
+    font-style: italic;
+    text-align: left;
+    font-weight: 350;
+}
+
+.button_area {
+    margin-top: 100px;
+    text-align: center;
+}
+
+.spark {
+    background-color: darkcyan;
+    color: white;
+    border: none;
+    border-radius: 70px;
+    border: solid;
+    border-color: aquamarine;
+    border-width: 7.5px;
+    /* box-shadow: 0 6px grey; */
+    text-align: center;
+    vertical-align: middle;
+    font-size: 25px;
+    font-weight: bold;
+    height: 70px;
+    width: 70px;
+    display: inline;
+    transform: translateY(-2.5px);
+}
+
+.interval {
+    background-color: darkcyan;
+    color: white;
+    border: none;
+    border-radius: 65px;
+    border: solid;
+    border-color: rgba(169, 169, 169);
+    border-width: 5px;
+    /* box-shadow: 0 6px grey; */
+    text-align: center;
+    vertical-align: middle;
+    font-size: 25px;
+    font-weight: bold;
+    height: 65px;
+    width: 65px;
+    display: inline;
+}
+
+
+
+
+
+
+
+.source {
+    margin-top: -10px;
+    font-style: italic;
+    text-align: left;
+    font-weight: 350;
+}
+
+
+.title {
+    font-weight: 500;
+    text-align: center;
+}
+
+.content {
+    text-align: justify;
+    white-space: pre-line;
+    font-weight: 350;
+}
+
+.partA_questions {
+    margin-left: 5%;
+    text-align: left;
+    font-weight: 500;
+}
+
+.partB_question {
+    font-weight: 500;
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 80px;
+}
+
+
+.board {    
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.main_container {
+    display: flex;
+}
+
+#paper_container {
+    padding-top: 10px;
+    padding-right: 18px;
+    flex: 1;
+    min-height: 0; /* 防止内容溢出，允许容器收缩 */
+    overflow-y: auto; /* 允许纵向滚动 */
+    height: 500px; /* 设置容器的固定高度 */
+}
+
+#video_container {
+    padding-top: 10px;
+    flex: 1;
+    min-height: 0; /* 防止内容溢出，允许容器收缩 */
+    margin-left: 25px; /* 可根据需要调整左右间距 */
+    height: 500px; /* 设置容器的固定高度 */
+}
+
+#left_video_container {
+    flex: 1;
+    min-height: 0; /* 防止内容溢出，允许容器收缩 */
+    height: 500px; /* 设置容器的固定高度 */
+}
+
+#right_video_container {
+    padding-top: 10px;
+    flex: 1;
+    min-height: 0; /* 防止内容溢出，允许容器收缩 */
+    margin-left: 25px; /* 可根据需要调整左右间距 */
+    height: 500px; /* 设置容器的固定高度 */
+}
+
+
+
+::-webkit-scrollbar{
+    width: 8px;/* 纵向滚动条*/
+    height: 8px;/* 横向滚动条 */
+}
+
+/*定义滚动条轨道 内阴影*/
+::-webkit-scrollbar-track{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0);
+    background-color: #fbfbfb;
+}
+
+/*定义滑块 内阴影*/
+::-webkit-scrollbar-thumb{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0);
+    background-color: #D5D5D5;
+    border-radius: 12px;
+}
+
+
+::-webkit-scrollbar-thumb:hover{
+    background-color: #b2b2b2;
+}
+
+
+
+.video_subcontainer {
+    text-align: center;
+    width: 100%;
+    height: 80%;
+    margin-top: 50px;
+}
+
+
+.camera_subcontainer {
+    text-align: center;
+    width: 100%;
+    height: 70%;
+}
+
+.question_subcontainer {    
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+#video_player {
+    max-width: 98%;
+    max-height: 96%;
+}
+
+#left_video_player {
+    width: 90%;
+}
+
+#right_video_player {
+    width: 90%;
+    max-height: 80%;
+}
+
+.button_container {
+    float: top;
+}
+
+.indicate_icon {
+    stroke-width: 10px;
+    fill: #fbfbfb;
+}
+
+
+.indicate_icon:hover {
+    fill: #ffffff;
+}
+
+#switch_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding-top: 5px;
+    padding-bottom: 5px;
+    position: absolute;
+    /* right: 50px; */
+    left: 8px;
+    top: 48%;
+    background-color: #d7d7d7;
+    border-radius: 8px;
+}
+
+#switch_btn:hover {
+    background-color: #b2b2b2;
+}
+
+#switch_btn svg {
+    transform: translateX(-2.5px);
+}

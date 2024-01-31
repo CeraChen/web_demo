@@ -25,7 +25,7 @@ export default class EntryPage extends React.Component{
             <div className="whole_page">
                 <div className="head">
                     <img id="project_icon" src={mIcon} alt="icon"/> 
-                    <span className="project_title">SpeechAIlab</span>
+                    <span className="project_title">Gavis</span>
                 </div>
                 <div className="side_navigation">
                     <div className="navi_item">
@@ -54,7 +54,12 @@ export default class EntryPage extends React.Component{
                         <span className="module_text">HKDSE Paper 4 - mock test</span>
                     </div>
 
-                    <Link to="/mocktest/A" style={{ textDecoration:'none', color: 'black'}}>
+                    <Link to="/check" style={{ textDecoration:'none', color: 'black'}}>
+                        <button className="mocktest">
+                            Start Part A & B mock testing
+                        </button>
+                    </Link>
+                    {/* <Link to="/mocktest/A" style={{ textDecoration:'none', color: 'black'}}>
                         <button className="mocktest">
                             Part A - Group Discussion
                         </button>
@@ -63,7 +68,7 @@ export default class EntryPage extends React.Component{
                         <button className="mocktest">
                             Part B - Individual Response
                         </button>
-                    </Link>
+                    </Link> */}
                 </div>
 
                 {/* <div className="sub_entry" id="module_practice">
