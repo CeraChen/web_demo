@@ -392,8 +392,8 @@ export default class MockTest extends React.Component {
             // a.click();
             // URL.revokeObjectURL(audioUrl);
                 
-            // if(this.state.part === PART_A || leftTime > 0) {
-            if(this.state.part === PART_A) {
+            if(this.state.part === PART_A || leftTime > 0) {
+            // if(this.state.part === PART_A) {
                 const a = document.createElement('a');
                 a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
                 // a.href = URL.createObjectURL(videoBlob);

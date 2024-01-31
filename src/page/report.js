@@ -161,18 +161,7 @@ export default class Report extends React.Component{
             console.log(error);
         }
 
-        if(fetchCount > MAX_FETCH_TIMES || (this.state.result_json_A && this.state.result_json_B)) {
-            if(!(this.state.result_json_A && this.state.result_json_B)) {
-                mTimer = setTimeout(this.fetchResults, waitingInterval);
-            }
-            
-            if(this.state.waiting) {                
-                this.setState({
-                    waiting: false,
-                });
-            }
-        }
-        else {
+        if(!(this.state.result_json_A && this.state.result_json_B)) {            
             if(!this.state.result_json_A) {
                 this.fetchPartResult(PART_A);
             }
@@ -181,6 +170,14 @@ export default class Report extends React.Component{
             }
 
             mTimer = setTimeout(this.fetchResults, waitingInterval);
+        }
+
+        if(fetchCount > MAX_FETCH_TIMES || (this.state.result_json_A && this.state.result_json_B)) {
+            if(this.state.waiting) {                
+                this.setState({
+                    waiting: false,
+                });
+            }
         }
     }
 
