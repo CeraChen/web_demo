@@ -7,7 +7,6 @@ import accountIcon from '../icon/account.png'
 import historyIcon from '../icon/history-filling.png'
 import settingIcon from '../icon/settings-fill.png'
 import speechIcon from '../icon/speech.png'
-import speakIcon from '../icon/speaker-flipped.png'
 import USTlogo from '../icon/UST.svg'
 
 

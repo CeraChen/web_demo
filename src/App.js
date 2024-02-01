@@ -6,10 +6,7 @@ import StartPage from './page/start';
 import Intro from './page/introduction';
 import MockTest from './page/mocktest';
 import Report from './page/report';
-import React, { useState, useEffect } from 'react';
-import PartReport from './page/part_result';
-
-// import MockTest_ from './page/mocktest_';
+import React from 'react';
 
 const PART_A = 0;
 const PART_B = 1;

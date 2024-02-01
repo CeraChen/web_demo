@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import '../css/check.css'
 
 let mTimer = null;
@@ -49,7 +49,7 @@ function CheckPage() {
 
     useEffect(() => {
         if(!showDialog) {
-            var container = document.getElementsByClassName("check_container");
+            const container = document.getElementsByClassName("check_container");
             if(container){
                 container[0].style.visibility = "visible";
             }

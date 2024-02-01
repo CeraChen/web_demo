@@ -1,15 +1,14 @@
 import React from "react";
-import {Link} from "react-router-dom";
 import PartReport from "./part_result";
 import '../css/mocktest.css'
 
-import response_json_A from '../text/response_sample2.json'
-import response_json_B from '../text/response_sample1.json'
+import response_json_A from '../text/response_sample1.json'
+import response_json_B from '../text/response_sample2.json'
 
 const PART_A = 0;
 const PART_B = 1; 
 
-const MAX_FETCH_TIMES = 5;
+const MAX_FETCH_TIMES = 1;
 const waitingInterval = 5000;
 let mTimer = null;
 let fetchCount;
