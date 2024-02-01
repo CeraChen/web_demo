@@ -367,14 +367,16 @@ export default class MockTest extends React.Component {
         //     }
         // }
 
+        const part = this.state.part;
+
         const handleDurationReady = (duration) => {            
             const formData = new FormData();
             formData.append('video', videoBlob);
             formData.append('audio', audioBlob);
             formData.append('duration', duration);
-            formData.append('id', localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
-            formData.append('part', this.state.part);
-            console.log(localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
+            formData.append('id', localStorage.getItem((part === PART_A)? "id_A":"id_B"));
+            formData.append('part', part);
+            console.log(localStorage.getItem((part === PART_A)? "id_A":"id_B"));
 
 
             // upload the formdata to the backend
@@ -391,8 +393,6 @@ export default class MockTest extends React.Component {
                 console.log('Fail to upload! ', error);
             });
 
-            videoChunks = [];
-            audioChunks = [];
             
             // const videoUrl = URL.createObjectURL(videoBlob);
             // const audioUrl = URL.createObjectURL(audioBlob);
@@ -423,6 +423,9 @@ export default class MockTest extends React.Component {
 
         reader.readAsArrayBuffer(audioBlob);
 
+        
+        videoChunks = [];
+        audioChunks = [];
         
         if(this.state.part === PART_A || leftTime > 0) {
         // if(this.state.part === PART_A) {
