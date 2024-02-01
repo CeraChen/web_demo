@@ -1,14 +1,12 @@
 import React, { useEffect, useState, useRef } from "react"
 import '../css/part_report.css'
-import response_json_A from '../text/response_sample2.json'
-import response_json_B from '../text/response_sample1.json'
 import arpabet from '../text/arpabet.json'
 
 
 const PART_A = 0;
 const PART_B = 1; 
 
-const boundary = 70;
+const boundary = 65;
 
 function ScoreBar({ score , overall }) {
     const progressPercentage = (score / 9) * 100;
@@ -198,7 +196,7 @@ function PartReport({ part, reuslt_json }) {
                                                     <tr>
                                                         {(syllable_marks[idx] > 0) && (<td rowSpan={syllable_marks[idx]}>{syllables[idx]}</td>)}
                                                         <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{arpabet[phone.phone] || phone.phone}</td>
-                                                        <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{(phone.sound_most_like)? ((phone.sound_most_like === phone.phone)? 'Good' : phone.sound_most_like) : '[missing]'}</td>
+                                                        <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{(phone.sound_most_like)? ((phone.sound_most_like === phone.phone)? 'Good' : arpabet[phone.sound_most_like]) : '[missing]'}</td>
                                                     </tr>
                                                 )
                                                 )}

@@ -352,29 +352,31 @@ export default class MockTest extends React.Component {
         const audioContext = new AudioContext();
         const reader = new FileReader();
 
-        const jumpToNextPage = () => {
-            if(this.state.part === PART_A || leftTime > 0) {
-            // if(this.state.part === PART_A) {
-                const a = document.createElement('a');
-                a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
-                // a.href = URL.createObjectURL(videoBlob);
-                // a.download = "test.webm"
-                a.click();
-            }
-            else {
-                console.log("id B:", localStorage.getItem("id_B"));
-                console.log("if id B is null or undefined, the dataset cannot receive data successfully");
-            }
-        }
+        // const jumpToNextPage = () => {
+        //     if(this.state.part === PART_A || leftTime > 0) {
+        //     // if(this.state.part === PART_A) {
+        //         const a = document.createElement('a');
+        //         a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
+        //         // a.href = URL.createObjectURL(videoBlob);
+        //         // a.download = "test.webm"
+        //         a.click();
+        //     }
+        //     else {
+        //         console.log("id B:", localStorage.getItem("id_B"));
+        //         console.log("if id B is null or undefined, the dataset cannot receive data successfully");
+        //     }
+        // }
+
+        const part = this.state.part;
 
         const handleDurationReady = (duration) => {            
             const formData = new FormData();
             formData.append('video', videoBlob);
             formData.append('audio', audioBlob);
             formData.append('duration', duration);
-            formData.append('id', localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
-            formData.append('part', this.state.part);
-            console.log(localStorage.getItem((this.state.part === PART_A)? "id_A":"id_B"));
+            formData.append('id', localStorage.getItem((part === PART_A)? "id_A":"id_B"));
+            formData.append('part', part);
+            console.log(localStorage.getItem((part === PART_A)? "id_A":"id_B"));
 
 
             // upload the formdata to the backend
@@ -385,14 +387,12 @@ export default class MockTest extends React.Component {
             })
             .then(function(response) {
                 console.log('Send uploading data!');
-                jumpToNextPage()
+                // jumpToNextPage();
             })
             .catch(function(error) {
                 console.log('Fail to upload! ', error);
             });
 
-            videoChunks = [];
-            audioChunks = [];
             
             // const videoUrl = URL.createObjectURL(videoBlob);
             // const audioUrl = URL.createObjectURL(audioBlob);
@@ -422,6 +422,23 @@ export default class MockTest extends React.Component {
         };
 
         reader.readAsArrayBuffer(audioBlob);
+
+        
+        videoChunks = [];
+        audioChunks = [];
+        
+        if(this.state.part === PART_A || leftTime > 0) {
+        // if(this.state.part === PART_A) {
+            const a = document.createElement('a');
+            a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
+            // a.href = URL.createObjectURL(videoBlob);
+            // a.download = "test.webm"
+            a.click();
+        }
+        else {
+            console.log("id B:", localStorage.getItem("id_B"));
+            console.log("if id B is null or undefined, the dataset cannot receive data successfully");
+        }
     }
 
     startRecordVideo() {
