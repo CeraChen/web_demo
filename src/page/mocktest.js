@@ -2,15 +2,13 @@ import React from "react";
 import questions from '../text/questions.json';
 import '../css/mocktest.css';
 import '../css/button.css';
-import mQuestionVideo_B from "../video/DSE_Examiner_video_3.mp4";
-import mQuestionVideo_A from "../video/DSE_Examiner_video_2.mp4";
-import mStarterVideo from "../video/DSE_Student_video_1.mp4";
-import mInterruptVideo from "../video/DSE_Student_video_1.mp4";
-
 
 
 const PART_A = 0;
 const PART_B = 1;
+
+const WEAK = 0;
+const STRONG = 1;
 
 const OPENING = 0;
 const PREPARING = 1;
@@ -52,9 +50,10 @@ export default class MockTest extends React.Component {
         super(props);
         this.state = {
             part: props.part,
-            q_num: props.q_num,
-            text: questions.question_text["q" + props.q_num.toString()],
-            stage: (props.part === PART_A)? PREPARING : QUESTIONING,
+            q_num: localStorage.getItem("q_num"),
+            q_type: localStorage.getItem("q_type"),
+            text: questions.question_text["q" + localStorage.getItem("q_num").toString()],
+            stage: (props.part === PART_A)? OPENING : QUESTIONING,
             // exit_confirmed: false,
         };
         this.render = this.render.bind(this);
@@ -66,6 +65,10 @@ export default class MockTest extends React.Component {
 
         leftTime = (props.part === PART_A)? prepareTime : answerTimePartB;
         mCount = 0;
+        console.log("this.state.q_num");
+        console.log(this.state.q_num);
+        console.log("this.state.q_type");
+        console.log(this.state.q_type);
     }
 
     // handleBeforeUnload = (event) => {
@@ -88,25 +91,15 @@ export default class MockTest extends React.Component {
 
 
     componentDidMount() {
-        if(this.state.stage === PREPARING) {
-            console.log("did mount...");
-            var countdown = document.getElementById("countdown");
-            if(countdown && (mTimer === null)){ 
-                var mins = parseInt(leftTime/(1000 * 60));
-                var secs = parseInt((leftTime % (1000 * 60))/1000);
-                mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
-                secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
-                try{
-                    countdown.innerText = mins + ':' + secs;
-                } catch(error){
-                    console.log(error);
-                }
-
-                mTimer = setTimeout(this.countDownOnce, intervalTime);
-                startTime = Date.now();
-                console.log("start timer");
+        if(this.state.stage === OPENING) {
+            const videoPlayer = document.getElementById("video_player");
+            videoPlayer.onended = () => {
+                this.setState({
+                    stage: PREPARING
+                });
             }
         }
+        
         
         if(this.state.stage === QUESTIONING ) {
             const leftVideoPlayer = document.getElementById("left_video_player");
@@ -161,6 +154,27 @@ export default class MockTest extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
+        if(this.state.stage === PREPARING && this.state.stage !== prevState.stage) {
+            console.log("did mount...");
+            var countdown = document.getElementById("countdown");
+            if(countdown && (mTimer === null)){ 
+                var mins = parseInt(leftTime/(1000 * 60));
+                var secs = parseInt((leftTime % (1000 * 60))/1000);
+                mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
+                secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
+                try{
+                    countdown.innerText = mins + ':' + secs;
+                } catch(error){
+                    console.log(error);
+                }
+
+                mTimer = setTimeout(this.countDownOnce, intervalTime);
+                startTime = Date.now();
+                console.log("start timer");
+            }
+        }
+
+
         if(this.state.stage === INTERRUPTING && this.state.stage !== prevState.stage) {
             console.log("interrupted");
             const paperContainer = document.getElementById("paper_container");
@@ -293,7 +307,8 @@ export default class MockTest extends React.Component {
 
                 if(this.state.part === PART_A  && this.state.stage === PREPARING) {
                     this.setState({
-                        stage: PLAYING,
+                        stage: INTERRUPTING,
+                        // stage: PLAYING,
                         // stage: ANSWERING,
                     });
                 }
@@ -352,22 +367,9 @@ export default class MockTest extends React.Component {
         const audioContext = new AudioContext();
         const reader = new FileReader();
 
-        // const jumpToNextPage = () => {
-        //     if(this.state.part === PART_A || leftTime > 0) {
-        //     // if(this.state.part === PART_A) {
-        //         const a = document.createElement('a');
-        //         a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
-        //         // a.href = URL.createObjectURL(videoBlob);
-        //         // a.download = "test.webm"
-        //         a.click();
-        //     }
-        //     else {
-        //         console.log("id B:", localStorage.getItem("id_B"));
-        //         console.log("if id B is null or undefined, the dataset cannot receive data successfully");
-        //     }
-        // }
-
         const part = this.state.part;
+        const q_num = this.state.q_num;
+        const q_type = this.state.q_type;
 
         const handleDurationReady = (duration) => {            
             const formData = new FormData();
@@ -376,6 +378,9 @@ export default class MockTest extends React.Component {
             formData.append('duration', duration);
             formData.append('id', localStorage.getItem((part === PART_A)? "id_A":"id_B"));
             formData.append('part', part);
+            formData.append('question_num', q_num);
+            formData.append('question_type', q_type);
+
             console.log(localStorage.getItem((part === PART_A)? "id_A":"id_B"));
 
 
@@ -406,8 +411,7 @@ export default class MockTest extends React.Component {
             // a.href = audioUrl;
             // a.download = "audio.wav"
             // a.click();
-            // URL.revokeObjectURL(audioUrl);
-                
+            // URL.revokeObjectURL(audioUrl);  
             
         }
 
@@ -597,7 +601,9 @@ export default class MockTest extends React.Component {
                 mBoard = (
                     <div className="board">
                         <div className="question_subcontainer">
-                            <video id="video_player" src="" autoPlay></video>
+                            <video id="video_player" src={
+                                require("../video/examiner_videos/Examiner_PartA_opening.mp4")
+                            } autoPlay></video>
                         </div>
                     </div>
                 );
@@ -626,7 +632,6 @@ export default class MockTest extends React.Component {
 
             case INTERRUPTING:
             case PLAYING:
-                var mVideo = (this.state.stage === INTERRUPTING)? mInterruptVideo : mStarterVideo;
                 mHeading = (
                     <div className="heading">
                         <p className="part">{mPart}</p>
@@ -647,7 +652,11 @@ export default class MockTest extends React.Component {
                             <div id="video_container">
                                 <p className="guide">You can listen to the 1st discussant's response:</p>
                                 <div className="video_subcontainer" id="subcontainer">
-                                    <video id="video_player" src={mVideo} autoPlay></video>
+                                    <video id="video_player" src={(this.state.stage === INTERRUPTING)?
+                                        require("../video/examiner_videos/Examiner_PartA_ending.mp4") :
+                                        require('../video/candidate_videos/Candidate_Q'+ this.state.q_num.toString() +'_'+ ((this.state.q_type===WEAK)? 'Weak':'Strong') +'.mp4')
+                                    } autoPlay>
+                                    </video>
                                 </div> 
                             </div>
                         </div>
@@ -669,7 +678,9 @@ export default class MockTest extends React.Component {
                             <div id="left_video_container">
                                 <p className="guide">Examiner:</p>
                                 <div className="video_subcontainer">
-                                    <video id="left_video_player" src={mQuestionVideo_A} autoPlay></video>
+                                    <video id="left_video_player" src={
+                                        require('../video/question_videos/Examiner_Q'+ this.state.q_num.toString() +'_'+ ((this.state.q_type===WEAK)? 'Weak':'Strong') +'.mp4')
+                                    } autoPlay></video>
                                 </div> 
                             </div>
                             <div id="right_video_container">
@@ -733,7 +744,9 @@ export default class MockTest extends React.Component {
                             <div id="left_video_container">
                                 <p className="guide">Examiner:</p>
                                 <div className="video_subcontainer">
-                                    <video id="left_video_player" src={mQuestionVideo_B} autoPlay></video>
+                                    <video id="left_video_player" src={
+                                        require("../video/examiner_videos/Examiner_PartB.mp4")
+                                    } autoPlay></video>
                                 </div> 
                             </div>
                             <div id="video_container">

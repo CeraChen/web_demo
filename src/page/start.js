@@ -1,5 +1,8 @@
 import React from "react";
 
+const Q_NUM = 1;
+const Q_TYPE = 2;
+
 
 export default class StartPage extends React.Component{
     startTesting() {        
@@ -26,6 +29,9 @@ export default class StartPage extends React.Component{
         })
         .catch((error) => console.error(error));
 
+        
+        localStorage.setItem("q_num", Math.floor(Math.random() * Q_NUM) + 1);
+        localStorage.setItem("q_type", Math.floor(Math.random() * Q_TYPE) + 1);
         const a = document.createElement('a');
         a.href = "/partA/introduction";
         a.click();

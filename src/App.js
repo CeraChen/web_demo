@@ -10,12 +10,11 @@ import React from 'react';
 
 const PART_A = 0;
 const PART_B = 1;
-const Q_NUM = 1;
 
     
 
 function App() {
-    var q_num = 2; //Math.floor(Math.random() * Q_NUM) + 1;
+    // var q_num = 2; //Math.floor(Math.random() * Q_NUM) + 1;
 
     return (
         <Routes>
@@ -23,13 +22,13 @@ function App() {
             <Route  path='/check' element = {<CheckPage />} />
             <Route  path='/start' element = {<StartPage />} />
 
-            <Route  path='/partA/introduction' element = {<Intro part={PART_A} q_num={q_num}/>} />
-            <Route  path='/partA/mocktest' element = {<MockTest part={PART_A} q_num={q_num}/>} />
+            <Route  path='/partA/introduction' element = {<Intro part={PART_A}/>} />
+            <Route  path='/partA/mocktest' element = {<MockTest part={PART_A}/>} />
 
-            <Route  path='/partB/introduction' element = {<Intro part={PART_B} q_num={q_num}/>} />
-            <Route  path='/partB/mocktest' element = {<MockTest part={PART_B} q_num={q_num}/>} />
+            <Route  path='/partB/introduction' element = {<Intro part={PART_B}/>} />
+            <Route  path='/partB/mocktest' element = {<MockTest part={PART_B}/>} />
 
-            <Route path='/report' element= {<Report q_num={q_num}/>} />
+            <Route path='/report' element= {<Report/>} />
         </Routes>
     );
 }
