@@ -1,28 +1,7 @@
 {
     "question_text": {
         "q1": {
-            "source": "This article appeared in a local newspaper:",
-            "title": "Redevelopment in Western District leaves residents without a good night's sleep",
-            "content": "Redevelopment of old areas gives opportunities for developers to earn money. But local people do not have any say in the redevelopment and are forced to leave.\nIf you took a walk around Western District just a couple of years ago, you would see mostly stationery shops, bakeries, grocers and university students eating in cha chaan tengs. For years, even with its proximity to Central, the old neighbourhood remained largely untouched, retaining its traditional characteristics and flavour.\nBut when three new MTR stations -- Sai Ying Pun, HKU and Kennedy Town -- opened in the area in late 2014, they brought with them a whole range of bars and expensive restaurants that drew in young rich hipsters. Today, Western District is the new, trendy neighbourhood, with young professionals increasingly turning older buildings into expensive trendy flats, forcing many long-term residents to leave the area that has been their home all their lives.\nTraditional shops are forced to leave because of high rents: 250 of the 700 shops in the Sai Ying Pun area either changed tenants or closed down from 2015 to 2017.\nThere have been multiple complaints from residents about noise from bars and restaurants. \"For families and the elderly in this area, they are disturbed by the noise every day and can't afford to shop,\" one netizen said. \"We can't stop the world from developing, but there has to be a balance.\"\nYour class is discussing the redevelopment of older districts in Hong Kong. Your group has been asked to discuss the problems redevelopment causes. You may want to talk about:",
-            "partA": [
-                {"id": 1, "text": "why old districts are redeveloped"},
-                {"id": 2, "text": "what problems redevelopments cause"},
-                {"id": 3, "text": "what the government should do to reduce the problems residents face"},
-                {"id": 4, "text": "anything else you think is important"}
-            ],
-            "partB": [
-                {"id": 1, "text": "What do you like about the area you live in?"},
-                {"id": 2, "text": "What is the biggest advantage of redevelopment?"},
-                {"id": 3, "text": "What types of shops are typical of old neighbourhoods?"},
-                {"id": 4, "text": "Why do older people like to live in traditional districts?"},
-                {"id": 5, "text": "What would you like to change about your district?"},
-                {"id": 6, "text": "Would you prefer to live in an old neighbourhood or a redeveloped area?"},
-                {"id": 7, "text": "Is the redevelopment of old areas too slow in Hong Kong?"},
-                {"id": 8, "text": "Who benefits most from redevelopment?"}
-            ]
-        },
-        "q2": {
-            "source": "The article below appeared in last Friday’s newspaper:",
+            "source": "The article below appeared in last Friday's newspaper:",
             "title": "The Growing Concern of Mobile Phone Gaming Addiction",
             "content": "Mobile phone gaming has surged in popularity, captivating millions worldwide. However, this rise has sparked worries about addiction and its consequences, affecting various age groups. This addiction can harm mental health, leading to increased stress and anxiety. Prolonged screen time contributes to physical health issues like eye strain and disrupted sleep patterns. Relationships can suffer as individuals immersed in virtual worlds struggle to connect on a personal level, leading to isolation. Addressing mobile phone gaming addiction requires education, awareness, and responsible gaming features implemented by developers. As technology advances, finding a balance between the benefits and risks of mobile gaming becomes crucial for individuals and society.\n\nYour group aims to compose a letter to the newspaper editor addressing the arguments presented by Chris Wong. Engage in a discussion with your group about the content to incorporate in your letter regarding this article. You may want to talk about:",
             "partA": [
@@ -32,8 +11,152 @@
                 {"id": 4, "text": "Anything else you think is important"}
             ],
             "partB": [
-                {"id": 1, "text": "Why is mobile gaming a concern for educators?"},
-                {"id": 2, "text": "Can mobile gaming be beneficial to students?"}
+                {"id": 1, "text": "Can mobile gaming be beneficial to students?"},
+                {"id": 2, "text": "Why is mobile gaming a concern for educators?"}
+            ]
+        },
+        
+        "q2": {
+            "source": "Below is an extract from a report on tattooing:",
+            "title": "Attitudes towards Tattooing",
+            "content": "Over the years, attitudes towards tattooing have undergone a remarkable transformation, evolving from a stigmatized subculture to a widely accepted form of self-expression. Historically associated with rebellion and nonconformity, tattoos were once perceived as symbols of deviance or linked to marginalized groups. However, as societal norms have shifted, so too have perceptions of body art.\n\nIn recent decades, tattooing has transcended its countercultural roots and become a mainstream phenomenon. Increasingly embraced by individuals from all walks of life, tattoos are now seen as a legitimate means of conveying personal narratives, values, and identity. The rise of tattooed public figures, coupled with a growing appreciation for diverse forms of beauty, has contributed to the normalization of body ink.\n\nToday, tattoos are celebrated as unique and meaningful expressions of individuality, cultural heritage, and artistic taste. As societal attitudes continue to evolve, the once-rebellious act of getting inked has become a canvas for personal stories, a celebration of diversity, and an integral part of contemporary culture.\n\nYour group needs to prepare for a debate with the motion of whether “teenagers should have tattoos,” and your groups are now brainstorming for points. You may want to talk about:",
+            "partA": [
+                {"id": 1, "text": "Why teenagers may like to have tattoos"},
+                {"id": 2, "text": "How the meaning of tattoos have changed over the years"},
+                {"id": 3, "text": "What influences would bring to the teens if they have tattoos"},
+                {"id": 4, "text": "Anything else you think is important"}
+            ],
+            "partB": [
+                {"id": 1, "text": "Why do some teenagers think tattoo is cool?"},
+                {"id": 2, "text": "What do you think is the major reason why teens would like to have a tattoo?"}
+            ]
+        },
+        
+        "q3": {
+            "source": "The article below appeared in a report on trendy personality tests:",
+            "title": "The Myers-Briggs Personality Test",
+            "content": "The Myers-Briggs Personality Test (MBTI) has recently become widely popular among the young generation. This self-reported inventory designed to identify people's personality traits has divided individuals into 16 personality types in total. The MBTI test is largely used as it not only helps people to learn more about themselves from a variety of angles such as their potential career paths and workplace habits, but also to appreciate individual differences. However, there are also some common misunderstandings about the MBTI categories. For example, in the extroversion and introversion category, many assume that an “I” (i.e. introvert) is less capable of socialising. Nevertheless, many may not be aware that this letter does not necessarily suggest one's social skills, but more importantly, the way they receive and release emotions, or interact with surroundings. With the increased popularity of MBTI, people may need to be more critical when using their MBTI types as references to understand and identify themselves.\n\nYour group wants to write an article about MBTI in the school's weekly report. Engage in a discussion with your group about what to include in your article. You may want to talk about:",
+            "partA": [
+                {"id": 1, "text": "The degree of popularity of MBTI among youngsters in Hong Kong"},
+                {"id": 2, "text": "Reasons behind the popularity of MBTI"},
+                {"id": 3, "text": "How should people view their MBTI types"},
+                {"id": 4, "text": "Anything else you think is important"}
+            ],
+            "partB": [
+                {"id": 1, "text": "Can one's MBTI tell his/her personality traits?"},
+                {"id": 2, "text": "Why has MBTI gained increased popularity among the young generation?"}
+            ]
+        },
+        
+        "q4": {
+            "source": "The article below appeared in a report on AI in education:",
+            "title": "ChatGPT: Friend or Foe?",
+            "content": "The arrival of ChatGPT, an artificial intelligence chatbot, has started a new chapter in education. This chatbot can complete a range of complex tasks such as writing papers and solving math problems. In Hong Kong, where students face the pressure of high academic expectations, ChatGPT could offer extra support to them. Nevertheless, many worry that students' creative and critical thinking skills may be negatively influenced as the chatbot helps them to generate texts for important assignments, emails, or conversations. As ChatGPT continually advances, it is crucial for educators and students to use it wisely to ensure that it only complements the educational process rather than replacing their own thinking. \n\nYour group wants to write an article about ChatGPT in the school's weekly report. Engage in a discussion with your group about what to include in your article. You may want to talk about:",
+            "partA": [
+                {"id": 1, "text": "The degree of popularity of ChatGPT among youngsters in Hong Kong"},
+                {"id": 2, "text": "Reasons behind the popularity of ChatGPT"},
+                {"id": 3, "text": "How should people view the emergence of ChatGPT"},
+                {"id": 4, "text": "Anything else you think is important"}
+            ],
+            "partB": [
+                {"id": 1, "text": "Can ChatGPT replace traditional education?"},
+                {"id": 2, "text": "How should students view and use ChatGPT as a tool?"}
+            ]
+        },
+        
+        "q5": {
+            "source": "Below is an extract from a report on short videos in education:",
+            "title": "Short videos",
+            "content": "Short videos, such as those popular on platforms like TikTok, have revolutionized the educational landscape. With their bite-sized format, they offer unique opportunities and challenges for learners. On the positive side, these videos provide concise and engaging content, breaking down complex topics into easily digestible information. They utilize visual and auditory elements to enhance learner engagement and make education more accessible and inclusive across diverse communities. However, there are concerns as well. Short videos can promote shallow understanding, as they often provide only surface-level explanations. The spread of misinformation is another challenge, as anyone can create and share educational content without proper expertise. Moreover, the addictive nature of these videos can lead to distractions. To leverage the benefits of short videos, it is crucial for educators and learners to approach them critically, supplementing them with comprehensive resources and encouraging deeper exploration and critical thinking.\n\nYour group wants to write an article about the impacts of short videos in the school's weekly report. Engage in a discussion with your group about what to include in your article. You may want to talk about:",
+            "partA": [
+                {"id": 1, "text": "The popularity of short videos among youngsters in Hong Kong"},
+                {"id": 2, "text": "Reasons behind the popularity of short videos"},
+                {"id": 3, "text": "How should people view the emergence of short videos"},
+                {"id": 4, "text": "Anything else you think is important"}
+            ],
+            "partB": [
+                {"id": 1, "text": "Can short videos have positive impacts on students?"},
+                {"id": 2, "text": "How should students view short videos as a part of their daily entertainment?"}
+            ]
+        },
+        
+        "q6": {
+            "source": "The article below appeared in a beauty and fashion magazine:",
+            "title": "Cosmetic surgeries",
+            "content": "Many individuals, mainly females, tend to choose cosmetic surgeries to address concerns related to their facial features, body contours, and skin appearance. Cosmetic surgeries have a significant impact on individuals, both positive and negative, with regards to their physical, psychological, and social well-being. On the positive side, cosmetic surgeries can enhance self-esteem and body image, leading to improved self-confidence and overall quality of life. However, it is important to consider the potential negative impacts as well. Cosmetic surgeries carry risks, including complications, scarring, and dissatisfaction with the results. Unrealistic expectations can lead to disappointment if desired outcomes are not achieved. To ensure a positive experience, it is vital for individuals to have realistic expectations, consult with qualified surgeons, and carefully weigh the potential risks and benefits.\n\nYour group wants to write an article about cosmetic surgeries in the school's magazine. Engage in a discussion with your group about what to include in your article. You may want to talk about:",
+            "partA": [
+                {"id": 1, "text": "Whether cosmetic surgeries are popular in Hong Kong"},
+                {"id": 2, "text": "Reasons behind the popularity of cosmetic surgeries"},
+                {"id": 3, "text": "How should people view the relationship between beauty and cosmetic surgeries"},
+                {"id": 4, "text": "Anything else you think is important"}
+            ],
+            "partB": [
+                {"id": 1, "text": "Should adolescents choose cosmetic surgeries to enhance their appearances?"},
+                {"id": 2, "text": "How should people view cosmetic surgery as a way of enhancing appearance?"}
+            ]
+        },
+        
+        "q7": {
+            "source": "The article below appeared on a website report about Instagram:",
+            "title": "Instagram Stories as a way of sharing daily life",
+            "content": "Posting on Instagram Stories is a popular feature that allows users to share photos, videos, and content that disappears after 24 hours. It provides a casual and temporary way to engage with followers and share moments from daily life. It offers an opportunity to showcase highlights from events, travels, or everyday activities, giving followers a glimpse into the user's life. The temporary nature of Instagram Stories creates a sense of urgency and exclusivity, as followers know that the content will disappear after 24 hours. Nevertheless, sharing too much on Instagram Stories can lead to overexposure, where personal boundaries are crossed, and private aspects of life are made public. Relying on the number of views, likes, or comments on Stories for validation can negatively impact self-esteem, as seeking constant external validation may lead to feelings of inadequacy or a skewed perception of self-worth. To mitigate these negative impacts, it is important to set healthy boundaries, be mindful of content shared, and prioritize real-life connections over virtual interactions.\n\nYour group wants to prepare for a presentation about ins story in the school's English Week. Engage in a discussion with your group about what to include in your presentation. You may want to talk about:",
+            "partA": [
+                {"id": 1, "text": "The popularity of ins stories among adolescents in Hong Kong"},
+                {"id": 2, "text": "Reasons behind the popularity of ins stories"},
+                {"id": 3, "text": "How should people view the phenomenon of using ins stories as a means to share daily life"},
+                {"id": 4, "text": "Anything else you think is important"}
+            ],
+            "partB": [
+                {"id": 1, "text": "Should adolescents use ins stories to share daily life with peers?"},
+                {"id": 2, "text": "Why do adolescents use ins stories to share daily life?"}
+            ]
+        },
+        
+        "q8": {
+            "source": "The article below appeared in a travel magazine:",
+            "title": "Airbnb as the new accommodation option",
+            "content": "Choosing Airbnb over a traditional hotel offers a unique and personalized accommodation experience. Airbnb provides a platform where individuals can rent out their homes, apartments, or rooms to travellers, offering a wide range of options to choose from. Airbnb also allows travellers to explore and stay in local neighbourhoods, providing a more authentic experience of the destination. By staying in a residential area, travellers can interact with locals, discover hidden gems, and get a glimpse into the local culture and way of life. Moreover, Airbnb often offers a wider range of accommodations at different price points, making it suitable for various budgets and preferences. From cozy apartments to luxurious villas, there is something for everyone. However, it is important to note that Airbnb stays may lack some of the services and amenities provided by traditional hotels, such as daily housekeeping or 24/7 front desk assistance. Additionally, ensuring the reliability and safety of the accommodation is crucial, so reading reviews and communicating with hosts are essential steps when choosing an Airbnb.\n\nYour group wants to prepare for a debate with the motion of “Airbnb vs traditional hotel”. Engage in a discussion with your group about what to include in your script. You may want to talk about:",
+            "partA": [
+                {"id": 1, "text": "The trend for adolescents to choose Airbnb in Hong Kong"},
+                {"id": 2, "text": "Reasons behind the popularity of Airbnb"},
+                {"id": 3, "text": "How should people choose Airbnb when travelling"},
+                {"id": 4, "text": "Anything else you think is important"}
+            ],
+            "partB": [
+                {"id": 1, "text": "Should adolescents use Airbnb when travelling?"},
+                {"id": 2, "text": "Why do adolescents favour Airbnb as an accommodation choice?"}
+            ]
+        },
+        
+        "q9": {
+            "source": "The article below appeared on a travel website's report about solo travel:",
+            "title": "Solo travel: Simply being cool?",
+            "content": "Solo travel refers to the act of traveling alone without companionship. It is a popular form of travel that allows individuals to explore new places, experience different cultures, and gain personal growth and independence. Solo travel can be a rewarding experience, providing opportunities for self-discovery, adventure, and the freedom to create your own itinerary. Whether it's wandering through bustling city streets, immersing yourself in local cultures, or finding solace in nature's beauty, solo travel offers a unique opportunity to connect with yourself and the world around you. However, it's important to acknowledge the potential challenges of solo travel. Feelings of loneliness and homesickness can arise, especially when faced with unfamiliar surroundings. Safety concerns may also arise, as being alone in an unknown place requires extra vigilance. By embracing the positives and taking necessary precautions, it enables personal development, cultural understanding, and a deeper connection with oneself and the world.\n\nYour group wants to prepare for a debate with the motion of “solo travel vs travel with friends”. Engage in a discussion with your group about what to include in your script. You may want to talk about:",
+            "partA": [
+                {"id": 1, "text": "Whether the idea of solo travel is popular in Hong Kong"},
+                {"id": 2, "text": "Reasons behind the popularity of solo travel"},
+                {"id": 3, "text": "How should people view the option of solo travel"},
+                {"id": 4, "text": "Anything else you think is important"}
+            ],
+            "partB": [
+                {"id": 1, "text": "Should teenagers choose solo travel?"},
+                {"id": 2, "text": "What do you think is the major reason for people to choose solo travel?"}
+            ]
+        },
+        
+        "q10": {
+            "source": "Below is an extract from an article in a culinary magazine:",
+            "title": "Café culture: More than coffee",
+            "content": "Cafes have experienced a surge in popularity worldwide, becoming a beloved part of modern culture. These cozy establishments have evolved from mere places to grab a cup of coffee to vibrant social hubs that cater to a variety of needs and desires. Cafes provide a refuge from the fast-paced city life, offering a tranquil and cozy atmosphere for people to unwind, work, or meet with friends. They serve as a haven for relaxation and leisure amidst the bustling streets. In addition, the culinary aspect of cafes has gained attention. From freshly baked pastries and artisanal sandwiches to healthy snacks and vegan options, cafes have diversified their menus to cater to various dietary preferences and lifestyle choices. People are also drawn to the aesthetic appeal of beautifully crafted beverages and dishes, making cafes a popular backdrop for capturing Instagram-worthy moments.\n\nYour group wants to prepare for a presentation about café culture in Hong Kong. Engage in a discussion with your group about what to include in your script. You may want to talk about:",
+            "partA": [
+                {"id": 1, "text": "The popularity of café culture in Hong Kong"},
+                {"id": 2, "text": "Reasons behind the popularity of cafes"},
+                {"id": 3, "text": "How should people view café culture"},
+                {"id": 4, "text": "Anything else you think is important"}
+            ],
+            "partB": [
+                {"id": 1, "text": "Do you think teenagers like to go to cafes instead of traditional teahouses?"},
+                {"id": 2, "text": "What do you think is the major reason for the popularity of café culture?"}
             ]
         }
     }

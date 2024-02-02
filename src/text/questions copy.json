@@ -1,0 +1,40 @@
+{
+    "question_text": {
+        "q1": {
+            "source": "This article appeared in a local newspaper:",
+            "title": "Redevelopment in Western District leaves residents without a good night's sleep",
+            "content": "Redevelopment of old areas gives opportunities for developers to earn money. But local people do not have any say in the redevelopment and are forced to leave.\nIf you took a walk around Western District just a couple of years ago, you would see mostly stationery shops, bakeries, grocers and university students eating in cha chaan tengs. For years, even with its proximity to Central, the old neighbourhood remained largely untouched, retaining its traditional characteristics and flavour.\nBut when three new MTR stations -- Sai Ying Pun, HKU and Kennedy Town -- opened in the area in late 2014, they brought with them a whole range of bars and expensive restaurants that drew in young rich hipsters. Today, Western District is the new, trendy neighbourhood, with young professionals increasingly turning older buildings into expensive trendy flats, forcing many long-term residents to leave the area that has been their home all their lives.\nTraditional shops are forced to leave because of high rents: 250 of the 700 shops in the Sai Ying Pun area either changed tenants or closed down from 2015 to 2017.\nThere have been multiple complaints from residents about noise from bars and restaurants. \"For families and the elderly in this area, they are disturbed by the noise every day and can't afford to shop,\" one netizen said. \"We can't stop the world from developing, but there has to be a balance.\"\nYour class is discussing the redevelopment of older districts in Hong Kong. Your group has been asked to discuss the problems redevelopment causes. You may want to talk about:",
+            "partA": [
+                {"id": 1, "text": "why old districts are redeveloped"},
+                {"id": 2, "text": "what problems redevelopments cause"},
+                {"id": 3, "text": "what the government should do to reduce the problems residents face"},
+                {"id": 4, "text": "anything else you think is important"}
+            ],
+            "partB": [
+                {"id": 1, "text": "What do you like about the area you live in?"},
+                {"id": 2, "text": "What is the biggest advantage of redevelopment?"},
+                {"id": 3, "text": "What types of shops are typical of old neighbourhoods?"},
+                {"id": 4, "text": "Why do older people like to live in traditional districts?"},
+                {"id": 5, "text": "What would you like to change about your district?"},
+                {"id": 6, "text": "Would you prefer to live in an old neighbourhood or a redeveloped area?"},
+                {"id": 7, "text": "Is the redevelopment of old areas too slow in Hong Kong?"},
+                {"id": 8, "text": "Who benefits most from redevelopment?"}
+            ]
+        },
+        "q2": {
+            "source": "The article below appeared in last Friday’s newspaper:",
+            "title": "The Growing Concern of Mobile Phone Gaming Addiction",
+            "content": "Mobile phone gaming has surged in popularity, captivating millions worldwide. However, this rise has sparked worries about addiction and its consequences, affecting various age groups. This addiction can harm mental health, leading to increased stress and anxiety. Prolonged screen time contributes to physical health issues like eye strain and disrupted sleep patterns. Relationships can suffer as individuals immersed in virtual worlds struggle to connect on a personal level, leading to isolation. Addressing mobile phone gaming addiction requires education, awareness, and responsible gaming features implemented by developers. As technology advances, finding a balance between the benefits and risks of mobile gaming becomes crucial for individuals and society.\n\nYour group aims to compose a letter to the newspaper editor addressing the arguments presented by Chris Wong. Engage in a discussion with your group about the content to incorporate in your letter regarding this article. You may want to talk about:",
+            "partA": [
+                {"id": 1, "text": "The seriousness of mobile gaming as an issue in Hong Kong"},
+                {"id": 2, "text": "Reasons behind the popularity of mobile gaming"},
+                {"id": 3, "text": "Appropriate reactions from schools and parents to mobile phone gaming"},
+                {"id": 4, "text": "Anything else you think is important"}
+            ],
+            "partB": [
+                {"id": 1, "text": "Why is mobile gaming a concern for educators?"},
+                {"id": 2, "text": "Can mobile gaming be beneficial to students?"}
+            ]
+        }
+    }
+}

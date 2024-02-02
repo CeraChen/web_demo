@@ -15,14 +15,13 @@ let mTimer = null;
 
 
 
-function Intro( { part, q_num } ) {
+function Intro( { part } ) {
     const navigate = useNavigate();
     const [buttonClass, setButtonClass] = useState("spark");
     const [buttonText, setButtonText] = useState(parseInt(leftTime/1000).toString());
 
     
     console.log(part);
-    console.log(q_num);
     var mPart = (part === PART_A)? "Part A" : "Part B";
     var mText = (part === PART_A)? "You will then have 10 minutes to prepare for group discussion." :
             "You will have 1 minute to answer directly.";

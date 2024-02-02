@@ -29,7 +29,7 @@ export default class Report extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-            q_num: props.q_num,
+            q_num: localStorage.getItem("q_num"),
             current_part: PART_A,
             result_json_A: null,
             result_json_B: null,
