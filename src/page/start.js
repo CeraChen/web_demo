@@ -1,6 +1,6 @@
 import React from "react";
 
-const Q_NUM = 1;
+const Q_NUM = 10;
 const Q_TYPE = 2;
 
 
