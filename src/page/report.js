@@ -1,5 +1,6 @@
 import React from "react";
 import PartReport from "./part_result";
+import WaitDialog from "./wait_dialog";
 import '../css/mocktest.css'
 
 import response_json_A from '../text/response_sample1.json'
@@ -13,16 +14,6 @@ const waitingInterval = 5000;
 let mTimer = null;
 let fetchCount;
 
-function WaitDialog() {
-    return (        
-        <div className="waiting_dialog">
-            <div className="waiting_dialog_container">  
-                <p>Evaluating your answers ... Please wait for the scoring.</p>              
-                <div className="spinner"></div>
-            </div>
-        </div>
-    );
-}
 
 
 export default class Report extends React.Component{

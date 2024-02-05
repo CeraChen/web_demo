@@ -34,11 +34,11 @@ export default class StartPage extends React.Component{
             // }
         };
 
-        const jumpNext = () => {            
+        const jumpNext = (page) => {            
             const a = document.createElement('a');
-            a.href = "/partA/introduction";   
+            a.href = page;   
             console.log("to jump to the next page!");         
-            // a.click();
+            a.click();
         }
 
         fetchExamKey()
@@ -49,9 +49,12 @@ export default class StartPage extends React.Component{
             console.log("id A:", localStorage.getItem("id_A"));
             console.log("id B:", localStorage.getItem("id_B"));
 
-            jumpNext();
+            jumpNext("/partA/introduction");
         })
-        .catch((error) => console.error(error));
+        .catch((error) => {
+            console.error(error);
+            jumpNext("/partA/introduction");
+        });
     }
 
     

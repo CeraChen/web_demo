@@ -1,5 +1,6 @@
 import React from "react";
 import questions from '../text/questions.json';
+import WaitDialog from "./wait_dialog";
 import '../css/mocktest.css';
 import '../css/button.css';
 
@@ -54,6 +55,7 @@ export default class MockTest extends React.Component {
             q_type: localStorage.getItem("q_type"),
             text: questions.question_text["q" + localStorage.getItem("q_num").toString()],
             stage: (props.part === PART_A)? PREPARING : QUESTIONING,
+            waiting: false,
             // OPENING : QUESTIONING,
             // exit_confirmed: false,
         };
@@ -386,7 +388,13 @@ export default class MockTest extends React.Component {
                 });
     }
 
-    handleMediaStop() {    
+    handleMediaStop() {            
+        if(this.state.stage === ANSWERING) {            
+            this.setState({
+                waiting: true
+            });
+        }
+
         const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm'});        
         
@@ -801,7 +809,8 @@ export default class MockTest extends React.Component {
 
         
         return(
-            <div className="main">
+            <div className="main">                
+                { this.state.waiting && <WaitDialog text={"Uploading your data ... Please do NOT refresh or leave this page."}></WaitDialog> }
                 {mHeading}
                 {mBoard}
             </div>
