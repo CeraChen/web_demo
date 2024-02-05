@@ -401,10 +401,10 @@ export default class MockTest extends React.Component {
         const q_type = this.state.q_type;
 
         const jumpToNextPage = () => {            
-            if(this.state.part === PART_A || leftTime > 0) {
+            if(part === PART_A || leftTime > 0) {
             // if(this.state.part === PART_A) {
                 const a = document.createElement('a');
-                a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
+                a.href = (part === PART_A)? "../../partB/introduction" : "../../report";
                 // a.href = URL.createObjectURL(videoBlob);
                 // a.download = "test.webm"
                 a.click();
