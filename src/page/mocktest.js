@@ -408,6 +408,12 @@ export default class MockTest extends React.Component {
         const q_num = this.state.q_num;
         const q_type = this.state.q_type;
 
+        // const removeWaitDialog = () => {
+        //     this.setState({
+        //         waiting: false,
+        //     });
+        // }
+
         const jumpToNextPage = () => {            
             if(part === PART_A || leftTime > 0) {
             // if(this.state.part === PART_A) {
@@ -444,13 +450,12 @@ export default class MockTest extends React.Component {
                 body: formData
             })
             .then(function(response) {
-                console.log('Send uploading data!');
+                console.log('Send uploading data!');                
+                jumpToNextPage();
             })
             .catch(function(error) {
                 console.log('Fail to upload! ', error);
             });
-
-            jumpToNextPage();
             
             // const videoUrl = URL.createObjectURL(videoBlob);
             // const audioUrl = URL.createObjectURL(audioBlob);
@@ -804,9 +809,6 @@ export default class MockTest extends React.Component {
                 );
 
         }
-
-
-
         
         return(
             <div className="main">                
@@ -814,10 +816,6 @@ export default class MockTest extends React.Component {
                 {mHeading}
                 {mBoard}
             </div>
-
-            // <div onClick={this.updateUrl(this.state.part, "hihi")}>
-            //     <Link to={nextPage}>Intro counting down</Link>
-            // </div>
         );
     }
 }
