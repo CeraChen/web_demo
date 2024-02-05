@@ -103,6 +103,7 @@ export default class MockTest extends React.Component {
                 secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
                 try{
                     countdown.innerText = mins + ':' + secs;
+                    console.log(mins + ':' + secs);
                 } catch(error){
                     console.log(error);
                 }
@@ -279,8 +280,8 @@ export default class MockTest extends React.Component {
                 mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
                 secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
                 try{
+                    countdown.innerText = mins + ':' + secs;                    
                     console.log(mins + ':' + secs);
-                    countdown.innerText = mins + ':' + secs;
                 } catch(error){
                     console.log(error);
                 }
@@ -323,6 +324,7 @@ export default class MockTest extends React.Component {
         
         try{
             countdown.innerText = mins + ':' + secs;
+            console.log(mins + ':' + secs);
 
             // console.log("Offset: " + offset + "ms, next count in " + nextTime + "ms, left prepare time" + leftTime + "ms");
             if(leftTime <= 0){
@@ -386,7 +388,10 @@ export default class MockTest extends React.Component {
 
     handleMediaStop() {    
         const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm'});
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm'});        
+        
+        videoChunks = [];
+        audioChunks = [];
         
         const audioContext = new AudioContext();
         const reader = new FileReader();
@@ -394,6 +399,22 @@ export default class MockTest extends React.Component {
         const part = this.state.part;
         const q_num = this.state.q_num;
         const q_type = this.state.q_type;
+
+        const jumpToNextPage = () => {            
+            if(this.state.part === PART_A || leftTime > 0) {
+            // if(this.state.part === PART_A) {
+                const a = document.createElement('a');
+                a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
+                // a.href = URL.createObjectURL(videoBlob);
+                // a.download = "test.webm"
+                a.click();
+            }
+            else {
+                console.log("id B:", localStorage.getItem("id_B"));
+                console.log("if id B is null or undefined, the dataset cannot receive data successfully");
+            }
+        }
+
 
         const handleDurationReady = (duration) => {            
             const formData = new FormData();
@@ -416,12 +437,12 @@ export default class MockTest extends React.Component {
             })
             .then(function(response) {
                 console.log('Send uploading data!');
-                // jumpToNextPage();
             })
             .catch(function(error) {
                 console.log('Fail to upload! ', error);
             });
 
+            jumpToNextPage();
             
             // const videoUrl = URL.createObjectURL(videoBlob);
             // const audioUrl = URL.createObjectURL(audioBlob);
@@ -435,8 +456,7 @@ export default class MockTest extends React.Component {
             // a.href = audioUrl;
             // a.download = "audio.wav"
             // a.click();
-            // URL.revokeObjectURL(audioUrl);  
-            
+            // URL.revokeObjectURL(audioUrl);              
         }
 
         reader.onload = function () {
@@ -449,24 +469,7 @@ export default class MockTest extends React.Component {
             });
         };
 
-        reader.readAsArrayBuffer(audioBlob);
-
-        
-        videoChunks = [];
-        audioChunks = [];
-        
-        // if(this.state.part === PART_A || leftTime > 0) {
-        if(this.state.part === PART_A) {
-            const a = document.createElement('a');
-            a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
-            // a.href = URL.createObjectURL(videoBlob);
-            // a.download = "test.webm"
-            a.click();
-        }
-        else {
-            console.log("id B:", localStorage.getItem("id_B"));
-            console.log("if id B is null or undefined, the dataset cannot receive data successfully");
-        }
+        reader.readAsArrayBuffer(audioBlob);        
     }
 
     startRecordVideo() {
@@ -732,8 +735,8 @@ export default class MockTest extends React.Component {
                                 {mSVG}
                                 {/* {(paperShown)? "hide" : "view"} */}
                             </div>}
-                        {(this.state.part === PART_B) &&
-                            <p className="guide">Please click the timer below your video when you finish and would like to move on.</p>}
+                        {/* {(this.state.part === PART_B) && */}
+                        <p className="guide">Please click the timer below your video when you finish and would like to move on.</p>
                     </div>
                 );
                 
