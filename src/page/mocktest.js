@@ -389,11 +389,11 @@ export default class MockTest extends React.Component {
     }
 
     handleMediaStop() {            
-        if(this.state.stage === ANSWERING) {            
-            this.setState({
-                waiting: true
-            });
-        }
+        // if(this.state.stage === ANSWERING) {            
+        //     this.setState({
+        //         waiting: true
+        //     });
+        // }
 
         const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm'});        
@@ -450,13 +450,13 @@ export default class MockTest extends React.Component {
                 body: formData
             })
             .then(function(response) {
-                console.log('Send uploading data!');                
-                jumpToNextPage();
+                console.log('Send uploading data!'); 
             })
             .catch(function(error) {
                 console.log('Fail to upload! ', error);
             });
-            
+                           
+            jumpToNextPage();
             // const videoUrl = URL.createObjectURL(videoBlob);
             // const audioUrl = URL.createObjectURL(audioBlob);
 
@@ -812,7 +812,7 @@ export default class MockTest extends React.Component {
         
         return(
             <div className="main">                
-                { this.state.waiting && <WaitDialog text={"Uploading your data ... Please do NOT refresh or leave this page."}></WaitDialog> }
+                {/* { this.state.waiting && <WaitDialog text={"Uploading your data ... Please do NOT refresh or leave this page."}></WaitDialog> } */}
                 {mHeading}
                 {mBoard}
             </div>
