@@ -54,10 +54,8 @@ export default class MockTest extends React.Component {
             q_num: localStorage.getItem("q_num"),
             q_type: localStorage.getItem("q_type"),
             text: questions.question_text["q" + localStorage.getItem("q_num").toString()],
-            stage: (props.part === PART_A)? PREPARING : QUESTIONING,
+            stage: (props.part === PART_A)? OPENING : QUESTIONING,
             waiting: false,
-            // OPENING : QUESTIONING,
-            // exit_confirmed: false,
         };
         this.render = this.render.bind(this);
         this.countDownOnce = this.countDownOnce.bind(this);
@@ -75,48 +73,8 @@ export default class MockTest extends React.Component {
         console.log(this.state.q_type);
     }
 
-    // handleBeforeUnload = (event) => {
-    //     if (this.state.exit_confirmed) {
-    //         event.preventDefault();
-    //         event.returnValue = '';
-        
-    //         const confirmationMessage = '您是否确定要离开此页面？您的数据可能不会保存。';
-    //         return confirmationMessage;
-    //     }
-    // }
-    
-    // handleExitClick = () => {
-    //     this.setState({ exit_confirmed: true });
-    // }
-    
-    // handleStayClick = () => {
-    //     this.setState({ exit_confirmed: false });
-    // }
-
 
     componentDidMount() {
-        if(this.state.stage === PREPARING) {
-            console.log("did mount...");
-            var countdown = document.getElementById("countdown");
-            if(countdown && (mTimer === null)){ 
-                var mins = parseInt(leftTime/(1000 * 60));
-                var secs = parseInt((leftTime % (1000 * 60))/1000);
-                mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
-                secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
-                try{
-                    countdown.innerText = mins + ':' + secs;
-                    console.log(mins + ':' + secs);
-                } catch(error){
-                    console.log(error);
-                }
-
-                mTimer = setTimeout(this.countDownOnce, intervalTime);
-                startTime = Date.now();
-                console.log("start timer");
-            }
-        }
-
-
         if(this.state.stage === OPENING) {
             const videoPlayer = document.getElementById("video_player");
             videoPlayer.onended = () => {
@@ -179,26 +137,27 @@ export default class MockTest extends React.Component {
         // window.removeEventListener('beforeunload', this.handleBeforeUnload);
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        // if(this.state.stage === PREPARING && this.state.stage !== prevState.stage) {
-        //     console.log("did mount...");
-        //     var countdown = document.getElementById("countdown");
-        //     if(countdown && (mTimer === null)){ 
-        //         var mins = parseInt(leftTime/(1000 * 60));
-        //         var secs = parseInt((leftTime % (1000 * 60))/1000);
-        //         mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
-        //         secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
-        //         try{
-        //             countdown.innerText = mins + ':' + secs;
-        //         } catch(error){
-        //             console.log(error);
-        //         }
+    componentDidUpdate(prevProps, prevState) {        
+        if(this.state.stage === PREPARING && this.state.stage !== prevState.stage) {
+            console.log("did mount...");
+            var countdown = document.getElementById("countdown");
+            if(countdown && (mTimer === null)){ 
+                var mins = parseInt(leftTime/(1000 * 60));
+                var secs = parseInt((leftTime % (1000 * 60))/1000);
+                mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
+                secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
+                try{
+                    countdown.innerText = mins + ':' + secs;
+                    console.log(mins + ':' + secs);
+                } catch(error){
+                    console.log(error);
+                }
 
-        //         mTimer = setTimeout(this.countDownOnce, intervalTime);
-        //         startTime = Date.now();
-        //         console.log("start timer");
-        //     }
-        // }
+                mTimer = setTimeout(this.countDownOnce, intervalTime);
+                startTime = Date.now();
+                console.log("start timer");
+            }
+        }
 
 
         if(this.state.stage === INTERRUPTING && this.state.stage !== prevState.stage) {
@@ -299,7 +258,7 @@ export default class MockTest extends React.Component {
     }
     
     countDownOnce(){
-        // console.log("enter");
+        console.log("enter");
         try {
             clearTimeout(mTimer);
             mTimer = null;
@@ -335,9 +294,8 @@ export default class MockTest extends React.Component {
 
                 if(this.state.part === PART_A  && this.state.stage === PREPARING) {
                     this.setState({
-                        // stage: INTERRUPTING,
+                        stage: INTERRUPTING,
                         // stage: PLAYING,
-                        stage: ANSWERING,
                     });
                 }
                 else {
@@ -369,8 +327,7 @@ export default class MockTest extends React.Component {
         }
 
         this.setState({
-            // stage: PLAYING,
-            stage: ANSWERING,
+            stage: PLAYING,
         });
     }
 
