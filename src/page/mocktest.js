@@ -1,5 +1,6 @@
 import React from "react";
 import questions from '../text/questions.json';
+import WaitDialog from "./wait_dialog";
 import '../css/mocktest.css';
 import '../css/button.css';
 
@@ -53,7 +54,9 @@ export default class MockTest extends React.Component {
             q_num: localStorage.getItem("q_num"),
             q_type: localStorage.getItem("q_type"),
             text: questions.question_text["q" + localStorage.getItem("q_num").toString()],
-            stage: (props.part === PART_A)? OPENING : QUESTIONING,
+            stage: (props.part === PART_A)? PREPARING : QUESTIONING,
+            waiting: false,
+            // OPENING : QUESTIONING,
             // exit_confirmed: false,
         };
         this.render = this.render.bind(this);
@@ -64,6 +67,7 @@ export default class MockTest extends React.Component {
 
 
         leftTime = (props.part === PART_A)? prepareTime : answerTimePartB;
+        mTimer = null;
         mCount = 0;
         console.log("this.state.q_num");
         console.log(this.state.q_num);
@@ -91,6 +95,28 @@ export default class MockTest extends React.Component {
 
 
     componentDidMount() {
+        if(this.state.stage === PREPARING) {
+            console.log("did mount...");
+            var countdown = document.getElementById("countdown");
+            if(countdown && (mTimer === null)){ 
+                var mins = parseInt(leftTime/(1000 * 60));
+                var secs = parseInt((leftTime % (1000 * 60))/1000);
+                mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
+                secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
+                try{
+                    countdown.innerText = mins + ':' + secs;
+                    console.log(mins + ':' + secs);
+                } catch(error){
+                    console.log(error);
+                }
+
+                mTimer = setTimeout(this.countDownOnce, intervalTime);
+                startTime = Date.now();
+                console.log("start timer");
+            }
+        }
+
+
         if(this.state.stage === OPENING) {
             const videoPlayer = document.getElementById("video_player");
             videoPlayer.onended = () => {
@@ -154,25 +180,25 @@ export default class MockTest extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(this.state.stage === PREPARING && this.state.stage !== prevState.stage) {
-            console.log("did mount...");
-            var countdown = document.getElementById("countdown");
-            if(countdown && (mTimer === null)){ 
-                var mins = parseInt(leftTime/(1000 * 60));
-                var secs = parseInt((leftTime % (1000 * 60))/1000);
-                mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
-                secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
-                try{
-                    countdown.innerText = mins + ':' + secs;
-                } catch(error){
-                    console.log(error);
-                }
+        // if(this.state.stage === PREPARING && this.state.stage !== prevState.stage) {
+        //     console.log("did mount...");
+        //     var countdown = document.getElementById("countdown");
+        //     if(countdown && (mTimer === null)){ 
+        //         var mins = parseInt(leftTime/(1000 * 60));
+        //         var secs = parseInt((leftTime % (1000 * 60))/1000);
+        //         mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
+        //         secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
+        //         try{
+        //             countdown.innerText = mins + ':' + secs;
+        //         } catch(error){
+        //             console.log(error);
+        //         }
 
-                mTimer = setTimeout(this.countDownOnce, intervalTime);
-                startTime = Date.now();
-                console.log("start timer");
-            }
-        }
+        //         mTimer = setTimeout(this.countDownOnce, intervalTime);
+        //         startTime = Date.now();
+        //         console.log("start timer");
+        //     }
+        // }
 
 
         if(this.state.stage === INTERRUPTING && this.state.stage !== prevState.stage) {
@@ -256,7 +282,8 @@ export default class MockTest extends React.Component {
                 mins = (mins < 10)? ('0' + mins.toString()) : mins.toString();
                 secs = (secs < 10)? ('0' + secs.toString()) : secs.toString();
                 try{
-                    countdown.innerText = mins + ':' + secs;
+                    countdown.innerText = mins + ':' + secs;                    
+                    console.log(mins + ':' + secs);
                 } catch(error){
                     console.log(error);
                 }
@@ -299,6 +326,7 @@ export default class MockTest extends React.Component {
         
         try{
             countdown.innerText = mins + ':' + secs;
+            console.log(mins + ':' + secs);
 
             // console.log("Offset: " + offset + "ms, next count in " + nextTime + "ms, left prepare time" + leftTime + "ms");
             if(leftTime <= 0){
@@ -307,9 +335,9 @@ export default class MockTest extends React.Component {
 
                 if(this.state.part === PART_A  && this.state.stage === PREPARING) {
                     this.setState({
-                        stage: INTERRUPTING,
+                        // stage: INTERRUPTING,
                         // stage: PLAYING,
-                        // stage: ANSWERING,
+                        stage: ANSWERING,
                     });
                 }
                 else {
@@ -341,8 +369,8 @@ export default class MockTest extends React.Component {
         }
 
         this.setState({
-            stage: PLAYING,
-            // stage: ANSWERING,
+            // stage: PLAYING,
+            stage: ANSWERING,
         });
     }
 
@@ -360,9 +388,18 @@ export default class MockTest extends React.Component {
                 });
     }
 
-    handleMediaStop() {    
+    handleMediaStop() {            
+        // if(this.state.stage === ANSWERING) {            
+        //     this.setState({
+        //         waiting: true
+        //     });
+        // }
+
         const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm'});
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm'});        
+        
+        videoChunks = [];
+        audioChunks = [];
         
         const audioContext = new AudioContext();
         const reader = new FileReader();
@@ -370,6 +407,28 @@ export default class MockTest extends React.Component {
         const part = this.state.part;
         const q_num = this.state.q_num;
         const q_type = this.state.q_type;
+
+        // const removeWaitDialog = () => {
+        //     this.setState({
+        //         waiting: false,
+        //     });
+        // }
+
+        const jumpToNextPage = () => {            
+            if(part === PART_A || leftTime > 0) {
+            // if(this.state.part === PART_A) {
+                const a = document.createElement('a');
+                a.href = (part === PART_A)? "../../partB/introduction" : "../../report";
+                // a.href = URL.createObjectURL(videoBlob);
+                // a.download = "test.webm"
+                a.click();
+            }
+            else {
+                console.log("id B:", localStorage.getItem("id_B"));
+                console.log("if id B is null or undefined, the dataset cannot receive data successfully");
+            }
+        }
+
 
         const handleDurationReady = (duration) => {            
             const formData = new FormData();
@@ -391,14 +450,13 @@ export default class MockTest extends React.Component {
                 body: formData
             })
             .then(function(response) {
-                console.log('Send uploading data!');
-                // jumpToNextPage();
+                console.log('Send uploading data!'); 
             })
             .catch(function(error) {
                 console.log('Fail to upload! ', error);
             });
-
-            
+                           
+            jumpToNextPage();
             // const videoUrl = URL.createObjectURL(videoBlob);
             // const audioUrl = URL.createObjectURL(audioBlob);
 
@@ -411,8 +469,7 @@ export default class MockTest extends React.Component {
             // a.href = audioUrl;
             // a.download = "audio.wav"
             // a.click();
-            // URL.revokeObjectURL(audioUrl);  
-            
+            // URL.revokeObjectURL(audioUrl);              
         }
 
         reader.onload = function () {
@@ -425,24 +482,7 @@ export default class MockTest extends React.Component {
             });
         };
 
-        reader.readAsArrayBuffer(audioBlob);
-
-        
-        videoChunks = [];
-        audioChunks = [];
-        
-        if(this.state.part === PART_A || leftTime > 0) {
-        // if(this.state.part === PART_A) {
-            const a = document.createElement('a');
-            a.href = (this.state.part === PART_A)? "../../partB/introduction" : "../../report";
-            // a.href = URL.createObjectURL(videoBlob);
-            // a.download = "test.webm"
-            a.click();
-        }
-        else {
-            console.log("id B:", localStorage.getItem("id_B"));
-            console.log("if id B is null or undefined, the dataset cannot receive data successfully");
-        }
+        reader.readAsArrayBuffer(audioBlob);        
     }
 
     startRecordVideo() {
@@ -708,8 +748,8 @@ export default class MockTest extends React.Component {
                                 {mSVG}
                                 {/* {(paperShown)? "hide" : "view"} */}
                             </div>}
-                        {(this.state.part === PART_B) &&
-                            <p className="guide">Please click the timer below your video when you finish and would like to move on.</p>}
+                        {/* {(this.state.part === PART_B) && */}
+                        <p className="guide">Please click the timer below your video when you finish and would like to move on.</p>
                     </div>
                 );
                 
@@ -769,19 +809,13 @@ export default class MockTest extends React.Component {
                 );
 
         }
-
-
-
         
         return(
-            <div className="main">
+            <div className="main">                
+                {/* { this.state.waiting && <WaitDialog text={"Uploading your data ... Please do NOT refresh or leave this page."}></WaitDialog> } */}
                 {mHeading}
                 {mBoard}
             </div>
-
-            // <div onClick={this.updateUrl(this.state.part, "hihi")}>
-            //     <Link to={nextPage}>Intro counting down</Link>
-            // </div>
         );
     }
 }
