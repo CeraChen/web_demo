@@ -6,7 +6,7 @@ import arpabet from '../text/arpabet.json'
 const PART_A = 0;
 const PART_B = 1; 
 
-const boundary = 65;
+const boundary = 70;
 
 function ScoreBar({ score , overall }) {
     const progressPercentage = (score / 9) * 100;
@@ -176,7 +176,28 @@ function PartReport({ part, reuslt_json }) {
                             syllables[last_pos] = syllable.letters;
                             last_pos += syllable.phone_count;
                         }
-                                    
+                        
+                        var correct_mark = true;
+                        if(item.quality_score <= boundary) {                            
+                            for(var phone_idx=0; phone_idx<item.phone_score_list.length; phone_idx ++) {
+                                var phone = item.phone_score_list[phone_idx].phone;
+                                if(phone_idx === item.phone_score_list.length-1) {
+                                    console.log("last", phone, item.phone_score_list[phone_idx].sound_most_like)
+                                    if(item.phone_score_list[phone_idx].sound_most_like) {
+                                        correct_mark = false;
+                                    }
+                                }
+                                else {
+                                    console.log("middle", phone, item.phone_score_list[phone_idx].sound_most_like)
+                                    if(item.phone_score_list[phone_idx].sound_most_like !== phone) {
+                                        correct_mark = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        console.log("result", correct_mark);
 
 
                         return (
@@ -205,7 +226,8 @@ function PartReport({ part, reuslt_json }) {
                                     </span>
                                 )}
                                 <span id={index.toString()} 
-                                    className={(item.quality_score > boundary)?
+                                    className={correct_mark?
+                                        // (item.quality_score > boundary)?
                                         ((expandedItemIndex === index)? "active_correct" : "correct") : 
                                         ((expandedItemIndex === index)? "active_incorrect" : "incorrect")} 
                                     onClick={() => handleSpanClick(index)}>
