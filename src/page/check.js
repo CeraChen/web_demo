@@ -123,7 +123,7 @@ function CheckPage() {
             mStream.getTracks().forEach((track) => track.stop());
             console.log("release stream");
         }
-        navigate("../start");
+        navigate("../info");
     }
 
 

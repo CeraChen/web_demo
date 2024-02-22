@@ -1,6 +1,7 @@
 import './css/App.css';
 import { Route, Routes } from 'react-router-dom';
 import EntryPage from './page/entry';
+import InfoPage from './page/info';
 import CheckPage from './page/check';
 import StartPage from './page/start';
 import Intro from './page/introduction';
@@ -19,6 +20,7 @@ function App() {
     return (
         <Routes>
             <Route  path='/' element = {<EntryPage />} />
+            <Route  path='/info' element = {<InfoPage />} />
             <Route  path='/check' element = {<CheckPage />} />
             <Route  path='/start' element = {<StartPage />} />
 

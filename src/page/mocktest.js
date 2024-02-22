@@ -51,6 +51,8 @@ export default class MockTest extends React.Component {
         super(props);
         this.state = {
             part: props.part,
+            school: localStorage.getItem("school"),
+            name: localStorage.getItem("name"),
             q_num: localStorage.getItem("q_num"),
             q_type: localStorage.getItem("q_type"),
             text: questions.question_text["q" + localStorage.getItem("q_num").toString()],
@@ -365,6 +367,9 @@ export default class MockTest extends React.Component {
         const q_num = this.state.q_num;
         const q_type = this.state.q_type;
 
+        const school = this.state.school;
+        const name = this.state.name;
+
         // const removeWaitDialog = () => {
         //     this.setState({
         //         waiting: false,
@@ -396,6 +401,8 @@ export default class MockTest extends React.Component {
             formData.append('part', part);
             formData.append('question_num', q_num);
             formData.append('question_type', q_type);
+            formData.append('school', school);
+            formData.append('name', name);
 
             console.log(localStorage.getItem((part === PART_A)? "id_A":"id_B"));
 

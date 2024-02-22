@@ -1,5 +1,4 @@
 import React from "react"
-import {Link} from "react-router-dom"
 import '../css/entry.css'
 import mIcon from './earth-removebg-preview.png'
 import homeIcon from '../icon/home-fill.png'
@@ -17,6 +16,13 @@ export default class EntryPage extends React.Component{
             // part: props.part,
         };
         this.render = this.render.bind(this);
+    }
+
+    startToMockTest() {            
+        const a = document.createElement('a');
+        a.href = "/check";   
+        console.log("to jump to the next page!");         
+        a.click();
     }
 
     render() {
@@ -53,11 +59,11 @@ export default class EntryPage extends React.Component{
                         <span className="module_text">HKDSE Paper 4 - mock test</span>
                     </div>
 
-                    <Link to="/check" style={{ textDecoration:'none', color: 'black'}}>
-                        <button className="mocktest">
-                            Start Part A & B mock testing
-                        </button>
-                    </Link>
+                    {/* <Link to="/info" style={{ textDecoration:'none', color: 'black'}}> */}
+                    <button className="mocktest" onClick={this.startToMockTest}>
+                        Start Part A & B mock testing
+                    </button>
+                    {/* </Link> */}
                     {/* <Link to="/mocktest/A" style={{ textDecoration:'none', color: 'black'}}>
                         <button className="mocktest">
                             Part A - Group Discussion
