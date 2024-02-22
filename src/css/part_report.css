@@ -2,6 +2,20 @@
     width: 100%;
 }
 
+.relevance_warning {
+    margin-top: 15px;
+    text-align: left;
+    color: firebrick;
+}
+
+.bold_warning {
+    font-weight: bold;
+}
+
+.blank_warning {
+    color: firebrick;
+}
+
 .part_tooltip {
     position: absolute;
     top: 120%;
@@ -54,9 +68,9 @@
     /* font-size: large; */
 }
 
-.correct:hover {
+/* .correct:hover {
     cursor: pointer;
-}
+} */
 
 .incorrect:hover {
     cursor: pointer;

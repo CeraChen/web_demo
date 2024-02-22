@@ -1,0 +1,6 @@
+{
+  "status": "error",
+  "short_message": "error_no_speech",
+  "detail_message": "No speech is detected",
+  "version": "9.9"
+}

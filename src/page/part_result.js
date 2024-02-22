@@ -6,10 +6,12 @@ import arpabet from '../text/arpabet.json'
 const PART_A = 0;
 const PART_B = 1; 
 
+const FULL_SCORE = 100; //9
+
 const boundary = 70;
 
 function ScoreBar({ score , overall }) {
-    const progressPercentage = (score / 9) * 100;
+    const progressPercentage = (score / FULL_SCORE) * 100;
     console.log(score);
 
     var mHeight = (overall)? "18px" : "17px";
@@ -104,139 +106,160 @@ function PartReport({ part, reuslt_json }) {
                 <div className="ielts_scores">
                     <div className="score_item">
                         <div className="score_label">
-                            <span className="overall_score_text">IELTS overall:</span>
-                            <span className="overall_score_value">{response_json["speech_score"]["ielts_score"]["overall"]}</span>
+                            <span className="overall_score_text">Overall:</span>
+                            <span className="overall_score_value">{response_json?.speech_score?.speechace_score?.overall || 0}</span>
                         </div>
                         <div className="score_bar">
-                            <ScoreBar score={response_json["speech_score"]["ielts_score"]["overall"]} overall={true}></ScoreBar>
+                            <ScoreBar score={response_json?.speech_score?.speechace_score?.overall || 0} overall={true}></ScoreBar>
                         </div>
                     </div>
                     
                     <div className="score_item">
                         <div className="score_label">
                             <span className="sub_score_text">Pronunciation:</span>
-                            <span className="sub_score_value">{response_json["speech_score"]["ielts_score"]["pronunciation"]}</span>
+                            <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.pronunciation || 0}</span>
                         </div>
                         <div className="score_bar">
-                            <ScoreBar score={response_json["speech_score"]["ielts_score"]["pronunciation"]} overall={false}></ScoreBar>
+                            <ScoreBar score={response_json?.speech_score?.speechace_score?.pronunciation || 0} overall={false}></ScoreBar>
                         </div>
                     </div>
                     
                     <div className="score_item">
                         <div className="score_label">
                             <span className="sub_score_text">Fluency:</span>
-                            <span className="sub_score_value">{response_json["speech_score"]["ielts_score"]["fluency"]}</span>
+                            <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.fluency || 0}</span>
                         </div>
                         <div className="score_bar">
-                            <ScoreBar score={response_json["speech_score"]["ielts_score"]["fluency"]} overall={false}></ScoreBar>
+                            <ScoreBar score={response_json?.speech_score?.speechace_score?.fluency || 0} overall={false}></ScoreBar>
                         </div>
                     </div>
                     
                     <div className="score_item">
                         <div className="score_label">
                             <span className="sub_score_text">Coherence:</span>
-                            <span className="sub_score_value">{response_json["speech_score"]["ielts_score"]["coherence"]}</span>
+                            <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.coherence || 0}</span>
                         </div>
                         <div className="score_bar">
-                            <ScoreBar score={response_json["speech_score"]["ielts_score"]["coherence"]} overall={false}></ScoreBar>
+                            <ScoreBar score={response_json?.speech_score?.speechace_score?.coherence || 0} overall={false}></ScoreBar>
                         </div>
                     </div>
                     
                     <div className="score_item">
                         <div className="score_label">
                             <span className="sub_score_text">Grammar:</span>
-                            <span className="sub_score_value">{response_json["speech_score"]["ielts_score"]["grammar"]}</span>
+                            <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.grammar || 0}</span>
                         </div>
                         <div className="score_bar">
-                            <ScoreBar score={response_json["speech_score"]["ielts_score"]["grammar"]} overall={false}></ScoreBar>
+                            <ScoreBar score={response_json?.speech_score?.speechace_score?.grammar || 0} overall={false}></ScoreBar>
                         </div>
                     </div>
                     
                     <div className="score_item">
                         <div className="score_label">
                             <span className="sub_score_text">Vocabulary:</span>
-                            <span className="sub_score_value">{response_json["speech_score"]["ielts_score"]["vocab"]}</span>
+                            <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.vocab || 0}</span>
                         </div>
                         <div className="score_bar">
-                            <ScoreBar score={response_json["speech_score"]["ielts_score"]["vocab"]} overall={false}></ScoreBar>
+                            <ScoreBar score={response_json?.speech_score?.speechace_score?.vocab || 0} overall={false}></ScoreBar>
                         </div>
                     </div>
+
+                    {<p className="relevance_warning">
+                        {
+                            ((response_json?.speech_score?.relevance?.class || "TRUE") !== "TRUE")? 
+                            <span className="bold_warning">Warning: </span> :
+                            ""
+                        }
+                        {
+                            ((response_json?.speech_score?.relevance?.class || "TRUE") !== "TRUE")? 
+                            <span> your answer has been detected as irrelevant to the question.</span> :
+                            ""                            
+                        }
+                    </p>}
                 </div>
             </div>
 
             <div className="text_area">
                 <p className="report_title">Your answer:</p>
                 <div className="script">
-                    {response_json["speech_score"]["word_score_list"].map((item, index) => {
-                        var syllable_marks = new Array(item.phone_score_list.length).fill(0);
-                        var syllables = new Array(item.phone_score_list.length).fill('');
-                        var last_pos = 0;
-                        for(var syllable of item.syllable_score_list) {
-                            syllable_marks[last_pos] = syllable.phone_count;
-                            syllables[last_pos] = syllable.letters;
-                            last_pos += syllable.phone_count;
-                        }
-                        
-                        var correct_mark = true;
-                        if(item.quality_score <= boundary) {                            
-                            for(var phone_idx=0; phone_idx<item.phone_score_list.length; phone_idx ++) {
-                                var phone = item.phone_score_list[phone_idx].phone;
-                                if(phone_idx === item.phone_score_list.length-1) {
-                                    console.log("last", phone, item.phone_score_list[phone_idx].sound_most_like)
-                                    if(item.phone_score_list[phone_idx].sound_most_like) {
-                                        correct_mark = false;
+                    { (response_json?.speech_score?.word_score_list || false) && 
+                        response_json["speech_score"]["word_score_list"].map((item, index) => {
+                            var syllable_marks = new Array(item.phone_score_list.length).fill(0);
+                            var syllables = new Array(item.phone_score_list.length).fill('');
+                            var last_pos = 0;
+                            for(var syllable of item.syllable_score_list) {
+                                syllable_marks[last_pos] = syllable.phone_count;
+                                syllables[last_pos] = syllable.letters;
+                                last_pos += syllable.phone_count;
+                            }
+                            
+                            var correct_mark = true;
+                            if(item.quality_score <= boundary) {                            
+                                for(var phone_idx=0; phone_idx<item.phone_score_list.length; phone_idx ++) {
+                                    var phone = item.phone_score_list[phone_idx].phone;
+                                    if(phone_idx === item.phone_score_list.length-1) {
+                                        console.log("last", phone, item.phone_score_list[phone_idx].sound_most_like)
+                                        if(item.phone_score_list[phone_idx].sound_most_like) {
+                                            correct_mark = false;
+                                        }
                                     }
-                                }
-                                else {
-                                    console.log("middle", phone, item.phone_score_list[phone_idx].sound_most_like)
-                                    if(item.phone_score_list[phone_idx].sound_most_like !== phone) {
-                                        correct_mark = false;
-                                        break;
+                                    else {
+                                        console.log("middle", phone, item.phone_score_list[phone_idx].sound_most_like)
+                                        if(item.phone_score_list[phone_idx].sound_most_like !== phone) {
+                                            correct_mark = false;
+                                            break;
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        console.log("result", correct_mark);
+                            console.log("result", correct_mark);
 
 
-                        return (
-                            <span className="container" ref={(expandedItemIndex === index)? spanRef : null}>
-                                {expandedItemIndex === index && (
-                                    <span className="error_detail">
-                                        <table className="phone_tab">
-                                            <thead>
-                                                <tr>
-                                                    <th>Syllable</th>
-                                                    <th>Phone</th>
-                                                    <th>Result</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {item.phone_score_list.map((phone, idx) => (
+                            return (
+                                <span className="container" ref={(expandedItemIndex === index)? spanRef : null}>
+                                    {expandedItemIndex === index && (
+                                        <span className="error_detail">
+                                            <table className="phone_tab">
+                                                <thead>
                                                     <tr>
-                                                        {(syllable_marks[idx] > 0) && (<td rowSpan={syllable_marks[idx]}>{syllables[idx]}</td>)}
-                                                        <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{arpabet[phone.phone] || phone.phone}</td>
-                                                        <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{(phone.sound_most_like)? ((phone.sound_most_like === phone.phone)? 'Good' : arpabet[phone.sound_most_like]) : '[missing]'}</td>
+                                                        <th>Syllable</th>
+                                                        <th>Phone</th>
+                                                        <th>Result</th>
                                                     </tr>
-                                                )
-                                                )}
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                    {item.phone_score_list.map((phone, idx) => (
+                                                        <tr>
+                                                            {(syllable_marks[idx] > 0) && (<td rowSpan={syllable_marks[idx]}>{syllables[idx]}</td>)}
+                                                            <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{arpabet[phone.phone] || phone.phone}</td>
+                                                            <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{(phone.sound_most_like)? ((phone.sound_most_like === phone.phone)? 'Good' : arpabet[phone.sound_most_like]) : '[missing]'}</td>
+                                                        </tr>
+                                                    )
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </span>
+                                    )}
+                                    <span id={index.toString()} className="correct">
+                                        {/* className={correct_mark?
+                                            // (item.quality_score > boundary)?
+                                            ((expandedItemIndex === index)? "active_correct" : "correct") : 
+                                            ((expandedItemIndex === index)? "active_incorrect" : "incorrect")} 
+                                        onClick={() => handleSpanClick(index)}> */}
+                                        {item.word}
                                     </span>
-                                )}
-                                <span id={index.toString()} 
-                                    className={correct_mark?
-                                        // (item.quality_score > boundary)?
-                                        ((expandedItemIndex === index)? "active_correct" : "correct") : 
-                                        ((expandedItemIndex === index)? "active_incorrect" : "incorrect")} 
-                                    onClick={() => handleSpanClick(index)}>
-                                    {item.word}
-                                </span>
-                                <span className="correct">{item.ending_punctuation} </span>
-                            </span>);
+                                    <span className="correct">{item.ending_punctuation} </span>
+                                </span>);
                         }
                     )}
+                    {(!response_json?.speech_score?.word_score_list) &&
+                        <span className="container">                            
+                            <span className="blank_warning">
+                                [Sorry, the system has detected that you did not answer this question.]
+                            </span>
+                        </span>
+                    }
                 </div>
             </div>
         </div>

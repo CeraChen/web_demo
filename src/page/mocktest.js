@@ -651,7 +651,7 @@ export default class MockTest extends React.Component {
                                 <div className="video_subcontainer" id="subcontainer">
                                     <video id="video_player" src={(this.state.stage === INTERRUPTING)?
                                         require("../video/examiner_videos/Examiner_PartA_ending.mp4") :
-                                        require('../video/candidate_videos/Candidate_Q'+ this.state.q_num.toString() +'_'+ ((this.state.q_type===WEAK)? 'Weak':'Strong') +'.mp4')
+                                        require('../video/candidate_videos/Candidate_Q'+ this.state.q_num.toString() +'_'+ ((parseInt(this.state.q_type)===WEAK)? 'Weak':'Strong') +'.mp4')
                                     } autoPlay>
                                     </video>
                                 </div> 
@@ -676,7 +676,7 @@ export default class MockTest extends React.Component {
                                 <p className="guide">Examiner:</p>
                                 <div className="video_subcontainer">
                                     <video id="left_video_player" src={
-                                        require('../video/question_videos/Examiner_Q'+ this.state.q_num.toString() +'_'+ ((this.state.q_type===WEAK)? 'Weak':'Strong') +'.mp4')
+                                        require('../video/question_videos/Examiner_Q'+ this.state.q_num.toString() +'_'+ ((parseInt(this.state.q_type)===WEAK)? 'Weak':'Strong') +'.mp4')
                                     } autoPlay></video>
                                 </div> 
                             </div>
