@@ -253,12 +253,25 @@ function PartReport({ part, reuslt_json }) {
                                 </span>);
                         }
                     )}
+                    
                     {(!response_json?.speech_score?.word_score_list) &&
-                        <span className="container">                            
-                            <span className="blank_warning">
-                                [Sorry, the system has detected that you did not answer this question.]
+                    (                        
+                        (
+                            (response_json?.detail_message) && 
+                            <span className="container">                            
+                                <span className="blank_warning">
+                                    [Sorry, the system has detected that you did not answer this question.]
+                                </span>
                             </span>
-                        </span>
+                        ) ||
+                        (
+                            <span className="container">                            
+                                <span className="blank_warning">
+                                    [Sorry, the system has failed to detect your speech.]
+                                </span>
+                            </span>
+                        )
+                    )
                     }
                 </div>
             </div>
