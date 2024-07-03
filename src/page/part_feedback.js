@@ -7,6 +7,7 @@ const PART_A = 0;
 const PART_B = 1; 
 
 const FULL_SCORE = 100; //9
+const STRESS_BAR = 25;
 
 const boundary = 70;
 
@@ -39,22 +40,54 @@ function PartFeedback({ part, reuslt_json }) {
     
     console.log(response_json);
 
+    
 
-    const get_pause_list = (mJson) => {
-        var result_list = [];
-        console.log('enter!!');
+    const get_voicing_list = (mJson) => {
+        var pause_list = [];
+        var pitch_list = [];
+        var extent_list = [];
+        console.log('pause enter!!');
 
         if (!mJson?.speech_score?.word_score_list) {
             console.log("no score!!!");
-            return result_list;
+            return [pause_list, pitch_list];
         } 
 
-        for(var word_idx = 0; word_idx < mJson["speech_score"]["word_score_list"].length-1; word_idx++) {
-            const syllable_count = mJson["speech_score"]["word_score_list"][word_idx]["syllable_score_list"].length;
-            var interval = mJson["speech_score"]["word_score_list"][word_idx+1]["syllable_score_list"][0]["extent"][0] - 
-                           mJson["speech_score"]["word_score_list"][word_idx]["syllable_score_list"][syllable_count-1]["extent"][1];
-            var interval_type;
-            if (interval >= 50) {
+        for(var word_idx = 0; word_idx < mJson["speech_score"]["word_score_list"].length; word_idx++) {
+            var pitches = [];
+            var extents = [];
+            const syllables = mJson["speech_score"]["word_score_list"][word_idx]["syllable_score_list"];
+            const syllable_count = syllables.length;
+
+
+            for (var syllable of syllables) {
+                console.log(syllable);
+                if (syllable["pitch_range"]) {                    
+                    pitches.push(syllable["pitch_range"][0]);
+                    pitches.push(syllable["pitch_range"][1]);
+                }
+
+            }
+
+            if (pitches.length <= 1) {                
+                pitch_list.push("no_stress");
+            }
+            else {                
+                const pitch_sum =  pitches.reduce((accumulator, currentValue) => accumulator + currentValue);
+                const pitch_mean = pitch_sum / pitches.length;
+                console.log(pitch_mean);
+                const pow_sum = pitches.reduce((accumulator, currentValue) => accumulator + Math.pow(currentValue - pitch_mean, 2));
+                const pitch_sd = Math.sqrt(pow_sum / pitches.length);
+                pitch_list.push((pitch_sd > STRESS_BAR)? "stress" : "no_stress");
+            }
+
+
+
+            if (word_idx < mJson["speech_score"]["word_score_list"].length-1) {
+                var interval = mJson["speech_score"]["word_score_list"][word_idx+1]["syllable_score_list"][0]["extent"][0] - 
+                               mJson["speech_score"]["word_score_list"][word_idx]["syllable_score_list"][syllable_count-1]["extent"][1];
+                var interval_type;
+                if (interval >= 50) {
                 if (interval < 100) {
                     interval_type = "brief_pause"; // brief pause
                 }
@@ -66,17 +99,22 @@ function PartFeedback({ part, reuslt_json }) {
                         interval_type = "long_pause"; // long pause
                     }
                 }
-            }
-            else {
+                }
+                else {
                 interval_type = "no_pause"; // no pause
-            }
+                }
 
-            result_list.push(interval_type);
-            console.log(interval_type);
+                pause_list.push(interval_type);
+                console.log(interval_type);
+            }
         }
-        return result_list;
+        return [pause_list, pitch_list];
     };    
-    const pauses_type_list = get_pause_list(response_json);
+    const list_results = get_voicing_list(response_json);
+    const pauses_type_list = list_results[0];
+    const pitches_type_list = list_results[1];
+    console.log(pauses_type_list);
+    console.log(pitches_type_list);
 
 
 
@@ -282,7 +320,7 @@ function PartFeedback({ part, reuslt_json }) {
                                             </table>
                                         </span>
                                     )}
-                                    <span id={index.toString()} className="correct">
+                                    <span id={index.toString()} className={pitches_type_list[index] || "correct"}>
                                         {/* className={correct_mark?
                                             // (item.quality_score > boundary)?
                                             ((expandedItemIndex === index)? "active_correct" : "correct") : 

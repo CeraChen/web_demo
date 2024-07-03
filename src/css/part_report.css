@@ -109,6 +109,10 @@ td.correct {
     color: rgb(119, 183, 119);
 }
 
+span.stress {
+    background-color: lightgoldenrodyellow;
+}
+
 /* span.no_pause {
     background-color: darkcyan;
 } */
