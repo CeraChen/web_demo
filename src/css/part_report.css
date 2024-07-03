@@ -109,6 +109,19 @@ td.correct {
     color: rgb(119, 183, 119);
 }
 
+/* span.no_pause {
+    background-color: darkcyan;
+} */
+span.brief_pause {
+    background-color: lightblue;
+}
+span.master_pause {
+    background-color: mediumaquamarine;
+}
+span.long_pause {
+    background-color: darkcyan;
+}
+
 .text_area {
     float: left;
     width: 65%;

@@ -9,6 +9,8 @@ import MockTest from './page/mocktest';
 import Report from './page/report';
 import React from 'react';
 
+import Feedback from './page/feedback';
+
 const PART_A = 0;
 const PART_B = 1;
 
@@ -31,6 +33,8 @@ function App() {
             <Route  path='/partB/mocktest' element = {<MockTest part={PART_B}/>} />
 
             <Route path='/report' element= {<Report/>} />
+            
+            <Route path='/feedback' element= {<Feedback/>} />
         </Routes>
     );
 }
