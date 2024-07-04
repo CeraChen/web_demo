@@ -7,7 +7,13 @@ const PART_A = 0;
 const PART_B = 1; 
 
 const FULL_SCORE = 100; //9
-const STRESS_BAR = 25;
+const STRESS_BAR = 30;
+const STRESS_PERCENT = 6;
+const EXTENT_SHORT_BAR = 15;
+const EXTENT_LONG_BAR = 30;
+const EXTENT_SHORT_PERCENT = 15;
+const EXTENT_LONG_PERCENT = 8;
+const SKIP_WORDS = ["the", "a", "an", "I", "this", "that"];
 
 const boundary = 70;
 
@@ -46,11 +52,13 @@ function PartFeedback({ part, reuslt_json }) {
         var pause_list = [];
         var pitch_list = [];
         var extent_list = [];
-        console.log('pause enter!!');
+        var word_average_extents = [];
+        var word_sd_pitches = [];
+        console.log('enter!!');
 
         if (!mJson?.speech_score?.word_score_list) {
             console.log("no score!!!");
-            return [pause_list, pitch_list];
+            return [pause_list, pitch_list, extent_list];
         } 
 
         for(var word_idx = 0; word_idx < mJson["speech_score"]["word_score_list"].length; word_idx++) {
@@ -61,16 +69,19 @@ function PartFeedback({ part, reuslt_json }) {
 
 
             for (var syllable of syllables) {
-                console.log(syllable);
+                // console.log(syllable);
                 if (syllable["pitch_range"]) {                    
                     pitches.push(syllable["pitch_range"][0]);
                     pitches.push(syllable["pitch_range"][1]);
                 }
-
+                if (syllable["extent"]) {
+                    extents.push(syllable["extent"][1] - syllable["extent"][0])
+                }
             }
 
             if (pitches.length <= 1) {                
-                pitch_list.push("no_stress");
+                // pitch_list.push("no_stress");
+                word_sd_pitches.push(0);
             }
             else {                
                 const pitch_sum =  pitches.reduce((accumulator, currentValue) => accumulator + currentValue);
@@ -78,9 +89,14 @@ function PartFeedback({ part, reuslt_json }) {
                 console.log(pitch_mean);
                 const pow_sum = pitches.reduce((accumulator, currentValue) => accumulator + Math.pow(currentValue - pitch_mean, 2));
                 const pitch_sd = Math.sqrt(pow_sum / pitches.length);
-                pitch_list.push((pitch_sd > STRESS_BAR)? "stress" : "no_stress");
+                word_sd_pitches.push(pitch_sd);
+                // pitch_list.push((pitch_sd > STRESS_BAR)? "stress" : "no_stress");
             }
 
+            const extent_sum =  extents.reduce((accumulator, currentValue) => accumulator + currentValue);
+            const extent_mean = extent_sum / extents.length;
+            word_average_extents.push(extent_mean);
+            // extent_list.push((extent_mean < EXTENT_SHORT_BAR)? "high_speed" : ((extent_mean >= EXTENT_LONG_BAR)? "low_speed" : "normal_speed"));
 
 
             if (word_idx < mJson["speech_score"]["word_score_list"].length-1) {
@@ -108,13 +124,60 @@ function PartFeedback({ part, reuslt_json }) {
                 console.log(interval_type);
             }
         }
-        return [pause_list, pitch_list];
+
+        var tmp_extents = [...word_average_extents];
+        tmp_extents.sort(function(a, b) {
+            return b - a;
+        });
+
+        var tmp_pitches = [...word_sd_pitches];
+        tmp_pitches.sort(function(a, b) {
+            return b - a;
+        });
+
+        const index_long = Math.ceil((EXTENT_LONG_PERCENT / 100) * tmp_extents.length) - 1;
+        const index_short = Math.ceil((1 - (EXTENT_SHORT_PERCENT / 100)) * tmp_extents.length) - 1;
+        const extent_long = Math.max(tmp_extents[index_long], EXTENT_LONG_BAR);
+        const extent_short = Math.min(tmp_extents[index_short], EXTENT_SHORT_BAR);
+        console.log("extent_long", extent_long);
+        console.log("extent_short", extent_short);
+
+        const index_stress = Math.ceil((STRESS_PERCENT / 100) * tmp_pitches.length) - 1;
+        const sd_stress = Math.max(tmp_pitches[index_stress], STRESS_BAR);
+        console.log("sd_stress", sd_stress);
+
+        for (var word_idx=0; word_idx<word_average_extents.length; word_idx++) {
+            if (word_average_extents[word_idx] > extent_long) {
+                extent_list.push("low_speed");
+            }
+            else {
+                if (!SKIP_WORDS.includes(mJson["speech_score"]["word_score_list"][word_idx]["word"]) & word_average_extents[word_idx] < extent_short) {
+                    extent_list.push("high_speed");
+                    console.log(word_average_extents[word_idx], extent_short);
+                }
+                else {
+                    extent_list.push("normal_speed");
+                }
+            }
+
+            if (word_sd_pitches[word_idx] > sd_stress) {
+                pitch_list.push("stress");
+            }
+            else {
+                pitch_list.push("no_stress");
+            }
+        }
+        
+        return [pause_list, pitch_list, extent_list];
     };    
     const list_results = get_voicing_list(response_json);
     const pauses_type_list = list_results[0];
     const pitches_type_list = list_results[1];
-    console.log(pauses_type_list);
-    console.log(pitches_type_list);
+    const extents_type_list = list_results[2];
+
+    // console.log(pauses_type_list);
+    // console.log(pitches_type_list);
+    // console.log(extents_type_list);
 
 
 
@@ -320,15 +383,17 @@ function PartFeedback({ part, reuslt_json }) {
                                             </table>
                                         </span>
                                     )}
-                                    <span id={index.toString()} className={pitches_type_list[index] || "correct"}>
-                                        {/* className={correct_mark?
-                                            // (item.quality_score > boundary)?
-                                            ((expandedItemIndex === index)? "active_correct" : "correct") : 
-                                            ((expandedItemIndex === index)? "active_incorrect" : "incorrect")} 
-                                        onClick={() => handleSpanClick(index)}> */}
-                                        {item.word}
+                                    <span className={extents_type_list[index]}>
+                                        <span id={index.toString()} className={pitches_type_list[index]}>
+                                            {/* className={correct_mark?
+                                                // (item.quality_score > boundary)?
+                                                ((expandedItemIndex === index)? "active_correct" : "correct") : 
+                                                ((expandedItemIndex === index)? "active_incorrect" : "incorrect")} 
+                                            onClick={() => handleSpanClick(index)}> */}
+                                            {item.word}
+                                        </span>
+                                        <span className={ pauses_type_list[index] }>{item.ending_punctuation} </span>
                                     </span>
-                                    <span className={ pauses_type_list[index] }>{item.ending_punctuation} </span>
                                     {/* <span className="correct">{pauses_type_list[index]} </span> */}
                                 </span>);
                         }

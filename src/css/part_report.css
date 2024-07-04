@@ -110,7 +110,16 @@ td.correct {
 }
 
 span.stress {
-    background-color: lightgoldenrodyellow;
+    /* background-color: lightgoldenrodyellow; */
+    text-decoration: #F4A460 double underline;
+}
+
+span.high_speed {
+    text-decoration: blueviolet dotted underline 1.8pt;
+}
+
+span.low_speed {
+    text-decoration: rgb(178, 64, 133) wavy underline 1.2pt;
 }
 
 /* span.no_pause {
