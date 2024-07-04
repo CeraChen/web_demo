@@ -17,6 +17,10 @@ const SKIP_WORDS = ["the", "a", "an", "I", "this", "that"];
 
 const boundary = 70;
 
+var show_stress = false;
+var show_speed = false;
+var show_pause = true;
+
 function ScoreBar({ score , overall }) {
     const progressPercentage = (score / FULL_SCORE) * 100;
     // console.log(score);
@@ -383,8 +387,8 @@ function PartFeedback({ part, reuslt_json }) {
                                             </table>
                                         </span>
                                     )}
-                                    <span className={extents_type_list[index]}>
-                                        <span id={index.toString()} className={pitches_type_list[index]}>
+                                    <span className={(show_speed)? extents_type_list[index] : "correct"}>
+                                        <span id={index.toString()} className={(show_stress)? pitches_type_list[index] : "correct"}>
                                             {/* className={correct_mark?
                                                 // (item.quality_score > boundary)?
                                                 ((expandedItemIndex === index)? "active_correct" : "correct") : 
@@ -392,7 +396,7 @@ function PartFeedback({ part, reuslt_json }) {
                                             onClick={() => handleSpanClick(index)}> */}
                                             {item.word}
                                         </span>
-                                        <span className={ pauses_type_list[index] }>{item.ending_punctuation} </span>
+                                        <span className={(show_pause)? pauses_type_list[index] : "correct"}>{item.ending_punctuation} </span>
                                     </span>
                                     {/* <span className="correct">{pauses_type_list[index]} </span> */}
                                 </span>);
