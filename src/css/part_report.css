@@ -109,17 +109,27 @@ td.correct {
     color: rgb(119, 183, 119);
 }
 
+.legend_num {
+    margin: 20px;
+    color: rgb(80, 80, 80);
+    font-weight: 600;
+}
+
 span.stress {
-    /* background-color: lightgoldenrodyellow; */
-    text-decoration: #F4A460 double underline;
+    text-decoration: #1E90FF double underline 2pt;
+    /* text-decoration: #F4A460 double underline; */
 }
 
 span.high_speed {
-    text-decoration: blueviolet dotted underline 1.8pt;
+    text-decoration: blueviolet dotted underline 4pt;
+    z-index: 98;
+    /* text-decoration: blueviolet dotted underline 1.8pt; */
 }
 
 span.low_speed {
-    text-decoration: rgb(178, 64, 133) wavy underline 1.2pt;
+    text-decoration: cyan wavy underline 2pt;
+    z-index: 99;
+    /* text-decoration: rgb(178, 64, 133) wavy underline 1.2pt; */
 }
 
 /* span.no_pause {

@@ -17,9 +17,32 @@ const SKIP_WORDS = ["the", "a", "an", "I", "this", "that"];
 
 const boundary = 70;
 
-var show_stress = false;
-var show_speed = false;
-var show_pause = true;
+// var show_stress = false;
+// var show_speed = true;
+// var show_pause = true;
+var pauses_type_list = [];
+var pitches_type_list = [];
+var extents_type_list = [];
+
+
+// var pronunciation_score_list = [];
+// var fluency_score_list = [];
+// var grammar_score_list = [];
+// var coherence_score_list = [];
+// var vocab_score_list = [];
+
+var score_lists = [];
+const subscore_label_list = ["No Subscore", "Pronunciation", "Fluency", "Grammar", "Coherence", "Vocabulary"];
+
+// const mColors = [[255, 255, 255, 0.0], 
+//     [215, 243, 218, 0.5], 
+//     [255, 235, 205, 0.5], 
+//     [0, 255, 255, 0.3],
+//     [255, 192, 203, 0.3],
+//     [127, 255, 212, 0.3]]
+const mColors = [[21,3,251], [42,72,235], [52,116,235], [24,149,255], [1,184,255], [94,196,244], [168,218,242], [255,253,177], [255,228,63], [255,189,15], [255,144,0], [255,89,0], [255,5,0], [214,0,0]];
+// [215, 241, 242, 0.5], [215, 243, 218, 0.5], [215, 241, 242, 0.5], [215, 243, 218, 0.5] ]
+// [218, 215, 242, 0.5], [243, 215, 240, 0.5], [244, 218, 217, 0.5]]
 
 function ScoreBar({ score , overall }) {
     const progressPercentage = (score / FULL_SCORE) * 100;
@@ -37,11 +60,74 @@ function ScoreBar({ score , overall }) {
         <button className="long_bar" style={{ height: `${mHeight}`, backgroundColor: `${mBgColor}`}}></button>
       </div>
     );
-  }
+}
+
+function rgbToHex(r, g, b) {
+    // 将RGB分量的值限制在0到255之间
+    r = Math.max(0, Math.min(255, r));
+    g = Math.max(0, Math.min(255, g));
+    b = Math.max(0, Math.min(255, b));
+  
+    // 将十进制的RGB值转换为十六进制字符串
+    var hexR = r.toString(16).padStart(2, "0");
+    var hexG = g.toString(16).padStart(2, "0");
+    var hexB = b.toString(16).padStart(2, "0");
+  
+    // 拼接十六进制颜色值并返回
+    var hexColor = "#" + hexR + hexG + hexB;
+    return hexColor;
+}
+  
+
+
+function WordSpan({ show_speed, show_stress, show_pause, show_subscore, index, word, punc }) {
+    var mColor = [255, 255, 255, 0];
+    // mColors[show_subscore].slice();
+    if (show_subscore > 0) {
+        const score_list = score_lists[show_subscore - 1];
+        const color_idx = parseInt(score_list[index]/100 * mColors.length);
+        console.log("subscore", score_list[index])
+        // mColor[0] *= (Math.pow(score_list[index], 2)/10000);
+        // mColor[1] *= (Math.pow(score_list[index], 2)/10000);
+        // mColor[2] *= (Math.pow(score_list[index], 2)/10000);
+        for (var i=0; i<3; i++) {
+            mColor[i] = mColors[color_idx][i];
+            // (mColors[0][i] * score_list[index]/100) + (mColors[1][i] * (1-score_list[index]/100));
+        }
+        mColor[3] = 0.6;
+        console.log(mColor);
+    }
+    
+    var mSpan = (
+        // <span style={{ backgroundColor: rgbToHex(mColor[0], mColor[1], mColor[2]) }} className={(show_speed)? extents_type_list[index] : "correct"}>
+        // color: (mColor[0]+mColor[1]+mColor[2] < 360)? "white":"black" }} className={(show_speed)? extents_type_list[index] : "correct"}>
+        <span style={{ backgroundColor: `rgba(${mColor[0]}, ${mColor[1]}, ${mColor[2]}, ${mColor[3]})`}} className={(show_speed)? extents_type_list[index] : "correct"}>
+            <span id={index.toString()} className={(show_stress)? pitches_type_list[index] : "correct"}>
+                {word}
+            </span>
+            <span className={(show_pause)? pauses_type_list[index] : "correct"}>{punc} </span>
+        </span>
+    );
+
+    return mSpan;
+}
 
 
 function PartFeedback({ part, reuslt_json }) {
     const [expandedItemIndex, setExpandedItemIndex] = useState(null);
+    const [show_stress, setShowStress] = useState(false);
+    const [show_speed, setShowSpeed] = useState(false);
+    const [show_pause, setShowPause] = useState(false);
+
+    
+    // const [show_pronunciation, setShowPronunciation] = useState(false);
+    // const [show_fluency, setShowFluency] = useState(false);
+    // const [show_grammar, setShowGrammar] = useState(false);
+    // const [show_coherence, setShowCoherence] = useState(false);
+    // const [show_vocab, setShowVocab] = useState(false);
+    const [show_subscore, setShowSubscore] = useState(0);
+    // 0 none, 1 pronunciation, 2 fluency, 3 grammar, 4 coherence, 5 vocab
+
     const spanRef = useRef();
 
     const mPart = (part === PART_A)? "Part A" : "Part B";
@@ -90,7 +176,7 @@ function PartFeedback({ part, reuslt_json }) {
             else {                
                 const pitch_sum =  pitches.reduce((accumulator, currentValue) => accumulator + currentValue);
                 const pitch_mean = pitch_sum / pitches.length;
-                console.log(pitch_mean);
+                // console.log(pitch_mean);
                 const pow_sum = pitches.reduce((accumulator, currentValue) => accumulator + Math.pow(currentValue - pitch_mean, 2));
                 const pitch_sd = Math.sqrt(pow_sum / pitches.length);
                 word_sd_pitches.push(pitch_sd);
@@ -108,17 +194,17 @@ function PartFeedback({ part, reuslt_json }) {
                                mJson["speech_score"]["word_score_list"][word_idx]["syllable_score_list"][syllable_count-1]["extent"][1];
                 var interval_type;
                 if (interval >= 50) {
-                if (interval < 100) {
-                    interval_type = "brief_pause"; // brief pause
-                }
-                else {
-                    if (interval < 200) {
-                        interval_type = "master_pause"; // master pause
+                    if (interval < 100) {
+                        interval_type = "brief_pause"; // brief pause
                     }
                     else {
-                        interval_type = "long_pause"; // long pause
+                        if (interval < 200) {
+                            interval_type = "master_pause"; // master pause
+                        }
+                        else {
+                            interval_type = "long_pause"; // long pause
+                        }
                     }
-                }
                 }
                 else {
                 interval_type = "no_pause"; // no pause
@@ -157,7 +243,7 @@ function PartFeedback({ part, reuslt_json }) {
             else {
                 if (!SKIP_WORDS.includes(mJson["speech_score"]["word_score_list"][word_idx]["word"]) & word_average_extents[word_idx] < extent_short) {
                     extent_list.push("high_speed");
-                    console.log(word_average_extents[word_idx], extent_short);
+                    // console.log(word_average_extents[word_idx], extent_short);
                 }
                 else {
                     extent_list.push("normal_speed");
@@ -175,9 +261,56 @@ function PartFeedback({ part, reuslt_json }) {
         return [pause_list, pitch_list, extent_list];
     };    
     const list_results = get_voicing_list(response_json);
-    const pauses_type_list = list_results[0];
-    const pitches_type_list = list_results[1];
-    const extents_type_list = list_results[2];
+    pauses_type_list = list_results[0];
+    pitches_type_list = list_results[1];
+    extents_type_list = list_results[2];
+
+    const get_segment_list = (mJson) => {
+        var word_segment_pronunciation_scores = [];
+        var word_segment_fluency_scores = [];
+        var word_segment_grammar_scores = [];
+        var word_segment_coherence_scores = [];
+        var word_segment_vocab_scores = [];
+
+        if (!mJson?.speech_score?.fluency?.segment_metrics_list || mJson?.speech_score?.word_score_list.length < 1) {
+            console.log("no segment!!!");
+            return [
+                word_segment_pronunciation_scores,
+                word_segment_fluency_scores,
+                word_segment_grammar_scores,
+                word_segment_coherence_scores,
+                word_segment_vocab_scores
+            ];
+        } 
+
+        // console.log("mJson.speech_score.fluency.segment_metrics_list", mJson.speech_score.fluency.segment_metrics_list);
+        for (var segment_metrics of mJson.speech_score.fluency.segment_metrics_list) {
+            // const segment_metrics = 
+            // console.log("segment", segment_metrics);
+            var segment = segment_metrics["segment"];
+            for (var word_id=0; word_id<segment[1] - segment[0]; word_id ++) {
+                word_segment_pronunciation_scores.push(segment_metrics.speechace_score.pronunciation);
+                word_segment_fluency_scores.push(segment_metrics.speechace_score.fluency);
+                word_segment_grammar_scores.push(segment_metrics.speechace_score.grammar);
+                word_segment_coherence_scores.push(segment_metrics.speechace_score.coherence);
+                word_segment_vocab_scores.push(segment_metrics.speechace_score.vocab);
+            }
+        }
+
+        return [
+            word_segment_pronunciation_scores,
+            word_segment_fluency_scores,
+            word_segment_grammar_scores,
+            word_segment_coherence_scores,
+            word_segment_vocab_scores
+        ];
+    };
+    score_lists = get_segment_list(response_json);
+    // pronunciation_score_list = score_lists[0];
+    // fluency_score_list = score_lists[1];
+    // grammar_score_list = score_lists[2];
+    // coherence_score_list = score_lists[3];
+    // vocab_score_list = score_lists[4];
 
     // console.log(pauses_type_list);
     // console.log(pitches_type_list);
@@ -194,6 +327,25 @@ function PartFeedback({ part, reuslt_json }) {
             setExpandedItemIndex(index);
         }
     };
+
+    const handleStressClick = () => {
+        setShowStress(!show_stress);  // 切换布尔值
+    };
+    
+    const handlePauseClick = () => {
+        setShowPause(!show_pause);  // 切换布尔值
+    };
+    
+    const handleSpeedClick = () => {
+        setShowSpeed(!show_speed);  // 切换布尔值
+    };
+
+    const handleSubscoreClick = () => {
+        console.log("current subscore", show_subscore+1);
+        const subscoreBtn = document.getElementById("subscore_button");
+        subscoreBtn.textContent = subscore_label_list[(show_subscore+1)%6];
+        setShowSubscore((show_subscore+1) % 6);
+    }
 
 
     
@@ -230,6 +382,10 @@ function PartFeedback({ part, reuslt_json }) {
         
         }
     };
+
+    const spanElements = mColors.map((mColor, index) => {
+        return <span style={{ backgroundColor: `rgba(${mColor[0]}, ${mColor[1]}, ${mColor[2]}, 0.6)`, color: "transparent" }}>___</span>; //{parseInt(index/mColors.length*100)}
+    })
     
 
     useEffect(() => {
@@ -323,6 +479,13 @@ function PartFeedback({ part, reuslt_json }) {
                         }
                     </p>}
                 </div>
+
+                <div className="voicing_control">
+                    <button onClick={handlePauseClick}>Show Pause</button>                    
+                    <button onClick={handleStressClick}>Show Stress</button>
+                    <button onClick={handleSpeedClick}>Show Speed</button>
+                    <button onClick={handleSubscoreClick} id="subscore_button">No Subscore</button>
+                </div>
             </div>
 
             <div className="text_area">
@@ -387,17 +550,18 @@ function PartFeedback({ part, reuslt_json }) {
                                             </table>
                                         </span>
                                     )}
-                                    <span className={(show_speed)? extents_type_list[index] : "correct"}>
-                                        <span id={index.toString()} className={(show_stress)? pitches_type_list[index] : "correct"}>
+                                    {/* <span className={(show_speed)? extents_type_list[index] : "correct"}>
+                                        <span id={index.toString()} className={(show_stress)? pitches_type_list[index] : "correct"}> */}
                                             {/* className={correct_mark?
                                                 // (item.quality_score > boundary)?
                                                 ((expandedItemIndex === index)? "active_correct" : "correct") : 
                                                 ((expandedItemIndex === index)? "active_incorrect" : "incorrect")} 
                                             onClick={() => handleSpanClick(index)}> */}
-                                            {item.word}
+                                            {/* {item.word}
                                         </span>
                                         <span className={(show_pause)? pauses_type_list[index] : "correct"}>{item.ending_punctuation} </span>
-                                    </span>
+                                    </span> */}
+                                    <WordSpan show_speed={show_speed} show_stress={show_stress} show_pause={show_pause} show_subscore={show_subscore} index={index} word={item.word} punc={item.ending_punctuation}></WordSpan>
                                     {/* <span className="correct">{pauses_type_list[index]} </span> */}
                                 </span>);
                         }
@@ -423,6 +587,39 @@ function PartFeedback({ part, reuslt_json }) {
                     )
                     }
                 </div>
+
+                {(show_pause) && <div className="pause_annotation">
+                    <div>
+                        <span className="brief_pause">brief pause</span>
+                    </div>
+                    <div>
+                        <span className="master_pause">master pause</span>
+                    </div>
+                    <div>
+                        <span className="long_pause">long pause</span>
+                    </div>
+                </div>}
+                
+                {(show_stress) && <div className="stress_annotation">
+                    <div>
+                        <span className="stress">stress</span>
+                    </div>
+                </div>}
+                
+                {(show_speed) && <div className="speed_annotation">
+                    <div>
+                        <span className="low_speed">low_speed</span>
+                    </div>
+                    <div>
+                        <span className="high_speed">high_speed</span>
+                    </div>
+                </div>}
+
+                {(show_subscore>0) && <div className="legend">
+                    <span className="legend_num">0</span>
+                    {spanElements}
+                    <span className="legend_num">100</span>
+                </div>}
             </div>
         </div>
     );
