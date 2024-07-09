@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react"
 import '../css/part_report.css'
 import arpabet from '../text/arpabet.json'
+import BarEcharts from './radar.js'
 
 
 const PART_A = 0;
@@ -621,6 +622,7 @@ function PartFeedback({ part, reuslt_json }) {
                     <span className="legend_num">100</span>
                 </div>}
             </div>
+            <BarEcharts dataList={[3, 6.7, 9, 1, 3.6]} nameList={["a", "b", "c", "d", "e"]} />
         </div>
     );
 }
