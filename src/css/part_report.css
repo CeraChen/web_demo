@@ -109,6 +109,35 @@ td.correct {
     color: rgb(119, 183, 119);
 }
 
+
+.radar_chart_title{    
+    text-align: left;
+    font-weight: 700;
+    margin-top: 20px;
+    margin-bottom: -1px;
+    /* font-size: large; */
+}
+
+.radar_chart_area {    
+    /* display: flex; */
+    overflow: visible;
+    /* margin-top: 7px; */
+    justify-content: center;
+    align-items: center;
+}
+
+.radar_chart_container {
+    /* margin-top: 20px; */
+    margin-bottom: 25px;
+    padding-left: 10px;
+    padding-right: 20px;
+}
+
+.legend {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
 .legend_num {
     margin: 20px;
     color: rgb(80, 80, 80);

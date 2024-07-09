@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react"
 import '../css/part_report.css'
 import arpabet from '../text/arpabet.json'
-import BarEcharts from './radar.js'
+import RadarChart from './radar.js'
 
 
 const PART_A = 0;
@@ -34,6 +34,7 @@ var extents_type_list = [];
 
 var score_lists = [];
 const subscore_label_list = ["No Subscore", "Pronunciation", "Fluency", "Grammar", "Coherence", "Vocabulary"];
+const radar_label_list = ["Show Details", "Show Scores"]
 
 // const mColors = [[255, 255, 255, 0.0], 
 //     [215, 243, 218, 0.5], 
@@ -128,6 +129,8 @@ function PartFeedback({ part, reuslt_json }) {
     // const [show_vocab, setShowVocab] = useState(false);
     const [show_subscore, setShowSubscore] = useState(0);
     // 0 none, 1 pronunciation, 2 fluency, 3 grammar, 4 coherence, 5 vocab
+
+    const [show_radar, setShowRadar] = useState(false);
 
     const spanRef = useRef();
 
@@ -317,6 +320,103 @@ function PartFeedback({ part, reuslt_json }) {
     // console.log(pitches_type_list);
     // console.log(extents_type_list);
 
+    const get_dimension_list = (mJson) => {
+        var grammar_scores = [];
+        var grammar_names = [];
+        var vocab_scores = [];
+        var vocab_names = [];
+        var coherence_scores = [];
+        var coherence_names = [];
+
+        if(mJson?.speech_score?.grammar?.overall_metrics?.grammatical_range) {
+            var grammar_metrics = mJson.speech_score.grammar.overall_metrics;
+
+            grammar_scores.push(grammar_metrics.length.score);
+            grammar_names.push("Length");
+            
+            grammar_scores.push(grammar_metrics.lexical_diversity.score);
+            grammar_names.push("Lexical\nDiversity");
+
+            grammar_scores.push(grammar_metrics.grammatical_accuracy.score);
+            grammar_names.push("Grammatical\nAccuracy");
+
+            grammar_scores.push(grammar_metrics.grammatical_range.noun_phrase_complexity.score);
+            grammar_names.push("Noun Phrase\nComplexity");
+
+            grammar_scores.push(grammar_metrics.grammatical_range.noun_phrase_variation.score);
+            grammar_names.push("Noun Phrase\nVariation");
+
+            grammar_scores.push(grammar_metrics.grammatical_range.verb_construction_variation.score);
+            grammar_names.push("Verb\nConstruction\nVariation");
+
+            grammar_scores.push(grammar_metrics.grammatical_range.adverb_modifier_variation.score);
+            grammar_names.push("Adverb\nModifier\nVariation");
+
+        }
+
+        
+        if(mJson?.speech_score?.vocab?.overall_metrics) {
+            var vocab_metrics = mJson.speech_score.vocab.overall_metrics;
+            
+            vocab_scores.push(vocab_metrics.lexical_diversity.score);
+            vocab_names.push("Lexical Diversity");
+            
+            vocab_scores.push(vocab_metrics.word_sophistication.score);
+            vocab_names.push("Word\nSophistication");
+            
+            vocab_scores.push(vocab_metrics.word_specificity.score);
+            vocab_names.push("Word\nSpecificity");
+            
+            vocab_scores.push(vocab_metrics.academic_language_use.score);
+            vocab_names.push("Academic Language Use");
+            
+            vocab_scores.push(vocab_metrics.collocation_commonality.score);
+            vocab_names.push("Collocation\nCommonality");
+            
+            vocab_scores.push(vocab_metrics.idiomaticity.score);
+            vocab_names.push("Idiomaticity");
+        }
+
+        
+        if(mJson?.speech_score?.coherence?.overall_metrics) {
+            var coherence_metrics = mJson.speech_score.coherence.overall_metrics;
+            
+            coherence_scores.push(coherence_metrics.lexical_density.score);
+            coherence_names.push("Lexical Density");
+            
+            coherence_scores.push(coherence_metrics.basic_connectives.score);
+            coherence_names.push("Basic\nConnectives");
+            
+            coherence_scores.push(coherence_metrics.causal_connectives.score);
+            coherence_names.push("Causal\nConnectives");
+            
+            coherence_scores.push(coherence_metrics.negative_connectives.score);
+            coherence_names.push("Negative\nConnectives");
+            
+            coherence_scores.push(coherence_metrics.pronoun_density.score);
+            coherence_names.push("Pronoun\nDensity");
+            
+            coherence_scores.push(coherence_metrics.adverb_diversity.score);
+            coherence_names.push("Adverb\nDiversity");
+            
+            coherence_scores.push(coherence_metrics.verb_diversity.score);
+            coherence_names.push("Verb\nDiversity");
+        }
+
+
+        return [grammar_scores, grammar_names,
+                vocab_scores, vocab_names,
+                coherence_scores, coherence_names];
+    };
+
+    const list_results_2 = get_dimension_list(response_json);
+    const grammar_scores_list = list_results_2[0];
+    const grammar_names_list = list_results_2[1];
+    const vocab_scores_list = list_results_2[2];
+    const vocab_names_list = list_results_2[3];
+    const coherence_scores_list = list_results_2[4];
+    const coherence_names_list = list_results_2[5];
+
 
 
     const handleSpanClick = (index) => {
@@ -346,6 +446,12 @@ function PartFeedback({ part, reuslt_json }) {
         const subscoreBtn = document.getElementById("subscore_button");
         subscoreBtn.textContent = subscore_label_list[(show_subscore+1)%6];
         setShowSubscore((show_subscore+1) % 6);
+    }
+
+    const handleRadarClick = () => {     
+        const radarBtn = document.getElementById("radar_button");
+        radarBtn.textContent = radar_label_list[show_radar? 0:1];
+        setShowRadar(!show_radar);
     }
 
 
@@ -405,89 +511,108 @@ function PartFeedback({ part, reuslt_json }) {
 
     return (
         <div className={(mPart === PART_A)? "partA" : "partB"}>
-            <div className="score_container">
-                <div className="ielts_scores">
-                    <div className="score_item">
-                        <div className="score_label">
-                            <span className="overall_score_text">Overall:</span>
-                            <span className="overall_score_value">{response_json?.speech_score?.speechace_score?.overall || 0}</span>
-                        </div>
-                        <div className="score_bar">
-                            <ScoreBar score={response_json?.speech_score?.speechace_score?.overall || 0} overall={true}></ScoreBar>
-                        </div>
-                    </div>
-                    
-                    <div className="score_item">
-                        <div className="score_label">
-                            <span className="sub_score_text">Pronunciation:</span>
-                            <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.pronunciation || 0}</span>
-                        </div>
-                        <div className="score_bar">
-                            <ScoreBar score={response_json?.speech_score?.speechace_score?.pronunciation || 0} overall={false}></ScoreBar>
-                        </div>
-                    </div>
-                    
-                    <div className="score_item">
-                        <div className="score_label">
-                            <span className="sub_score_text">Fluency:</span>
-                            <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.fluency || 0}</span>
-                        </div>
-                        <div className="score_bar">
-                            <ScoreBar score={response_json?.speech_score?.speechace_score?.fluency || 0} overall={false}></ScoreBar>
-                        </div>
-                    </div>
-                    
-                    <div className="score_item">
-                        <div className="score_label">
-                            <span className="sub_score_text">Coherence:</span>
-                            <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.coherence || 0}</span>
-                        </div>
-                        <div className="score_bar">
-                            <ScoreBar score={response_json?.speech_score?.speechace_score?.coherence || 0} overall={false}></ScoreBar>
-                        </div>
-                    </div>
-                    
-                    <div className="score_item">
-                        <div className="score_label">
-                            <span className="sub_score_text">Grammar:</span>
-                            <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.grammar || 0}</span>
-                        </div>
-                        <div className="score_bar">
-                            <ScoreBar score={response_json?.speech_score?.speechace_score?.grammar || 0} overall={false}></ScoreBar>
-                        </div>
-                    </div>
-                    
-                    <div className="score_item">
-                        <div className="score_label">
-                            <span className="sub_score_text">Vocabulary:</span>
-                            <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.vocab || 0}</span>
-                        </div>
-                        <div className="score_bar">
-                            <ScoreBar score={response_json?.speech_score?.speechace_score?.vocab || 0} overall={false}></ScoreBar>
-                        </div>
-                    </div>
-
-                    {<p className="relevance_warning">
-                        {
-                            ((response_json?.speech_score?.relevance?.class || "TRUE") !== "TRUE")? 
-                            <span className="bold_warning">Warning: </span> :
-                            ""
-                        }
-                        {
-                            ((response_json?.speech_score?.relevance?.class || "TRUE") !== "TRUE")? 
-                            <span> your answer has been detected as irrelevant to the question.</span> :
-                            ""                            
-                        }
-                    </p>}
-                </div>
-
+            <div className="score_container">              
                 <div className="voicing_control">
                     <button onClick={handlePauseClick}>Show Pause</button>                    
                     <button onClick={handleStressClick}>Show Stress</button>
                     <button onClick={handleSpeedClick}>Show Speed</button>
                     <button onClick={handleSubscoreClick} id="subscore_button">No Subscore</button>
+                    <button onClick={handleRadarClick} id="radar_button">Show Details</button>
                 </div>
+                { (!show_radar) &&
+                    <div className="ielts_scores">
+                        <div className="score_item">
+                            <div className="score_label">
+                                <span className="overall_score_text">Overall:</span>
+                                <span className="overall_score_value">{response_json?.speech_score?.speechace_score?.overall || 0}</span>
+                            </div>
+                            <div className="score_bar">
+                                <ScoreBar score={response_json?.speech_score?.speechace_score?.overall || 0} overall={true}></ScoreBar>
+                            </div>
+                        </div>
+                        
+                        <div className="score_item">
+                            <div className="score_label">
+                                <span className="sub_score_text">Pronunciation:</span>
+                                <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.pronunciation || 0}</span>
+                            </div>
+                            <div className="score_bar">
+                                <ScoreBar score={response_json?.speech_score?.speechace_score?.pronunciation || 0} overall={false}></ScoreBar>
+                            </div>
+                        </div>
+                        
+                        <div className="score_item">
+                            <div className="score_label">
+                                <span className="sub_score_text">Fluency:</span>
+                                <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.fluency || 0}</span>
+                            </div>
+                            <div className="score_bar">
+                                <ScoreBar score={response_json?.speech_score?.speechace_score?.fluency || 0} overall={false}></ScoreBar>
+                            </div>
+                        </div>
+                        
+                        <div className="score_item">
+                            <div className="score_label">
+                                <span className="sub_score_text">Coherence:</span>
+                                <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.coherence || 0}</span>
+                            </div>
+                            <div className="score_bar">
+                                <ScoreBar score={response_json?.speech_score?.speechace_score?.coherence || 0} overall={false}></ScoreBar>
+                            </div>
+                        </div>
+                        
+                        <div className="score_item">
+                            <div className="score_label">
+                                <span className="sub_score_text">Grammar:</span>
+                                <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.grammar || 0}</span>
+                            </div>
+                            <div className="score_bar">
+                                <ScoreBar score={response_json?.speech_score?.speechace_score?.grammar || 0} overall={false}></ScoreBar>
+                            </div>
+                        </div>
+                        
+                        <div className="score_item">
+                            <div className="score_label">
+                                <span className="sub_score_text">Vocabulary:</span>
+                                <span className="sub_score_value">{response_json?.speech_score?.speechace_score?.vocab || 0}</span>
+                            </div>
+                            <div className="score_bar">
+                                <ScoreBar score={response_json?.speech_score?.speechace_score?.vocab || 0} overall={false}></ScoreBar>
+                            </div>
+                        </div>
+
+                        {<p className="relevance_warning">
+                            {
+                                ((response_json?.speech_score?.relevance?.class || "TRUE") !== "TRUE")? 
+                                <span className="bold_warning">Warning: </span> :
+                                ""
+                            }
+                            {
+                                ((response_json?.speech_score?.relevance?.class || "TRUE") !== "TRUE")? 
+                                <span> your answer has been detected as irrelevant to the question.</span> :
+                                ""                            
+                            }
+                        </p>}
+                    </div> 
+                }  
+                { (show_radar) &&
+                    <div className="radar_chart_area">
+                        <div className="radar_chart_container">
+                            <p className="radar_chart_title">Grammar Details:</p>
+                            <RadarChart className="radar_chart" id="grammar_radar" dataList={grammar_scores_list} nameList={grammar_names_list} title={"Grammar Details"} />
+                        </div> 
+                        <div className="radar_chart_container">
+                            <p className="radar_chart_title">Vocab Details:</p>
+                            <RadarChart className="radar_chart" id="vocab_radar" dataList={vocab_scores_list} nameList={vocab_names_list} title={"Vocabulary Details"} />                        
+                        </div> 
+                        <div className="radar_chart_container">
+                            <p className="radar_chart_title">Coherence Details:</p>
+                            <RadarChart className="radar_chart" id="coherence_radar" dataList={coherence_scores_list} nameList={coherence_names_list} title={"Coherence Details"} />
+                        </div>                        
+                    </div>
+                }
             </div>
+           
 
             <div className="text_area">
                 <p className="report_title">Your answer:</p>
@@ -588,7 +713,15 @@ function PartFeedback({ part, reuslt_json }) {
                     )
                     }
                 </div>
+                
+                
+                {(show_subscore>0) && <div className="legend">
+                    <span className="legend_num">0</span>
+                    {spanElements}
+                    <span className="legend_num">100</span>
+                </div>}
 
+                
                 {(show_pause) && <div className="pause_annotation">
                     <div>
                         <span className="brief_pause">brief pause</span>
@@ -615,14 +748,7 @@ function PartFeedback({ part, reuslt_json }) {
                         <span className="high_speed">high_speed</span>
                     </div>
                 </div>}
-
-                {(show_subscore>0) && <div className="legend">
-                    <span className="legend_num">0</span>
-                    {spanElements}
-                    <span className="legend_num">100</span>
-                </div>}
             </div>
-            <BarEcharts dataList={[3, 6.7, 9, 1, 3.6]} nameList={["a", "b", "c", "d", "e"]} />
         </div>
     );
 }
