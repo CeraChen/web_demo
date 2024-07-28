@@ -82,7 +82,7 @@ function rgbToHex(r, g, b) {
   
 
 
-function WordSpan({ show_speed, show_stress, show_pause, show_subscore, index, word, punc }) {
+function WordSpan({ show_speed, show_stress, show_pause, show_subscore, index, word, punc, onclick }) {
     var mColor = [255, 255, 255, 0];
     // mColors[show_subscore].slice();
     if (show_subscore > 0) {
@@ -104,7 +104,7 @@ function WordSpan({ show_speed, show_stress, show_pause, show_subscore, index, w
         // <span style={{ backgroundColor: rgbToHex(mColor[0], mColor[1], mColor[2]) }} className={(show_speed)? extents_type_list[index] : "correct"}>
         // color: (mColor[0]+mColor[1]+mColor[2] < 360)? "white":"black" }} className={(show_speed)? extents_type_list[index] : "correct"}>
         <span style={{ backgroundColor: `rgba(${mColor[0]}, ${mColor[1]}, ${mColor[2]}, ${mColor[3]})`}} className={(show_speed)? extents_type_list[index] : "correct"}>
-            <span id={index.toString()} className={(show_stress)? pitches_type_list[index] : "correct"}>
+            <span id={index.toString()} className={(show_stress)? pitches_type_list[index] : "correct"} onClick={() => onclick(index)}>
                 {word}
             </span>
             <span className={(show_pause)? pauses_type_list[index] : "correct"}>{punc} </span>
@@ -120,6 +120,18 @@ function PartFeedback({ part, reuslt_json }) {
     const [show_stress, setShowStress] = useState(false);
     const [show_speed, setShowSpeed] = useState(false);
     const [show_pause, setShowPause] = useState(false);
+
+    const [pause_bar1, setPauseBar1] = useState(50);
+    const [pause_bar2, setPauseBar2] = useState(100);
+    const [pause_bar3, setPauseBar3] = useState(200);
+
+    
+    const [extent_bar_long, setExtentBarLong] = useState(EXTENT_LONG_BAR);
+    const [extent_bar_short, setExtentBarShort] = useState(EXTENT_SHORT_BAR);
+
+
+    const [stress_bar, setStressBar] = useState(STRESS_BAR);
+    
 
     
     // const [show_pronunciation, setShowPronunciation] = useState(false);
@@ -141,6 +153,31 @@ function PartFeedback({ part, reuslt_json }) {
     console.log(response_json);
 
     
+    const handlePauseBar1 = (e) => {
+        setPauseBar1(e.target.value);
+    };    
+    const handlePauseBar2 = (e) => {
+        setPauseBar2(e.target.value);
+    };    
+    const handlePauseBar3 = (e) => {
+        setPauseBar3(e.target.value);
+    };
+
+
+    
+    const handleExtentBarLong = (e) => {
+        setExtentBarLong(e.target.value);
+    };
+    const handleExtentBarShort = (e) => {
+        setExtentBarShort(e.target.value);
+    };
+
+
+    const handleStressBar = (e) => {
+        setStressBar(e.target.value);
+    };
+
+
 
     const get_voicing_list = (mJson) => {
         var pause_list = [];
@@ -197,12 +234,12 @@ function PartFeedback({ part, reuslt_json }) {
                 var interval = mJson["speech_score"]["word_score_list"][word_idx+1]["syllable_score_list"][0]["extent"][0] - 
                                mJson["speech_score"]["word_score_list"][word_idx]["syllable_score_list"][syllable_count-1]["extent"][1];
                 var interval_type;
-                if (interval >= 50) {
-                    if (interval < 100) {
+                if (interval >= pause_bar1) {
+                    if (interval < pause_bar2) {
                         interval_type = "brief_pause"; // brief pause
                     }
                     else {
-                        if (interval < 200) {
+                        if (interval < pause_bar3) {
                             interval_type = "master_pause"; // master pause
                         }
                         else {
@@ -231,13 +268,15 @@ function PartFeedback({ part, reuslt_json }) {
 
         const index_long = Math.ceil((EXTENT_LONG_PERCENT / 100) * tmp_extents.length) - 1;
         const index_short = Math.ceil((1 - (EXTENT_SHORT_PERCENT / 100)) * tmp_extents.length) - 1;
-        const extent_long = Math.max(tmp_extents[index_long], EXTENT_LONG_BAR);
-        const extent_short = Math.min(tmp_extents[index_short], EXTENT_SHORT_BAR);
+        // const extent_long = Math.max(tmp_extents[index_long], EXTENT_LONG_BAR);
+        // const extent_short = Math.min(tmp_extents[index_short], EXTENT_SHORT_BAR);
+        const extent_long = Math.max(tmp_extents[index_long], extent_bar_long);
+        const extent_short = Math.min(tmp_extents[index_short], extent_bar_short);
         console.log("extent_long", extent_long);
         console.log("extent_short", extent_short);
 
         const index_stress = Math.ceil((STRESS_PERCENT / 100) * tmp_pitches.length) - 1;
-        const sd_stress = Math.max(tmp_pitches[index_stress], STRESS_BAR);
+        const sd_stress = Math.max(tmp_pitches[index_stress], stress_bar);
         console.log("sd_stress", sd_stress);
 
         for (var word_idx=0; word_idx<word_average_extents.length; word_idx++) {
@@ -687,7 +726,7 @@ function PartFeedback({ part, reuslt_json }) {
                                         </span>
                                         <span className={(show_pause)? pauses_type_list[index] : "correct"}>{item.ending_punctuation} </span>
                                     </span> */}
-                                    <WordSpan show_speed={show_speed} show_stress={show_stress} show_pause={show_pause} show_subscore={show_subscore} index={index} word={item.word} punc={item.ending_punctuation}></WordSpan>
+                                    <WordSpan show_speed={show_speed} show_stress={show_stress} show_pause={show_pause} show_subscore={show_subscore} index={index} word={item.word} punc={item.ending_punctuation} onclick={handleSpanClick}></WordSpan>
                                     {/* <span className="correct">{pauses_type_list[index]} </span> */}
                                 </span>);
                         }
@@ -724,27 +763,33 @@ function PartFeedback({ part, reuslt_json }) {
                 
                 {(show_pause) && <div className="pause_annotation">
                     <div>
+                        <input type="number" value={pause_bar1} id="brief_pause_control" step="0.1" onChange={handlePauseBar1}/>
                         <span className="brief_pause">brief pause</span>
                     </div>
                     <div>
+                        <input type="number" value={pause_bar2} id="master_pause_control" step="0.1" onChange={handlePauseBar2}/>
                         <span className="master_pause">master pause</span>
                     </div>
                     <div>
+                        <input type="number" value={pause_bar3} id="long_pause_control" step="0.1"  onChange={handlePauseBar3}/>
                         <span className="long_pause">long pause</span>
                     </div>
                 </div>}
                 
                 {(show_stress) && <div className="stress_annotation">
                     <div>
+                        <input type="number" value={stress_bar} id="stress_control" step="0.1" onChange={handleStressBar}/>
                         <span className="stress">stress</span>
                     </div>
                 </div>}
                 
                 {(show_speed) && <div className="speed_annotation">
                     <div>
+                        <input type="number" value={extent_bar_long} id="low_speed_control" step="0.1" onChange={handleExtentBarLong}/>
                         <span className="low_speed">low_speed</span>
                     </div>
                     <div>
+                        <input type="number" value={extent_bar_short} id="high_speed_control" step="0.1" onChange={handleExtentBarShort}/>
                         <span className="high_speed">high_speed</span>
                     </div>
                 </div>}
