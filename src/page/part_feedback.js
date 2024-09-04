@@ -12,8 +12,10 @@ const STRESS_BAR = 30;
 const STRESS_PERCENT = 6;
 const EXTENT_SHORT_BAR = 15;
 const EXTENT_LONG_BAR = 30;
-const EXTENT_SHORT_PERCENT = 15;
-const EXTENT_LONG_PERCENT = 8;
+const EXTENT_SHORT_PERCENT = 20; // 15;
+const EXTENT_LONG_PERCENT = 10; //8;
+const SEGMENT_RATE_FAST = 3.0;
+const SEGMENT_RATE_SLOW = 2.0;
 const SKIP_WORDS = ["the", "a", "an", "I", "this", "that"];
 
 const boundary = 70;
@@ -33,6 +35,12 @@ var extents_type_list = [];
 // var vocab_score_list = [];
 
 var score_lists = [];
+var speed_rate_average = 0;
+var speed_rate_sign = "unknown";
+
+var pitch_vary_sign = "unknown";
+var stress_sentence = "";
+
 const subscore_label_list = ["No Subscore", "Pronunciation", "Fluency", "Grammar", "Coherence", "Vocabulary"];
 const radar_label_list = ["Show Details", "Show Scores"]
 
@@ -62,6 +70,45 @@ function ScoreBar({ score , overall }) {
         <button className="long_bar" style={{ height: `${mHeight}`, backgroundColor: `${mBgColor}`}}></button>
       </div>
     );
+}
+
+function IntonationSpan({ into, idx }) {
+    // const FALL_COLOR = [75, 164, 253];
+    // const RISE_COLOR = [0, 206, 209];
+    // const FLAT_COLOR = [230, 230, 250];
+    
+    const FALL_COLOR = [109, 178, 247];
+    const RISE_COLOR = [242, 196, 32];
+    const FLAT_COLOR = [171, 171, 186];
+    
+    var cur_color = [255, 255, 255];
+    
+    var result = "";
+    switch (into) {
+        case "FALL":
+            result = "↓";
+            cur_color = FALL_COLOR;
+            break;
+
+        case "RISE":
+            result = "↑";
+            cur_color = RISE_COLOR;
+            break;
+
+        case "FLAT":
+            result = "-";
+            cur_color = FLAT_COLOR;
+            break;
+
+        default:
+            break;
+    }
+        
+    // if (result.length > 0) {
+    //     result = " " + result;
+    // }
+    
+    return <span style={{ color: `rgb(${cur_color[0]}, ${cur_color[1]}, ${cur_color[2]})`}}>{result}</span>;
 }
 
 function rgbToHex(r, g, b) {
@@ -199,6 +246,7 @@ function PartFeedback({ part, reuslt_json }) {
             const syllable_count = syllables.length;
 
 
+
             for (var syllable of syllables) {
                 // console.log(syllable);
                 if (syllable["pitch_range"]) {                    
@@ -300,13 +348,59 @@ function PartFeedback({ part, reuslt_json }) {
                 pitch_list.push("no_stress");
             }
         }
+
+        const current_segment_list = mJson?.speech_score?.fluency?.segment_metrics_list;
+        var current_word_idx = 0;
+        var max_sd = 0;
+        var max_start = 0;
+        var max_end = 0;
+        var pitch_sd_mean = 0;
+        for (var segment_idx=0; segment_idx<current_segment_list.length; segment_idx ++) {
+            var current_word_count = current_segment_list[segment_idx]["word_count"]; 
+            var current_segment_sd = word_sd_pitches.slice(current_word_idx, current_word_idx+current_word_count);
+            
+            var current_segment_sd_mean = current_segment_sd.reduce((accumulator, currentValue) => accumulator + currentValue);
+            pitch_sd_mean += current_segment_sd_mean;
+            current_segment_sd_mean /= current_word_count;
+            
+            if (current_segment_sd_mean > max_sd) {
+                max_sd = current_segment_sd_mean;
+                max_start = current_word_idx;
+                max_end = current_word_idx + current_word_count;
+            }
+            current_word_idx += current_word_count;
+        }
+        if (word_sd_pitches.length > 0) {
+            pitch_sd_mean /= word_sd_pitches.length;
+        }
+         
+
+        var max_sd_sentence = "\"";
+        console.log("MAX START", max_start);
+        console.log("MAX END", max_end);
+        if (max_start < max_end) {
+            var max_sd_words = mJson["speech_score"]["word_score_list"].slice(max_start, max_end);
+            for (var sd_word_idx=0; sd_word_idx<max_sd_words.length; sd_word_idx ++) {
+                console.log("word", max_sd_words[sd_word_idx].word)
+                max_sd_sentence += (((sd_word_idx > 0)? " " : "") + max_sd_words[sd_word_idx].word);
+                // if (max_sd_words[sd_word_idx].ending_punctuation) {
+                //     max_sd_sentence += max_sd_words[sd_word_idx].ending_punctuation;
+                // }
+            }
+        }
+        max_sd_sentence += "\"";
+
+
         
-        return [pause_list, pitch_list, extent_list];
+        return [pause_list, pitch_list, extent_list, max_sd_sentence, pitch_sd_mean];
     };    
     const list_results = get_voicing_list(response_json);
     pauses_type_list = list_results[0];
     pitches_type_list = list_results[1];
     extents_type_list = list_results[2];
+    stress_sentence = list_results[3];
+    var pitch_sd_mean = list_results[4];
+    pitch_vary_sign = (pitch_sd_mean > stress_bar/2.5)? "changable" : "stable";
 
     const get_segment_list = (mJson) => {
         var word_segment_pronunciation_scores = [];
@@ -325,12 +419,17 @@ function PartFeedback({ part, reuslt_json }) {
                 word_segment_vocab_scores
             ];
         } 
-
+        
+        // var speech_rate = [];
+        // var word_count = [];
         // console.log("mJson.speech_score.fluency.segment_metrics_list", mJson.speech_score.fluency.segment_metrics_list);
         for (var segment_metrics of mJson.speech_score.fluency.segment_metrics_list) {
             // const segment_metrics = 
             // console.log("segment", segment_metrics);
             var segment = segment_metrics["segment"];
+            // speech_rate.push(segment_metrics["speech_rate"]);
+            // word_count.push(segment_metrics["word_count"]);
+
             for (var word_id=0; word_id<segment[1] - segment[0]; word_id ++) {
                 word_segment_pronunciation_scores.push(segment_metrics.speechace_score.pronunciation);
                 word_segment_fluency_scores.push(segment_metrics.speechace_score.fluency);
@@ -339,6 +438,14 @@ function PartFeedback({ part, reuslt_json }) {
                 word_segment_vocab_scores.push(segment_metrics.speechace_score.vocab);
             }
         }
+        
+        // var speed_rate_mean = 0;
+        // if (speech_rate.length > 0) {            
+        //     for (var segment_idx=0; segment_idx<speech_rate.length; segment_idx ++) {
+        //         speed_rate_mean += (speech_rate[segment_idx] * word_count[segment_idx]);
+        //     }
+        //     speed_rate_mean /= speech_rate.length;
+        // }
 
         return [
             word_segment_pronunciation_scores,
@@ -348,7 +455,12 @@ function PartFeedback({ part, reuslt_json }) {
             word_segment_vocab_scores
         ];
     };
+    // segment_results = get_segment_list(response_json);
+    // score_lists = segment_results[0];
+    // speed_rate_average = segment_results[1];
     score_lists = get_segment_list(response_json);
+    speed_rate_average = response_json?.speech_score?.fluency?.overall_metrics?.speech_rate;
+    speed_rate_sign = (speed_rate_average > SEGMENT_RATE_FAST)? "fast" : ((speed_rate_average < SEGMENT_RATE_SLOW)? "slow" : "moderate");
     // pronunciation_score_list = score_lists[0];
     // fluency_score_list = score_lists[1];
     // grammar_score_list = score_lists[2];
@@ -531,7 +643,7 @@ function PartFeedback({ part, reuslt_json }) {
 
     const spanElements = mColors.map((mColor, index) => {
         return <span style={{ backgroundColor: `rgba(${mColor[0]}, ${mColor[1]}, ${mColor[2]}, 0.6)`, color: "transparent" }}>___</span>; //{parseInt(index/mColors.length*100)}
-    })
+    });
     
 
     useEffect(() => {
@@ -660,10 +772,40 @@ function PartFeedback({ part, reuslt_json }) {
                         response_json["speech_score"]["word_score_list"].map((item, index) => {
                             var syllable_marks = new Array(item.phone_score_list.length).fill(0);
                             var syllables = new Array(item.phone_score_list.length).fill('');
+                            var intonations = new Array(item.phone_score_list.length).fill([]);
+                            
                             var last_pos = 0;
-                            for(var syllable of item.syllable_score_list) {
+                            // const get_intonation = (mIntonation) => {
+                            //     var result = "";
+                            //     for (var into_idx=0; into_idx<mIntonation.length; into_idx ++) {
+                            //         switch (mIntonation[into_idx]) {
+                            //             case "FALL":
+                            //                 result += "↓";
+                            //                 break;
+                            //             case "RISE":
+                            //                 result += "↑";
+                            //                 break;
+                            //             case "FLAT":
+                            //                 result += "-";
+                            //                 break;
+                            //             default:
+                            //                 break;
+                            //         }
+                                    
+                            //     }
+                            //     if (result.length > 0) {
+                            //         result = " " + result;
+                            //     }
+                            //     return result;
+                            // };
+                            // for(var syllable of item.syllable_score_list) {
+                            for (var syllable_idx=0; syllable_idx<item.syllable_score_list.length; syllable_idx++) {
+                                var syllable = item.syllable_score_list[syllable_idx];
                                 syllable_marks[last_pos] = syllable.phone_count;
                                 syllables[last_pos] = syllable.letters;
+                                intonations[last_pos] = response_json?.speech_score?.word_intonation_list[index].syllable_intonation_list[syllable_idx];
+                                // get_intonation(response_json?.speech_score?.word_intonation_list[index].syllable_intonation_list[syllable_idx]);
+                                // console.log(intonations);
                                 last_pos += syllable.phone_count;
                             }
                             
@@ -697,6 +839,7 @@ function PartFeedback({ part, reuslt_json }) {
                                             <table className="phone_tab">
                                                 <thead>
                                                     <tr>
+                                                        {/* <th>Intonation</th> */}
                                                         <th>Syllable</th>
                                                         <th>Phone</th>
                                                         <th>Result</th>
@@ -705,7 +848,8 @@ function PartFeedback({ part, reuslt_json }) {
                                                 <tbody>
                                                     {item.phone_score_list.map((phone, idx) => (
                                                         <tr>
-                                                            {(syllable_marks[idx] > 0) && (<td rowSpan={syllable_marks[idx]}>{syllables[idx]}</td>)}
+                                                            {/* {(syllable_marks[idx] > 0) && (<td rowSpan={syllable_marks[idx]}>{intonations[idx]}</td>)} */}
+                                                            {(syllable_marks[idx] > 0) && (<td rowSpan={syllable_marks[idx]}>{syllables[idx]}{intonations[idx].map((into, into_idx) => {return <IntonationSpan into={into} idx={into_idx}/>})}</td>)}
                                                             <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{arpabet[phone.phone] || phone.phone}</td>
                                                             <td className={(phone.sound_most_like === phone.phone)? "correct" : "incorrect"}>{(phone.sound_most_like)? ((phone.sound_most_like === phone.phone)? 'Good' : arpabet[phone.sound_most_like]) : '[missing]'}</td>
                                                         </tr>
@@ -752,6 +896,13 @@ function PartFeedback({ part, reuslt_json }) {
                     )
                     }
                 </div>
+
+                <p className="report_title">Voicing report:</p>
+                <div className="pause_feedback">Your overall pace is <span className="speed_text">{speed_rate_sign}</span>, with <span className="speed_text">{parseInt(response_json?.speech_score?.fluency?.overall_metrics?.word_correct_per_minute)}</span> correct words count per minute.</div>
+
+                <div className="speed_feedback">Your pitch is <span className="stress_text">{pitch_vary_sign}</span>, presenting the most varied tone in sentence <span className="stress_text">{stress_sentence}</span>.</div>
+                
+                <div className="stress_feedback"></div>
                 
                 
                 {(show_subscore>0) && <div className="legend">

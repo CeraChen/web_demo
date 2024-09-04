@@ -314,3 +314,24 @@ table th {
     font-weight: bolder;
     color: rgb(121, 121, 121)
 }
+
+
+.speed_text {
+    background-color: #95d2e7;
+    /* font-weight: bold; */
+}
+
+.stress_text {
+    background-color: #ebcf88;
+    /* font-weight: bold; */
+}
+
+.intonation_sign {
+    color: #4ba4fd;
+    background-color: rgb(109, 178, 247);
+    background-color: rgb(242, 196, 32);
+    background-color: rgb(171, 171, 186);
+}
+/* [75, 164, 253];
+    const RISE_COLOR = [0, 206, 209];
+    const FLAT_COLOR = [230, 230, 250]; */
