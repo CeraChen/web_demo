@@ -317,14 +317,50 @@ table th {
 
 
 .speed_text {
-    background-color: #95d2e7;
+    background-color:#ededb0;
+     /* #b2e5f6; */
     /* font-weight: bold; */
 }
 
-.stress_text {
-    background-color: #ebcf88;
+
+
+.stress_label {
+    background-color: #edd7b0;
+}
+
+.stress_sentence {
+    color: #c99a4a;
+    /* background-color: #edd7b0; */
+    /* #eedbac */
     /* font-weight: bold; */
 }
+
+.high_level_text {
+    background-color: #b0edb9;
+}
+
+.medium_level_text {
+    background-color: #bae3f5;
+}
+
+.low_level_text {
+    background-color: #eda1b8;
+}
+
+.best_sentence {
+    color: #4cb15b;
+}
+
+.worst_sentence {
+    color: #be4f70;
+}
+
+.bold_span {
+    font-weight: bold;
+    color: #484848;
+}
+
+
 
 .intonation_sign {
     color: #4ba4fd;

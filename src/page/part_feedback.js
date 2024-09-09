@@ -41,6 +41,11 @@ var speed_rate_sign = "unknown";
 var pitch_vary_sign = "unknown";
 var stress_sentence = "";
 
+var max_score_sentences = [];
+var min_score_sentences = [];
+var all_segment_results = [];
+
+
 const subscore_label_list = ["No Subscore", "Pronunciation", "Fluency", "Grammar", "Coherence", "Vocabulary"];
 const radar_label_list = ["Show Details", "Show Scores"]
 
@@ -71,6 +76,147 @@ function ScoreBar({ score , overall }) {
       </div>
     );
 }
+
+
+function VocabularyAspects({ mJson, mMaxSentences, mMinSentences }) {
+    var high_list = [];
+    var medium_list = [];
+    var low_list = [];
+    console.log(mMaxSentences[4]);
+    console.log(mMinSentences[4]);
+
+    const get_appended_aspects = (mAspectList, mClassName) => {
+        if (mAspectList.length == 1) {
+            return <span>
+                <span className={mClassName}>{mAspectList[0]}</span>.
+            </span>;
+        }
+
+        else {
+            return <span>
+                {mAspectList.slice(0, mAspectList.length-1).map((aspect) => {
+                    return <span><span className={mClassName}>{aspect}</span>, </span>;
+                })} and <span className={mClassName}>{mAspectList[mAspectList.length-1]}</span>.
+            </span>;
+        }
+    }
+
+    if (mJson?.speech_score?.vocab?.overall_metrics) {
+        const vocab_metrics = mJson.speech_score.vocab.overall_metrics;
+        const vocab_item_names = ["lexical_diversity", "word_sophistication", "word_specificity", "academic_language_use", "collocation_commonality", "idiomaticity"];
+        
+        for (var item_idx=0; item_idx<vocab_item_names.length; item_idx++) {
+            var item_name = vocab_item_names[item_idx];
+            switch (vocab_metrics[item_name]["level"]) {
+                case "high":
+                    high_list.push(item_name.replace(/_/g, " "));
+                    break;
+                case "mid":
+                    medium_list.push(item_name.replace(/_/g, " "));
+                    break;
+                case "low":
+                    low_list.push(item_name.replace(/_/g, " "));
+                    break;
+                default:
+                    console.log(vocab_metrics[item_name])
+                    break;
+            }
+        }
+    }
+    
+    return <div className="vocab_feedback">
+        <ul>
+            {(
+                (mMaxSentences.length == 5) && 
+                (mMinSentences.length == 5) && 
+                (mMaxSentences[4] != mMinSentences[4])
+            ) &&
+                <li>You demonstrate the <span className="bold_span">best</span> vocabulary in sentence <span className="best_sentence">{mMaxSentences[4]}</span>, while the <span className="bold_span">poorest</span> in  <span className="worst_sentence">{mMinSentences[4]}</span></li>
+            }
+
+            {(high_list.length > 0) && 
+                <li>You demonstrate a <span className="bold_span">great</span> proficiency in {get_appended_aspects(high_list, "high_level_text")}</li>
+            }
+            {(medium_list.length > 0) && 
+                <li>You have a <span className="bold_span">moderate</span> performance in {get_appended_aspects(medium_list, "medium_level_text")}</li>
+            }
+            {(low_list.length > 0) && 
+                <li>You may <span className="bold_span">need improvement</span> in {get_appended_aspects(low_list, "low_level_text")}</li>
+            }
+        </ul>
+    </div>
+}
+
+
+function GrammarAspects({ mJson, mMaxSentences, mMinSentences }) {
+    var high_list = [];
+    var medium_list = [];
+    var low_list = [];
+    // console.log(mMaxSentences[2]);
+    // console.log(mMinSentences[2]);
+
+    const get_appended_aspects = (mAspectList, mClassName) => {
+        if (mAspectList.length == 1) {
+            return <span>
+                <span className={mClassName}>{mAspectList[0]}</span>.
+            </span>;
+        }
+
+        else {
+            return <span>
+                {mAspectList.slice(0, mAspectList.length-1).map((aspect) => {
+                    return <span><span className={mClassName}>{aspect}</span>, </span>;
+                })} and <span className={mClassName}>{mAspectList[mAspectList.length-1]}</span>.
+            </span>;
+        }
+    }
+
+    if (mJson?.speech_score?.grammar?.overall_metrics) {
+        const metrics = mJson.speech_score.grammar.overall_metrics;
+        const item_names = ["length", "lexical_diversity", "grammatical_accuracy", "noun_phrase_complexity", "noun_phrase_variation", "verb_construction_variation", "adverb_modifier_variation"];
+        
+        for (var item_idx=0; item_idx<item_names.length; item_idx++) {
+            var item_name = item_names[item_idx];
+            var current_level = (item_idx<3)? metrics[item_name]["level"] : metrics["grammatical_range"][item_name]["level"];
+            switch (current_level) {
+                case "high":
+                    high_list.push(item_name.replace(/_/g, " "));
+                    break;
+                case "mid":
+                    medium_list.push(item_name.replace(/_/g, " "));
+                    break;
+                case "low":
+                    low_list.push(item_name.replace(/_/g, " "));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
+    return <div className="grammar_feedback">
+        <ul>
+            {(
+                (mMaxSentences.length == 5) && 
+                (mMinSentences.length == 5) && 
+                (mMaxSentences[2] != mMinSentences[2])
+            ) &&
+                <li>You demonstrate the <span className="bold_span">best</span> grammar in sentence <span className="best_sentence">{mMaxSentences[2]}</span>, while the <span className="bold_span">poorest</span> in  <span className="worst_sentence">{mMinSentences[2]}</span></li>
+            }
+
+            {(high_list.length > 0) && 
+                <li>You demonstrate a <span className="bold_span">great</span> proficiency in {get_appended_aspects(high_list, "high_level_text")}</li>
+            }
+            {(medium_list.length > 0) && 
+                <li>You have a <span className="bold_span">moderate</span> performance in {get_appended_aspects(medium_list, "medium_level_text")}</li>
+            }
+            {(low_list.length > 0) && 
+                <li>You may <span className="bold_span">need improvement</span> in {get_appended_aspects(low_list, "low_level_text")}</li>
+            }
+        </ul>
+    </div>
+}
+
 
 function IntonationSpan({ into, idx }) {
     // const FALL_COLOR = [75, 164, 253];
@@ -135,7 +281,7 @@ function WordSpan({ show_speed, show_stress, show_pause, show_subscore, index, w
     if (show_subscore > 0) {
         const score_list = score_lists[show_subscore - 1];
         const color_idx = parseInt(score_list[index]/100 * mColors.length);
-        console.log("subscore", score_list[index])
+        // console.log("subscore", score_list[index])
         // mColor[0] *= (Math.pow(score_list[index], 2)/10000);
         // mColor[1] *= (Math.pow(score_list[index], 2)/10000);
         // mColor[2] *= (Math.pow(score_list[index], 2)/10000);
@@ -144,7 +290,7 @@ function WordSpan({ show_speed, show_stress, show_pause, show_subscore, index, w
             // (mColors[0][i] * score_list[index]/100) + (mColors[1][i] * (1-score_list[index]/100));
         }
         mColor[3] = 0.6;
-        console.log(mColor);
+        // console.log(mColor);
     }
     
     var mSpan = (
@@ -416,20 +562,51 @@ function PartFeedback({ part, reuslt_json }) {
                 word_segment_fluency_scores,
                 word_segment_grammar_scores,
                 word_segment_coherence_scores,
-                word_segment_vocab_scores
+                word_segment_vocab_scores,
+                ["", "", "", "", ""],
+                ["", "", "", "", ""]
             ];
         } 
         
         // var speech_rate = [];
         // var word_count = [];
         // console.log("mJson.speech_score.fluency.segment_metrics_list", mJson.speech_score.fluency.segment_metrics_list);
+        var max_scores = [0, 0, 0, 0, 0]; // pronunciation, fluency, grammar, coherence, vocab
+        var min_scores = [100, 100, 100, 100, 100];
+        var max_segment_two_idx = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]];
+        var min_segment_two_idx = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]];
+        
+        const update_max_min = (current_scores, two_idx) => {
+            for (var score_idx=0; score_idx<current_scores.length; score_idx++) {
+                if (current_scores[score_idx] > max_scores[score_idx]) {
+                    max_scores[score_idx] = current_scores[score_idx];
+                    max_segment_two_idx[score_idx] = two_idx;
+                }
+
+                if (current_scores[score_idx] < min_scores[score_idx]) {
+                    min_scores[score_idx] = current_scores[score_idx];
+                    min_segment_two_idx[score_idx] = two_idx;
+                }
+
+            }
+        };
+
         for (var segment_metrics of mJson.speech_score.fluency.segment_metrics_list) {
             // const segment_metrics = 
             // console.log("segment", segment_metrics);
             var segment = segment_metrics["segment"];
             // speech_rate.push(segment_metrics["speech_rate"]);
             // word_count.push(segment_metrics["word_count"]);
-
+            update_max_min(
+                [
+                    segment_metrics.speechace_score.pronunciation, 
+                    segment_metrics.speechace_score.fluency, 
+                    segment_metrics.speechace_score.grammar, 
+                    segment_metrics.speechace_score.coherence, 
+                    segment_metrics.speechace_score.vocab
+                ], 
+                [segment[0], segment[1]]
+            );
             for (var word_id=0; word_id<segment[1] - segment[0]; word_id ++) {
                 word_segment_pronunciation_scores.push(segment_metrics.speechace_score.pronunciation);
                 word_segment_fluency_scores.push(segment_metrics.speechace_score.fluency);
@@ -437,6 +614,36 @@ function PartFeedback({ part, reuslt_json }) {
                 word_segment_coherence_scores.push(segment_metrics.speechace_score.coherence);
                 word_segment_vocab_scores.push(segment_metrics.speechace_score.vocab);
             }
+        }
+
+        var max_sentences = ["", "", "", "", ""];
+        var min_sentences = ["", "", "", "", ""];
+        const word_list = mJson.speech_score?.word_score_list;
+        
+        for (var score_idx=0; score_idx<max_segment_two_idx.length; score_idx++) {
+            var current_sentence = "\"";
+            for (var word_idx=max_segment_two_idx[score_idx][0]; word_idx<max_segment_two_idx[score_idx][1]; word_idx ++) {
+                current_sentence += (((word_idx > max_segment_two_idx[score_idx][0])? " " : "") + word_list[word_idx].word);
+                
+                if (word_idx != (max_segment_two_idx[score_idx][1]-1) && word_list[word_idx].ending_punctuation) {
+                    current_sentence += word_list[word_idx].ending_punctuation;
+                }
+            }
+            current_sentence += "\"";
+            max_sentences[score_idx] = current_sentence;
+        }
+        
+        for (var score_idx=0; score_idx<min_segment_two_idx.length; score_idx++) {
+            var current_sentence = "\"";
+            for (var word_idx=min_segment_two_idx[score_idx][0]; word_idx<min_segment_two_idx[score_idx][1]; word_idx ++) {
+                current_sentence += (((word_idx > min_segment_two_idx[score_idx][0])? " " : "") + word_list[word_idx].word);
+                
+                if (word_idx != (min_segment_two_idx[score_idx][1]-1) && word_list[word_idx].ending_punctuation) {
+                    current_sentence += word_list[word_idx].ending_punctuation;
+                }
+            }
+            current_sentence += "\"";
+            min_sentences[score_idx] = current_sentence;
         }
         
         // var speed_rate_mean = 0;
@@ -452,15 +659,25 @@ function PartFeedback({ part, reuslt_json }) {
             word_segment_fluency_scores,
             word_segment_grammar_scores,
             word_segment_coherence_scores,
-            word_segment_vocab_scores
+            word_segment_vocab_scores,
+            max_sentences,
+            min_sentences
         ];
     };
     // segment_results = get_segment_list(response_json);
     // score_lists = segment_results[0];
     // speed_rate_average = segment_results[1];
-    score_lists = get_segment_list(response_json);
+    
+    all_segment_results = get_segment_list(response_json);
+    console.log(all_segment_results);
+    score_lists = all_segment_results.slice(0, 5);
     speed_rate_average = response_json?.speech_score?.fluency?.overall_metrics?.speech_rate;
     speed_rate_sign = (speed_rate_average > SEGMENT_RATE_FAST)? "fast" : ((speed_rate_average < SEGMENT_RATE_SLOW)? "slow" : "moderate");
+
+    max_score_sentences = all_segment_results[5];
+    min_score_sentences = all_segment_results[6];
+    // console.log("MAX SCORES", max_score_sentences);
+    // console.log("MIN SCORES", min_score_sentences);
     // pronunciation_score_list = score_lists[0];
     // fluency_score_list = score_lists[1];
     // grammar_score_list = score_lists[2];
@@ -560,6 +777,7 @@ function PartFeedback({ part, reuslt_json }) {
                 coherence_scores, coherence_names];
     };
 
+
     const list_results_2 = get_dimension_list(response_json);
     const grammar_scores_list = list_results_2[0];
     const grammar_names_list = list_results_2[1];
@@ -567,6 +785,78 @@ function PartFeedback({ part, reuslt_json }) {
     const vocab_names_list = list_results_2[3];
     const coherence_scores_list = list_results_2[4];
     const coherence_names_list = list_results_2[5];
+
+
+
+    
+    // const get_vocab_report = (mJson) => {
+    //     if (mJson?.speech_score?.vocab?.overall_metrics) {
+    //         const vocab_metrics = mJson.speech_score.vocab.overall_metrics;
+    //         const vocab_item_names = ["lexical_diversity", "word_sophistication", "word_specificity", "academic_language_use", "collocation_commonality", "idiomaticity"];
+            
+    //         var high_list = [];
+    //         var medium_list = [];
+    //         var low_list = [];
+
+    //         for (var item_idx=0; item_idx<vocab_item_names.length; item_idx++) {
+    //             var item_name = vocab_item_names[item_idx];
+    //             switch (vocab_metrics[item_name]["level"]) {
+    //                 case "high":
+    //                     high_list.push(item_name.replace(/_/g, " "));
+    //                     break;
+    //                 case "mid":
+    //                     medium_list.push(item_name.replace(/_/g, " "));
+    //                     break;
+    //                 case "low":
+    //                     low_list.push(item_name.replace(/_/g, " "));
+    //                     break;
+    //                 default:
+    //                     console.log(vocab_metrics[item_name])
+    //                     break;
+    //             }
+    //         }
+
+    //         const get_appended_aspects = (mAspectList) => {
+    //             var output = "";
+    //             if (mAspectList.length == 1) {
+    //                 output += mAspectList[0];
+    //             }
+    //             else {
+    //                 for (var aspect_idx=0; aspect_idx<(mAspectList.length-1); aspect_idx ++) {
+    //                     output += mAspectList[aspect_idx];
+    //                     output += ", ";
+    //                 }
+    //                 output += "and ";
+    //                 output += mAspectList[mAspectList.length - 1];
+    //             }
+    //             output += ". ";
+    //             return output;
+    //         }
+
+    //         var result = "";
+    //         if (high_list.length > 0) {
+    //             result += "You demonstrate a great proficiency in ";
+    //             result += get_appended_aspects(high_list);
+    //         }
+
+    //         if (medium_list.length > 0) {
+    //             result += "You have a moderate performance in ";
+    //             result += get_appended_aspects(medium_list);
+    //         }
+            
+    //         if (low_list.length > 0) {
+    //             result += "You may need improvement in ";
+    //             result += get_appended_aspects(low_list);
+    //         }
+
+    //         return result;            
+    //     }
+        
+    //     return "";
+
+    // };
+
+    // mVocabReport = get_vocab_report(response_json);
 
 
 
@@ -897,19 +1187,28 @@ function PartFeedback({ part, reuslt_json }) {
                     }
                 </div>
 
-                <p className="report_title">Voicing report:</p>
-                <div className="pause_feedback">Your overall pace is <span className="speed_text">{speed_rate_sign}</span>, with <span className="speed_text">{parseInt(response_json?.speech_score?.fluency?.overall_metrics?.word_correct_per_minute)}</span> correct words count per minute.</div>
-
-                <div className="speed_feedback">Your pitch is <span className="stress_text">{pitch_vary_sign}</span>, presenting the most varied tone in sentence <span className="stress_text">{stress_sentence}</span>.</div>
-                
-                <div className="stress_feedback"></div>
-                
                 
                 {(show_subscore>0) && <div className="legend">
                     <span className="legend_num">0</span>
                     {spanElements}
                     <span className="legend_num">100</span>
                 </div>}
+
+                <p className="report_title">Voicing report:</p>
+                <ul>
+                    <li className="pause_feedback">Your overall <span className="bold_span">pace</span> is <span className="speed_text">{speed_rate_sign}</span>, with <span className="speed_text">{parseInt(response_json?.speech_score?.fluency?.overall_metrics?.word_correct_per_minute)}</span> correct words count per minute.</li>
+
+                    <li className="speed_feedback">Your <span className="bold_span">pitch</span> is <span className="stress_label">{pitch_vary_sign}</span>, presenting the most varied tone in sentence <span className="stress_sentence">{stress_sentence}</span>.</li>
+                    
+                    <li className="pause_feedback">You make <span className="bold_span">brief</span> pause TBC</li>
+                </ul>
+                
+                <p className="report_title">Grammar report:</p>
+                <GrammarAspects mJson={response_json} mMaxSentences={max_score_sentences} mMinSentences={min_score_sentences}/>
+
+                
+                <p className="report_title">Vocabulary report:</p>
+                <VocabularyAspects mJson={response_json} mMaxSentences={max_score_sentences} mMinSentences={min_score_sentences}/>
 
                 
                 {(show_pause) && <div className="pause_annotation">
