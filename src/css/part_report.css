@@ -322,6 +322,9 @@ table th {
     /* font-weight: bold; */
 }
 
+.pause_count_text {
+    background-color: #b7e0d4;
+}
 
 
 .stress_label {

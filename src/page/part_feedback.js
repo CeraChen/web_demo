@@ -27,6 +27,8 @@ var pauses_type_list = [];
 var pitches_type_list = [];
 var extents_type_list = [];
 
+var pause_count = [0, 0, 0];
+
 
 // var pronunciation_score_list = [];
 // var fluency_score_list = [];
@@ -380,9 +382,11 @@ function PartFeedback({ part, reuslt_json }) {
         var word_sd_pitches = [];
         console.log('enter!!');
 
+        var pause_count_list = [0, 0, 0];
+
         if (!mJson?.speech_score?.word_score_list) {
             console.log("no score!!!");
-            return [pause_list, pitch_list, extent_list];
+            return [pause_list, pitch_list, extent_list, "", 0, [0, 0, 0]];
         } 
 
         for(var word_idx = 0; word_idx < mJson["speech_score"]["word_score_list"].length; word_idx++) {
@@ -431,13 +435,16 @@ function PartFeedback({ part, reuslt_json }) {
                 if (interval >= pause_bar1) {
                     if (interval < pause_bar2) {
                         interval_type = "brief_pause"; // brief pause
+                        pause_count_list[0] += 1;
                     }
                     else {
                         if (interval < pause_bar3) {
                             interval_type = "master_pause"; // master pause
+                            pause_count_list[1] += 1;
                         }
                         else {
                             interval_type = "long_pause"; // long pause
+                            pause_count_list[2] += 1;
                         }
                     }
                 }
@@ -538,7 +545,7 @@ function PartFeedback({ part, reuslt_json }) {
 
 
         
-        return [pause_list, pitch_list, extent_list, max_sd_sentence, pitch_sd_mean];
+        return [pause_list, pitch_list, extent_list, max_sd_sentence, pitch_sd_mean, pause_count_list];
     };    
     const list_results = get_voicing_list(response_json);
     pauses_type_list = list_results[0];
@@ -547,6 +554,8 @@ function PartFeedback({ part, reuslt_json }) {
     stress_sentence = list_results[3];
     var pitch_sd_mean = list_results[4];
     pitch_vary_sign = (pitch_sd_mean > stress_bar/2.5)? "changable" : "stable";
+
+    pause_count = list_results[5];
 
     const get_segment_list = (mJson) => {
         var word_segment_pronunciation_scores = [];
@@ -1200,7 +1209,12 @@ function PartFeedback({ part, reuslt_json }) {
 
                     <li className="speed_feedback">Your <span className="bold_span">pitch</span> is <span className="stress_label">{pitch_vary_sign}</span>, presenting the most varied tone in sentence <span className="stress_sentence">{stress_sentence}</span>.</li>
                     
-                    <li className="pause_feedback">You make <span className="bold_span">brief</span> pause TBC</li>
+                    {((pause_count[0] == 0) && (pause_count[1] == 0) && (pause_count[2] == 0)) &&
+                        <li className="pause_feedback">You did not make any <span className="bold_span">brief</span>, <span className="bold_span">master</span>, or <span className="bold_span">long</span> pause. You may learn to modulate your speech by making approapriate pauses.</li>
+                    }
+                    {((pause_count[0] > 0) || (pause_count[1] > 0) || (pause_count[2] > 0)) &&
+                        <li className="pause_feedback">You made <span className="pause_count_text">{pause_count[0]}</span> <span className="bold_span">brief</span> pause, <span className="pause_count_text">{pause_count[1]}</span> <span className="bold_span">master</span> pause, and <span className="pause_count_text">{pause_count[2]}</span> <span className="bold_span">long</span> pause.</li>
+                    }
                 </ul>
                 
                 <p className="report_title">Grammar report:</p>
