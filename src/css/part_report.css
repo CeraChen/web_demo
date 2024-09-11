@@ -318,12 +318,25 @@ table th {
 
 .speed_text {
     background-color:#ededb0;
-     /* #b2e5f6; */
-    /* font-weight: bold; */
+    /* background-color:#ededb0; */
+}
+
+.speed_number {
+    color: #e7e246;
 }
 
 .pause_count_text {
     background-color: #b7e0d4;
+}
+
+.brief_pause_text {
+    color: lightblue;
+}
+.master_pause_text {
+    color: mediumaquamarine;
+}
+.long_pause_text {
+    color: darkcyan;
 }
 
 
@@ -339,19 +352,23 @@ table th {
 }
 
 .high_level_text {
-    background-color: #b0edb9;
+    background-color: #bce3c2;
+    /* font-style: italic; */
 }
 
 .medium_level_text {
-    background-color: #bae3f5;
+    /* background-color: #bddeee; */
+    /* font-style: italic; */
 }
 
 .low_level_text {
-    background-color: #eda1b8;
+    background-color: #ecbac9;
+    /* font-style: italic; */
 }
 
 .best_sentence {
-    color: #4cb15b;
+    color: #38a248;
+    /* color: #4cb15b; */
 }
 
 .worst_sentence {

@@ -45,21 +45,27 @@ var stress_sentence = "";
 
 var max_score_sentences = [];
 var min_score_sentences = [];
+var max_sentence_scores = [];
+var min_sentence_scores = [];
 var all_segment_results = [];
 
 
 const subscore_label_list = ["No Subscore", "Pronunciation", "Fluency", "Grammar", "Coherence", "Vocabulary"];
 const radar_label_list = ["Show Details", "Show Scores"]
 
-// const mColors = [[255, 255, 255, 0.0], 
-//     [215, 243, 218, 0.5], 
-//     [255, 235, 205, 0.5], 
-//     [0, 255, 255, 0.3],
-//     [255, 192, 203, 0.3],
-//     [127, 255, 212, 0.3]]
-const mColors = [[21,3,251], [42,72,235], [52,116,235], [24,149,255], [1,184,255], [94,196,244], [168,218,242], [255,253,177], [255,228,63], [255,189,15], [255,144,0], [255,89,0], [255,5,0], [214,0,0]];
-// [215, 241, 242, 0.5], [215, 243, 218, 0.5], [215, 241, 242, 0.5], [215, 243, 218, 0.5] ]
-// [218, 215, 242, 0.5], [243, 215, 240, 0.5], [244, 218, 217, 0.5]]
+const MIDDLE_COLOR = [200, 200, 200];
+const mColors = [
+        [190,79,112], [200,111,137], [209,143,162], [219,174,188], [228,206,213], 
+        [238,238,238],
+        [202,223,205], [165,208,172], [129,192,138], [92,177,105], [56,162,72]  
+    ];
+// pink-green: [
+//     [190,79,112], [200,111,137], [209,143,162], [219,174,188], [228,206,213], 
+//     [238,238,238],
+//     [202,223,205], [165,208,172], [129,192,138], [92,177,105], [56,162,72]  
+// ]; 
+// red-blue: [[21,3,251], [42,72,235], [52,116,235], [24,149,255], [1,184,255], [94,196,244], [168,218,242], [255,253,177], [255,228,63], [255,189,15], [255,144,0], [255,89,0], [255,5,0], [214,0,0]];
+
 
 function ScoreBar({ score , overall }) {
     const progressPercentage = (score / FULL_SCORE) * 100;
@@ -80,12 +86,29 @@ function ScoreBar({ score , overall }) {
 }
 
 
-function VocabularyAspects({ mJson, mMaxSentences, mMinSentences }) {
+function VocabularyAspects({ mJson, mMaxSentences, mMinSentences, mMaxScores, mMinScores }) {
     var high_list = [];
     var medium_list = [];
     var low_list = [];
     console.log(mMaxSentences[4]);
     console.log(mMinSentences[4]);
+
+    var max_color = [255, 255, 255];
+    var min_color = [255, 255, 255];
+    console.log(mMaxScores[4], mMinScores[4])
+    if (mMaxScores.length == 5 && mMinScores.length == 5) {
+        const max_color_idx = parseInt(mMaxScores[4]/100*mColors.length);
+        max_color = [...mColors[max_color_idx]];
+        if (max_color_idx == 5) {
+            max_color = MIDDLE_COLOR;
+        }
+        
+        const min_color_idx = parseInt(mMinScores[4]/100*mColors.length);
+        min_color = [...mColors[min_color_idx]];
+        if (min_color_idx == 5) {
+            min_color = MIDDLE_COLOR;
+        }
+    }
 
     const get_appended_aspects = (mAspectList, mClassName) => {
         if (mAspectList.length == 1) {
@@ -133,8 +156,10 @@ function VocabularyAspects({ mJson, mMaxSentences, mMinSentences }) {
                 (mMinSentences.length == 5) && 
                 (mMaxSentences[4] != mMinSentences[4])
             ) &&
-                <li>You demonstrate the <span className="bold_span">best</span> vocabulary in sentence <span className="best_sentence">{mMaxSentences[4]}</span>, while the <span className="bold_span">poorest</span> in  <span className="worst_sentence">{mMinSentences[4]}</span></li>
+                <li>You demonstrate the <span className="bold_span">best</span> vocabulary in sentence <span style={{ color: `rgb(${max_color[0]}, ${max_color[1]}, ${max_color[2]})`}}>{mMaxSentences[4]}</span>, while the <span className="bold_span">poorest</span> in  <span style={{ color: `rgb(${min_color[0]}, ${min_color[1]}, ${min_color[2]})`}}>{mMinSentences[4]}</span></li>
             }
+                {/* <li>You demonstrate the <span className="bold_span">best</span> vocabulary in sentence <span className="best_sentence">{mMaxSentences[4]}</span>, while the <span className="bold_span">poorest</span> in  <span className="worst_sentence">{mMinSentences[4]}</span></li>
+            } */}
 
             {(high_list.length > 0) && 
                 <li>You demonstrate a <span className="bold_span">great</span> proficiency in {get_appended_aspects(high_list, "high_level_text")}</li>
@@ -150,12 +175,28 @@ function VocabularyAspects({ mJson, mMaxSentences, mMinSentences }) {
 }
 
 
-function GrammarAspects({ mJson, mMaxSentences, mMinSentences }) {
+function GrammarAspects({ mJson, mMaxSentences, mMinSentences, mMaxScores, mMinScores }) {
     var high_list = [];
     var medium_list = [];
     var low_list = [];
     // console.log(mMaxSentences[2]);
     // console.log(mMinSentences[2]);
+
+    var max_color = [255, 255, 255];
+    var min_color = [255, 255, 255];
+    if (mMaxScores.length == 5 && mMinScores.length == 5) {
+        const max_color_idx = parseInt(mMaxScores[2]/100*mColors.length);
+        max_color = [...mColors[max_color_idx]]; 
+        if (max_color_idx == 5) {
+            max_color = MIDDLE_COLOR;
+        }
+        
+        const min_color_idx = parseInt(mMinScores[2]/100*mColors.length);
+        min_color = [...mColors[min_color_idx]];
+        if (min_color_idx == 5) {
+            min_color = MIDDLE_COLOR;
+        }
+    }
 
     const get_appended_aspects = (mAspectList, mClassName) => {
         if (mAspectList.length == 1) {
@@ -203,7 +244,7 @@ function GrammarAspects({ mJson, mMaxSentences, mMinSentences }) {
                 (mMinSentences.length == 5) && 
                 (mMaxSentences[2] != mMinSentences[2])
             ) &&
-                <li>You demonstrate the <span className="bold_span">best</span> grammar in sentence <span className="best_sentence">{mMaxSentences[2]}</span>, while the <span className="bold_span">poorest</span> in  <span className="worst_sentence">{mMinSentences[2]}</span></li>
+                <li>You demonstrate the <span className="bold_span">best</span> grammar in sentence <span style={{ color: `rgb(${max_color[0]}, ${max_color[1]}, ${max_color[2]})`}}>{mMaxSentences[2]}</span>, while the <span className="bold_span">poorest</span> in  <span style={{ color: `rgb(${min_color[0]}, ${min_color[1]}, ${min_color[2]})`}}>{mMinSentences[2]}</span></li>
             }
 
             {(high_list.length > 0) && 
@@ -573,7 +614,9 @@ function PartFeedback({ part, reuslt_json }) {
                 word_segment_coherence_scores,
                 word_segment_vocab_scores,
                 ["", "", "", "", ""],
-                ["", "", "", "", ""]
+                ["", "", "", "", ""],
+                [],
+                []
             ];
         } 
         
@@ -670,7 +713,9 @@ function PartFeedback({ part, reuslt_json }) {
             word_segment_coherence_scores,
             word_segment_vocab_scores,
             max_sentences,
-            min_sentences
+            min_sentences,
+            max_scores,
+            min_scores
         ];
     };
     // segment_results = get_segment_list(response_json);
@@ -685,6 +730,9 @@ function PartFeedback({ part, reuslt_json }) {
 
     max_score_sentences = all_segment_results[5];
     min_score_sentences = all_segment_results[6];
+
+    max_sentence_scores = all_segment_results[7];
+    min_sentence_scores = all_segment_results[8];
     // console.log("MAX SCORES", max_score_sentences);
     // console.log("MIN SCORES", min_score_sentences);
     // pronunciation_score_list = score_lists[0];
@@ -1205,7 +1253,7 @@ function PartFeedback({ part, reuslt_json }) {
 
                 <p className="report_title">Voicing report:</p>
                 <ul>
-                    <li className="pause_feedback">Your overall <span className="bold_span">pace</span> is <span className="speed_text">{speed_rate_sign}</span>, with <span className="speed_text">{parseInt(response_json?.speech_score?.fluency?.overall_metrics?.word_correct_per_minute)}</span> correct words count per minute.</li>
+                    <li className="pace_feedback">Your overall <span className="bold_span">pace</span> is <span className="speed_text">{speed_rate_sign}</span>, with <span className="speed_number">{parseInt(response_json?.speech_score?.fluency?.overall_metrics?.word_correct_per_minute)}</span> correct words count per minute.</li>
 
                     <li className="speed_feedback">Your <span className="bold_span">pitch</span> is <span className="stress_label">{pitch_vary_sign}</span>, presenting the most varied tone in sentence <span className="stress_sentence">{stress_sentence}</span>.</li>
                     
@@ -1213,16 +1261,16 @@ function PartFeedback({ part, reuslt_json }) {
                         <li className="pause_feedback">You did not make any <span className="bold_span">brief</span>, <span className="bold_span">master</span>, or <span className="bold_span">long</span> pause. You may learn to modulate your speech by making approapriate pauses.</li>
                     }
                     {((pause_count[0] > 0) || (pause_count[1] > 0) || (pause_count[2] > 0)) &&
-                        <li className="pause_feedback">You made <span className="pause_count_text">{pause_count[0]}</span> <span className="bold_span">brief</span> pause, <span className="pause_count_text">{pause_count[1]}</span> <span className="bold_span">master</span> pause, and <span className="pause_count_text">{pause_count[2]}</span> <span className="bold_span">long</span> pause.</li>
+                        <li className="pause_feedback">You made <span className="brief_pause_text">{pause_count[0]}</span> <span className="bold_span">brief</span> {(pause_count[0]>1)? "pauses":"pause"}, <span className="master_pause_text">{pause_count[1]}</span> <span className="bold_span">master</span> {(pause_count[1]>1)? "pauses":"pause"}, and <span className="long_pause_text">{pause_count[2]}</span> <span className="bold_span">long</span> {(pause_count[2]>1)? "pauses":"pause"}.</li>
                     }
                 </ul>
                 
                 <p className="report_title">Grammar report:</p>
-                <GrammarAspects mJson={response_json} mMaxSentences={max_score_sentences} mMinSentences={min_score_sentences}/>
+                <GrammarAspects mJson={response_json} mMaxSentences={max_score_sentences} mMinSentences={min_score_sentences} mMaxScores={max_sentence_scores} mMinScores={min_sentence_scores}/>
 
                 
                 <p className="report_title">Vocabulary report:</p>
-                <VocabularyAspects mJson={response_json} mMaxSentences={max_score_sentences} mMinSentences={min_score_sentences}/>
+                <VocabularyAspects mJson={response_json} mMaxSentences={max_score_sentences} mMinSentences={min_score_sentences} mMaxScores={max_sentence_scores} mMinScores={min_sentence_scores}/>
 
                 
                 {(show_pause) && <div className="pause_annotation">
