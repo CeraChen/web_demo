@@ -53,7 +53,7 @@ var all_segment_results = [];
 
 
 const subscore_label_list = ["No Subscore", "Pronunciation", "Fluency", "Grammar", "Coherence", "Vocabulary"];
-const radar_label_list = ["Show Details", "Show Scores"]
+const radar_label_list = ["Details", "Scores"]
 
 const MIDDLE_COLOR = [200, 200, 200];
 const mColors = [
@@ -1074,12 +1074,21 @@ function PartFeedback({ part, reuslt_json }) {
         <div className={(mPart === PART_A)? "partA" : "partB"}>
             <div className="score_container">              
                 <div className="voicing_control">
-                    <button id="pause_btn" onClick={handlePauseClick}>Show Pause</button>                    
-                    <button id="stress_btn" onClick={handleStressClick}>Show Stress</button>
-                    <button id="speed_btn" onClick={handleSpeedClick}>Show Speed</button>
-                    <button id="volume_btn" onClick={handleVolumeClick}>Show Volume</button>
-                    <button onClick={handleSubscoreClick} id="subscore_button">No Subscore</button>
-                    <button onClick={handleRadarClick} id="radar_button">Show Details</button>
+                    <div>  
+                        <span>Marks: </span>                       
+                        <button className="result_control" id="pause_btn" onClick={handlePauseClick}>Pause</button>                    
+                        <button className="result_control" id="stress_btn" onClick={handleStressClick}>Stress</button>
+                        <button className="result_control" id="speed_btn" onClick={handleSpeedClick}>Speed</button>
+                    </div>
+                    <div>   
+                        <span>Color Encodings: </span>                     
+                        <button className="result_control" id="volume_btn" onClick={handleVolumeClick}>Volume</button>
+                        <button className="result_control" onClick={handleSubscoreClick} id="subscore_button">No Subscore</button>
+                    </div>
+                    <div>
+                        <span>Scores/Details: </span>
+                        <button className="result_control" onClick={handleRadarClick} id="radar_button">Details</button>
+                    </div>
                 </div>
                 { (!show_radar) &&
                     <div className="ielts_scores">
