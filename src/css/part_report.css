@@ -147,12 +147,16 @@ td.correct {
 }
 
 .legend {
-    margin-top: 30px;
+    margin-top: 20px;
     margin-bottom: 30px;
+    font-size: smaller;
 }
 
 .legend_num {
-    margin: 20px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    margin-left: 15px;
+    margin-right: 15px;
     color: rgb(80, 80, 80);
     font-weight: 600;
 }
@@ -388,6 +392,21 @@ table th {
     background-color: rgb(242, 196, 32);
     background-color: rgb(171, 171, 186);
 }
-/* [75, 164, 253];
-    const RISE_COLOR = [0, 206, 209];
-    const FLAT_COLOR = [230, 230, 250]; */
+
+.legend_container {
+    margin-bottom: 10px;
+}
+
+.legend_container span:not(#legend_guidance) {
+    /* margin-right: 15px; */
+    margin-left: 15px;
+    /* font-size: smaller; */
+}
+#legend_guidance {
+    font-weight: bold;
+    /* font-size: smaller; */
+}
+.legend_guidance {
+    font-weight: bold;
+    /* font-size: smaller; */
+}

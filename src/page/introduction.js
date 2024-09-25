@@ -82,8 +82,6 @@ function Intro( { part } ) {
         </div>
     );
 
-
 }
-
 
 export default Intro;
