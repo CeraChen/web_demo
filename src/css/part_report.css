@@ -162,20 +162,20 @@ td.correct {
 }
 
 span.stress {
-    text-decoration: #1E90FF double underline 2pt;
-    /* text-decoration: #F4A460 double underline; */
+    text-decoration: #4b9beb double underline 2pt;
+    /* text-decoration: #1E90FF double underline 2pt; */
 }
 
 span.high_speed {
-    text-decoration: blueviolet dotted underline 4pt;
+    text-decoration: blueviolet dotted underline 3pt;
     z-index: 98;
     /* text-decoration: blueviolet dotted underline 1.8pt; */
 }
 
 span.low_speed {
-    text-decoration: cyan wavy underline 2pt;
+    text-decoration: rgb(18, 239, 239) wavy underline 1.6pt;
+    /* text-decoration: cyan wavy underline 1.6pt; */
     z-index: 99;
-    /* text-decoration: rgb(178, 64, 133) wavy underline 1.2pt; */
 }
 
 /* span.no_pause {
@@ -190,6 +190,21 @@ span.master_pause {
 span.long_pause {
     background-color: darkcyan;
 }
+
+
+span.brief_pause_a {
+    background-color: rgba(173, 216, 230, 0.6);
+}
+span.master_pause_a {
+    background-color: rgba(102, 205, 171, 0.6);
+}
+span.long_pause_a {
+    background-color: rgba(0, 139, 139, 0.6);
+}
+
+/* .italic_span {
+    font-style: italic;
+} */
 
 .text_area {
     float: left;

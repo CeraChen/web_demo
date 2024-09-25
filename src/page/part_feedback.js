@@ -395,9 +395,9 @@ function PartFeedback({ part, reuslt_json }) {
     }, [show_volume]);
 
 
-    const [pause_bar1, setPauseBar1] = useState(50);
-    const [pause_bar2, setPauseBar2] = useState(100);
-    const [pause_bar3, setPauseBar3] = useState(200);
+    const [pause_bar1, setPauseBar1] = useState(50); // 50个10毫秒，0.5s
+    const [pause_bar2, setPauseBar2] = useState(100); // 100个10毫秒，1s
+    const [pause_bar3, setPauseBar3] = useState(250); // 250个10毫秒，2.5s
 
     
     const [extent_bar_long, setExtentBarLong] = useState(EXTENT_LONG_BAR);
@@ -1337,9 +1337,9 @@ function PartFeedback({ part, reuslt_json }) {
 
                     {show_volume && <div>
                         <span className="legend_guidance">Volume: </span>
-                        <span className="legend_num">quiet</span>
+                        <span className="legend_num">small</span>
                         {volumeColorLegend}
-                        <span className="legend_num">loud</span>
+                        <span className="legend_num">large</span>
                     </div>}
                 </div>
                 
@@ -1356,7 +1356,9 @@ function PartFeedback({ part, reuslt_json }) {
                         <li className="pause_feedback">You did not make any <span className="bold_span">brief</span>, <span className="bold_span">master</span>, or <span className="bold_span">long</span> pause. You may learn to modulate your speech by making appropriate pauses.</li>
                     }
                     {((pause_count[0] > 0) || (pause_count[1] > 0) || (pause_count[2] > 0)) &&
-                        <li className="pause_feedback">You made <span className="brief_pause_text">{pause_count[0]}</span> <span className="bold_span">brief</span> {(pause_count[0]>1)? "pauses":"pause"}, <span className="master_pause_text">{pause_count[1]}</span> <span className="bold_span">master</span> {(pause_count[1]>1)? "pauses":"pause"}, and <span className="long_pause_text">{pause_count[2]}</span> <span className="bold_span">long</span> {(pause_count[2]>1)? "pauses":"pause"}.</li>
+                        <li className="pause_feedback">You made <span className="brief_pause_text">{pause_count[0]}</span> <span className="bold_span">brief</span> {(pause_count[0]>1)? "pauses":"pause"}, <span className="master_pause_text">{pause_count[1]}</span> <span className="bold_span">master</span> {(pause_count[1]>1)? "pauses":"pause"}, and <span className="long_pause_text">{pause_count[2]}</span> <span className="bold_span">long</span> {(pause_count[2]>1)? "pauses":"pause"}.
+                         A brief pause lasts <span className="brief_pause_a">0.5 to 1 second</span>, a master pause lasts <span className="master_pause_a">1 to 2.5 seconds</span>, while a long pause is <span className="long_pause_a">longer than 2.5 seconds</span>.
+                        </li>
                     }
                 </ul>
 
