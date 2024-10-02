@@ -202,6 +202,16 @@ span.long_pause_a {
     background-color: rgba(0, 139, 139, 0.6);
 }
 
+span.pause_example {
+    font-style: italic;
+    color: #6fafcf;
+}
+
+span.pause_span {
+    font-weight: bold;
+    color: #6fafcf;
+}
+
 /* .italic_span {
     font-style: italic;
 } */
@@ -370,6 +380,31 @@ table th {
     /* font-weight: bold; */
 }
 
+.stress_span {
+    font-weight: bold;
+    color: #c99a4a;
+}
+
+.pace_span {
+    font-weight: bold;
+    color: #73b9a4;
+}
+
+.grammar_span {
+    font-weight: bold;
+    color:rgb(147, 199, 182)
+}
+
+.vocab_span {
+    font-weight: bold;
+    color: #d898ab;
+}
+
+.vocab_example {
+    font-style: italic;
+    color: #d898ab;
+}
+
 .high_level_text {
     background-color: #bce3c2;
     /* font-style: italic; */
@@ -427,7 +462,7 @@ table th {
 }
 
 .result_control {
-    margin-left: 6px;
+    margin-left: 5px;
     margin-bottom: 10px;
     /* width: 100px; */
     height: 26px;
@@ -437,3 +472,8 @@ table th {
     text-align: left;
     font-size: bolder;
 }
+
+.answer_audio_player {
+    margin-left: 5px;
+}
+

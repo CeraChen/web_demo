@@ -2,6 +2,13 @@ import React, { useEffect, useState, useRef } from "react"
 import '../css/part_report.css'
 import arpabet from '../text/arpabet.json'
 import RadarChart from './radar.js'
+import AudioPlayer from "./audio_player.js"
+
+import audio_1 from "../audio/audio1_Michelle.mp3"
+import audio_2 from "../audio/audio3_Justin.mp3"
+
+// const audio_1 = "../audio/audio1_Michelle.mp3";
+// const audio_2 = "../audio/audio3_Justin.mp3";
 
 
 const PART_A = 0;
@@ -28,6 +35,12 @@ var pitches_type_list = [];
 var extents_type_list = [];
 
 var pause_count = [0, 0, 0];
+var pause_at_comma = [0, 0, 0];
+var pause_at_period = [0, 0, 0];
+var pause_examples = [];
+
+var pace_sd = 0;
+const PACE_SD_BAR = 0.8;
 
 
 // var pronunciation_score_list = [];
@@ -81,6 +94,38 @@ const mVolColors = [
 //     [202,223,205], [165,208,172], [129,192,138], [92,177,105], [56,162,72]  
 // ]; 
 // red-blue: [[21,3,251], [42,72,235], [52,116,235], [24,149,255], [1,184,255], [94,196,244], [168,218,242], [255,253,177], [255,228,63], [255,189,15], [255,144,0], [255,89,0], [255,5,0], [214,0,0]];
+
+
+function PauseFlexible() {
+    var comment = "";
+    var result = true;
+    if (pause_count[2] > 0) {
+        if ((pause_at_comma[2] + pause_at_period[2]) > 0.9*pause_count[2] && pause_at_period[2] > 0.5*pause_count[2]) {
+            return [result, comment];
+        }
+        else {
+            result = false;
+            comment = "It is recommended to make long pause only at the end of a sentence.";
+        }
+    }
+
+    if (pause_count[1] > 0) {
+        if ((pause_at_comma[1] + pause_at_period[1]) > 0.6*pause_count[1]) {
+            return [result, comment];
+        }
+        else {
+            result = false;
+            comment = "It is recommended to make long pause only at the end of a sentence.";
+        }
+    }
+
+    if (pause_count[0] + pause_count[1] + pause_count[2] < 2) {
+        return [false, "It is recommended to modulate your speech by making appropriate pauses."]
+    }
+
+
+    return [result, comment];
+}
 
 
 function ScoreBar({ score , overall }) {
@@ -336,7 +381,7 @@ function rgbToHex(r, g, b) {
   
 
 
-function WordSpan({ show_speed, show_stress, show_pause, show_volume, show_subscore, index, word, punc, onclick }) {
+function WordSpan({ show_speed, show_stress, show_pause, show_volume, show_subscore, index, word, punc, activate_sign, onclick }) {
     var mColor = [255, 255, 255, 0];
     // mColors[show_subscore].slice();
     if (show_subscore > 0) {
@@ -371,7 +416,7 @@ function WordSpan({ show_speed, show_stress, show_pause, show_volume, show_subsc
         // <span style={{ backgroundColor: rgbToHex(mColor[0], mColor[1], mColor[2]) }} className={(show_speed)? extents_type_list[index] : "correct"}>
         // color: (mColor[0]+mColor[1]+mColor[2] < 360)? "white":"black" }} className={(show_speed)? extents_type_list[index] : "correct"}>
         <span style={{ backgroundColor: `rgba(${mColor[0]}, ${mColor[1]}, ${mColor[2]}, ${mColor[3]})`}} className={(show_speed)? extents_type_list[index] : "correct"}>
-            <span id={index.toString()} className={(show_stress)? pitches_type_list[index] : "correct"} onClick={() => onclick(index)}>
+            <span id={index.toString()} className={(show_stress)? pitches_type_list[index] : activate_sign} onClick={() => onclick(index)}>
                 {word}
             </span>
             <span className={(show_pause)? pauses_type_list[index] : "correct"}>{punc} </span>
@@ -472,11 +517,34 @@ function PartFeedback({ part, reuslt_json }) {
         console.log('enter!!');
 
         var pause_count_list = [0, 0, 0];
+        var pause_at_comma_list = [0, 0, 0];
+        var pause_at_period_list = [0, 0, 0];
+        var pause_example_list = [];
 
         if (!mJson?.speech_score?.word_score_list) {
             console.log("no score!!!");
-            return [pause_list, pitch_list, extent_list, "", 0, [0, 0, 0], []];
+            return [pause_list, pitch_list, extent_list, "", 0, [0, 0, 0], [], [0, 0, 0], [0, 0, 0], [], false, false, false, [], false];
         } 
+
+        const academic = (mJson.speech_score.vocab.overall_metrics.academic_language_use.level != "low") 
+                        && (mJson.speech_score.grammar.overall_metrics.noun_phrase_complexity.level != "low");
+        const negotiate_flexible = (mJson.speech_score.speechace_score.grammar > 70) 
+                                && (mJson.speech_score.vocab.overall_metrics.lexical_diversity.level != "low");
+        console.log("vocab lexical diver", mJson.speech_score.vocab.overall_metrics.lexical_diversity.level);
+        const grammar_diverse = (mJson.speech_score.speechace_score.grammar > 70) 
+                                && (mJson.speech_score.grammar.overall_metrics.lexical_diversity.level != "low");
+        
+            
+        const vocab_terms = ["lexical_diversity", "word_sophistication", "word_specificity", "collocation_commonality", "idiomaticity"];
+        var vocab_diverse_count = 0;
+        var vocab_diverse_term_list = [];
+        for (var vocab_term of vocab_terms) {
+            if (mJson.speech_score.vocab.overall_metrics[vocab_term]["level"] == "low") {
+                vocab_diverse_count += 1;
+                vocab_diverse_term_list.push(vocab_term);
+            }
+        }
+        const vocab_diverse = (vocab_diverse_count < 3);
 
         for(var word_idx = 0; word_idx < mJson["speech_score"]["word_score_list"].length; word_idx++) {
             var pitches = [];
@@ -528,19 +596,48 @@ function PartFeedback({ part, reuslt_json }) {
                 var interval = mJson["speech_score"]["word_score_list"][word_idx+1]["syllable_score_list"][0]["extent"][0] - 
                                mJson["speech_score"]["word_score_list"][word_idx]["syllable_score_list"][syllable_count-1]["extent"][1];
                 var interval_type;
+                var interval_punc = ("ending_punctuation" in mJson["speech_score"]["word_score_list"][word_idx])? mJson["speech_score"]["word_score_list"][word_idx].ending_punctuation : null;
+
                 if (interval >= pause_bar1) {
                     if (interval < pause_bar2) {
                         interval_type = "brief_pause"; // brief pause
                         pause_count_list[0] += 1;
+
+                        if (interval_punc == ",") {
+                            pause_at_comma_list[0] +=1;
+                            // pause_example_list.push(mJson["speech_score"]["word_score_list"][word_idx]["word"]);
+                        }
+                        else if (interval_punc == ".") {
+                            pause_at_period_list[0] += 1;
+                            // pause_example_list.push(mJson["speech_score"]["word_score_list"][word_idx]["word"]);
+                        }
                     }
                     else {
                         if (interval < pause_bar3) {
                             interval_type = "master_pause"; // master pause
                             pause_count_list[1] += 1;
+
+                            if (interval_punc == ",") {
+                                pause_at_comma_list[1] +=1;
+                                pause_example_list.push(mJson["speech_score"]["word_score_list"][word_idx]["word"]);
+                            }
+                            else if (interval_punc == ".") {
+                                pause_at_period_list[1] += 1;
+                                pause_example_list.push(mJson["speech_score"]["word_score_list"][word_idx]["word"]);
+                            }
                         }
                         else {
                             interval_type = "long_pause"; // long pause
                             pause_count_list[2] += 1;
+                            
+                            if (interval_punc == ",") {
+                                pause_at_comma_list[2] +=1;
+                                pause_example_list.push(mJson["speech_score"]["word_score_list"][word_idx]["word"]);
+                            }
+                            else if (interval_punc == ".") {
+                                pause_at_period_list[2] += 1;
+                                pause_example_list.push(mJson["speech_score"]["word_score_list"][word_idx]["word"]);
+                            }
                         }
                     }
                 }
@@ -641,7 +738,7 @@ function PartFeedback({ part, reuslt_json }) {
 
 
         
-        return [pause_list, pitch_list, extent_list, max_sd_sentence, pitch_sd_mean, pause_count_list, word_avg_volume];
+        return [pause_list, pitch_list, extent_list, max_sd_sentence, pitch_sd_mean, pause_count_list, word_avg_volume, pause_at_comma_list, pause_at_period_list, pause_example_list, negotiate_flexible, grammar_diverse, vocab_diverse, vocab_diverse_term_list, academic];
     };    
     const list_results = get_voicing_list(response_json);
     pauses_type_list = list_results[0];
@@ -651,9 +748,24 @@ function PartFeedback({ part, reuslt_json }) {
     var pitch_sd_mean = list_results[4];
     volumes = list_results[6];
 
-    pitch_vary_sign = (pitch_sd_mean > stress_bar/2.5)? "changable" : "stable";
+    pitch_vary_sign = (pitch_sd_mean > stress_bar/2.6)? "changable" : "stable";
 
     pause_count = list_results[5];
+    pause_at_comma = list_results[7];
+    pause_at_period = list_results[8];
+    console.log("pause_count", pause_count);
+    console.log("pause_at_comma", pause_at_comma);
+    console.log("pause_at_period", pause_at_period);
+    const pause_check_results =  PauseFlexible();
+    const pause_flexible_sign = pause_check_results[0];
+    const pause_comment = pause_check_results[1];
+    pause_examples = list_results[9];
+
+    const negotiate_flexible_sign = list_results[10];
+    const grammar_diverse_sign = list_results[11];
+    const vocab_diverse_sign = list_results[12];
+    const vocab_diverse_terms = list_results[13];
+    const academic_sign = list_results[14];
 
     const get_segment_list = (mJson) => {
         var word_segment_pronunciation_scores = [];
@@ -661,6 +773,8 @@ function PartFeedback({ part, reuslt_json }) {
         var word_segment_grammar_scores = [];
         var word_segment_coherence_scores = [];
         var word_segment_vocab_scores = [];
+
+        var segment_speed_rate_list = [];
 
         if (!mJson?.speech_score?.fluency?.segment_metrics_list || mJson?.speech_score?.word_score_list.length < 1) {
             console.log("no segment!!!");
@@ -673,7 +787,8 @@ function PartFeedback({ part, reuslt_json }) {
                 ["", "", "", "", ""],
                 ["", "", "", "", ""],
                 [],
-                []
+                [],
+                0
             ];
         } 
         
@@ -706,6 +821,7 @@ function PartFeedback({ part, reuslt_json }) {
             var segment = segment_metrics["segment"];
             // speech_rate.push(segment_metrics["speech_rate"]);
             // word_count.push(segment_metrics["word_count"]);
+            segment_speed_rate_list.push(segment_metrics["speech_rate"]);
             update_max_min(
                 [
                     segment_metrics.speechace_score.pronunciation, 
@@ -754,6 +870,12 @@ function PartFeedback({ part, reuslt_json }) {
             current_sentence += "\"";
             min_sentences[score_idx] = current_sentence;
         }
+
+        var segment_speed_rate_mean = segment_speed_rate_list.reduce((accumulator, currentValue) => accumulator + currentValue);
+        segment_speed_rate_mean /= segment_speed_rate_list.length;
+        var segment_speed_rate_sd = segment_speed_rate_list.reduce((accumulator, currentValue) => accumulator + Math.pow((currentValue - segment_speed_rate_mean), 2));
+        segment_speed_rate_sd /= segment_speed_rate_list.length;
+        console.log("pace varying sd:", segment_speed_rate_sd);
         
         // var speed_rate_mean = 0;
         // if (speech_rate.length > 0) {            
@@ -772,7 +894,8 @@ function PartFeedback({ part, reuslt_json }) {
             max_sentences,
             min_sentences,
             max_scores,
-            min_scores
+            min_scores,
+            segment_speed_rate_sd
         ];
     };
     // segment_results = get_segment_list(response_json);
@@ -790,6 +913,8 @@ function PartFeedback({ part, reuslt_json }) {
 
     max_sentence_scores = all_segment_results[7];
     min_sentence_scores = all_segment_results[8];
+
+    pace_sd = all_segment_results[9];
     // console.log("MAX SCORES", max_score_sentences);
     // console.log("MIN SCORES", min_score_sentences);
     // pronunciation_score_list = score_lists[0];
@@ -1190,7 +1315,8 @@ function PartFeedback({ part, reuslt_json }) {
 
             <div className="text_area">
                 {/* transcript */}
-                <p className="report_title">Your answer:</p>
+                <p className="report_title">Your answer: </p>
+                    {/* <AudioPlayer file_path={(part == PART_A)? audio_1:audio_2}></AudioPlayer> */}
 
                 <div className="script">
                     { (response_json?.speech_score?.word_score_list || false) && 
@@ -1255,6 +1381,10 @@ function PartFeedback({ part, reuslt_json }) {
                             }
 
                             // console.log("result", correct_mark);
+                            const activate_sign = (expandedItemIndex === index)? "active_correct" : "correct";
+                                                // (item.quality_score > boundary)?
+                                                // ((expandedItemIndex === index)? "active_correct" : "correct") : 
+                                                // ((expandedItemIndex === index)? "active_incorrect" : "incorrect");
 
 
                             return (
@@ -1295,7 +1425,7 @@ function PartFeedback({ part, reuslt_json }) {
                                         </span>
                                         <span className={(show_pause)? pauses_type_list[index] : "correct"}>{item.ending_punctuation} </span>
                                     </span> */}
-                                    <WordSpan show_speed={show_speed} show_stress={show_stress} show_pause={show_pause} show_volume={show_volume} show_subscore={show_subscore} index={index} word={item.word} punc={item.ending_punctuation} onclick={handleSpanClick}></WordSpan>
+                                    <WordSpan show_speed={show_speed} show_stress={show_stress} show_pause={show_pause} show_volume={show_volume} show_subscore={show_subscore} index={index} word={item.word} punc={item.ending_punctuation} activate_sign={activate_sign} onclick={handleSpanClick}></WordSpan>
                                     {/* <span className="correct">{pauses_type_list[index]} </span> */}
                                 </span>);
                         }
@@ -1357,27 +1487,65 @@ function PartFeedback({ part, reuslt_json }) {
                 
                 <p className="report_title">Voicing report:</p>
                 <ul>
-                    <li className="pace_feedback">Your overall <span className="bold_span">pace</span> is <span className="speed_text">{speed_rate_sign}</span>, with <span className="speed_number">{parseInt(response_json?.speech_score?.fluency?.overall_metrics?.word_correct_per_minute)}</span> correct words count per minute.</li>
+                    {/* pace */}
+                    {/* <li className="pace_feedback">Your overall <span className="bold_span">pace</span> is <span className="speed_text">{speed_rate_sign}</span>, with <span className="speed_number">{parseInt(response_json?.speech_score?.fluency?.overall_metrics?.word_correct_per_minute)}</span> correct words count per minute.</li> */}
+                    {(pace_sd > PACE_SD_BAR)?
+                        <li className="pace_feedback">Your average speaking <span className="bold_span">pace</span> seemed <span className="pace_span">appropriately</span>. Varying your pace helped emphasize key points and engage listeners from diverse backgrounds.</li> :
+                        <li className="pace_feedback">Your average speaking <span className="bold_span">pace</span> seemed <span className="pace_span">inappropriately</span>. You may vary your pace to help emphasize key points and engage listeners from diverse backgrounds.</li>
+                    }
 
-                    <li className="speed_feedback">Your <span className="bold_span">pitch</span> is <span className="stress_label">{pitch_vary_sign}</span>, presenting the most varied tone in sentence <span className="stress_sentence">{stress_sentence}</span>.</li>
+
+                    {/* pitch variation */}
+                    {(pitch_vary_sign == "changable")?
+                        <li className="pitch_feedback">Your <span className="bold_span">pitch</span> changed <span className="stress_span">expressively</span> e.g. when conveying the sentence <span className="stress_sentence">{stress_sentence}</span>. This creative language practice helped acknowledge different perspectives respectfully.</li> :
+                        <li className="pitch_feedback">You showed <span className="stress_span">only some changes</span> in <span className="bold_span">pitch</span>. You may learn to modulate your speech by varying your pitches to help acknowledge different perspectives respectfully.</li>
+                    }                    
+                    {/* <li className="pitch_feedback">Your <span className="bold_span">pitch</span> is <span className="stress_label">{pitch_vary_sign}</span>, presenting the most varied tone in sentence <span className="stress_sentence">{stress_sentence}</span>.</li> */}
                     
-                    {((pause_count[0] == 0) && (pause_count[1] == 0) && (pause_count[2] == 0)) &&
+
+                    {/* pause */}
+                    {(pause_flexible_sign)?
+                        <li className="pause_feedback">You utilized <span className="bold_span">pauses</span> <span className="pause_span">flexibly</span>, for example before {pause_examples.map((example, ex_idx) => {
+                            return (ex_idx == pause_examples.length-1)? <span className="pause_example">{(pause_examples.length>1) && "and "}"{example}"</span>:<span className="pause_example">"{example}", </span>
+                        })}, seamlessly bringing together listeners from different backgrounds.</li> :
+                        <li className="pause_feedback">You utilized <span className="bold_span">pauses</span> <span className="pause_span">inflexibly</span>. {pause_comment}</li>
+                    }
+                    
+                    {/* {((pause_count[0] == 0) && (pause_count[1] == 0) && (pause_count[2] == 0)) &&
                         <li className="pause_feedback">You did not make any <span className="bold_span">brief</span>, <span className="bold_span">master</span>, or <span className="bold_span">long</span> pause. You may learn to modulate your speech by making appropriate pauses.</li>
                     }
                     {((pause_count[0] > 0) || (pause_count[1] > 0) || (pause_count[2] > 0)) &&
                         <li className="pause_feedback">You made <span className="brief_pause_text">{pause_count[0]}</span> <span className="bold_span">brief</span> {(pause_count[0]>1)? "pauses":"pause"}, <span className="master_pause_text">{pause_count[1]}</span> <span className="bold_span">master</span> {(pause_count[1]>1)? "pauses":"pause"}, and <span className="long_pause_text">{pause_count[2]}</span> <span className="bold_span">long</span> {(pause_count[2]>1)? "pauses":"pause"}.
                          A brief pause lasts <span className="brief_pause_a">0.5 to 1 second</span>, a master pause lasts <span className="master_pause_a">1 to 2.5 seconds</span>, while a long pause is <span className="long_pause_a">longer than 2.5 seconds</span>.
                         </li>
-                    }
+                    } */}
                 </ul>
 
 
                 <p className="report_title">Grammar report:</p>
-                <GrammarAspects mJson={response_json} mMaxSentences={max_score_sentences} mMinSentences={min_score_sentences} mMaxScores={max_sentence_scores} mMinScores={min_sentence_scores}/>
+                <ul>
+                    {(negotiate_flexible_sign)?
+                        <li>You <span className="grammar_span">skillfully</span> drew from diverse <span className="bold_span">grammatical practices</span> to negotiate meaning <span className="grammar_span">flexibly</span>.</li> :
+                        <li>You showed <span className="grammar_span">only some</span> diverse <span className="bold_span">grammatical practices</span> and negotiated meaning <span className="grammar_span">infelxibly</span>.</li>
+                    }
+                </ul>
+                {/* <GrammarAspects mJson={response_json} mMaxSentences={max_score_sentences} mMinSentences={min_score_sentences} mMaxScores={max_sentence_scores} mMinScores={min_sentence_scores}/> */}
 
                 
                 <p className="report_title">Vocabulary report:</p>
-                <VocabularyAspects mJson={response_json} mMaxSentences={max_score_sentences} mMinSentences={min_score_sentences} mMaxScores={max_sentence_scores} mMinScores={min_sentence_scores}/>
+                <ul>
+                    {(vocab_diverse_sign)?
+                        <li>You demonstrated skills in <span className="vocab_span">creatively adapting</span> your <span className="bold_span">lexis</span> for listeners globally. Varied choices highlighted ideas respectfully and built cooperation across communities.</li> :
+                        <li>You demonstrated <span className="vocab_span">only few skills</span> in adapting your <span className="bold_span">lexis</span> for listeners globally. You may pay attention to {vocab_diverse_terms.map((diverse_term, diverse_term_idx) => {
+                            return (<span className="vocab_example">{(vocab_diverse_terms.length>1 && diverse_term_idx==(vocab_diverse_terms.length-1)) && "and "}{diverse_term.replace("_", " ")}{(diverse_term_idx!=(vocab_diverse_terms.length-1)) && ", "}</span>);
+                        })} when improving your vocabulary diversity.</li>
+                    }
+                    
+                    { academic_sign &&
+                        <li>Your word selections matched audiences and aims authentically. This enhanced building consensus while representing varied cultural viewpoints harmoniously through cooperative practices.</li>
+                    }
+                </ul>
+                {/* <VocabularyAspects mJson={response_json} mMaxSentences={max_score_sentences} mMinSentences={min_score_sentences} mMaxScores={max_sentence_scores} mMinScores={min_sentence_scores}/> */}
 
                 
                 {/* {(show_pause) && <div className="pause_annotation">
