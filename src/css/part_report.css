@@ -212,6 +212,11 @@ span.pause_span {
     color: #6fafcf;
 }
 
+span.jam_span {
+    font-weight: bold;
+    color: rgb(173, 127, 173);
+}
+
 /* .italic_span {
     font-style: italic;
 } */
