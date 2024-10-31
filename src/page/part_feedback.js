@@ -1558,7 +1558,7 @@ function PartFeedback({ part, reuslt_json }) {
                 <p className="report_title">Vocabulary report:</p>
                 <ul>
                     {(vocab_diverse_sign)?
-                        <li>You demonstrated skills in <span className="vocab_span">creatively adapting</span> your <span className="bold_span">lexis</span> for listeners globally. Varied choices highlighted ideas respectfully and built cooperation across communities.</li> :
+                        <li>You demonstrated skills in <span className="vocab_span">creatively adapting</span> your <span className="bold_span">word choices</span> for listeners globally. Varied choices highlighted ideas respectfully and built cooperation across communities.</li> :
                         <li>You might need to <span className="vocab_span">further adapt</span> your <span className="bold_span">word choices</span> for a global audience. You may pay attention to {vocab_diverse_terms.map((diverse_term, diverse_term_idx) => {
                             return (<span className="vocab_example">{(vocab_diverse_terms.length>1 && diverse_term_idx==(vocab_diverse_terms.length-1)) && "and "}{diverse_term.replace("_", " ")}{(diverse_term_idx!=(vocab_diverse_terms.length-1)) && ", "}</span>);
                         })} when improving your vocabulary diversity.</li>

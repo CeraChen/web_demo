@@ -5,6 +5,7 @@
 speech
 audio
 record_speech.py
+assess_speech.py
 Recorder.py
 SpeechAce.py
 
