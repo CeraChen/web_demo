@@ -1509,15 +1509,15 @@ function PartFeedback({ part, reuslt_json }) {
                     {/* pace */}
                     {/* <li className="pace_feedback">Your overall <span className="bold_span">pace</span> is <span className="speed_text">{speed_rate_sign}</span>, with <span className="speed_number">{parseInt(response_json?.speech_score?.fluency?.overall_metrics?.word_correct_per_minute)}</span> correct words count per minute.</li> */}
                     {(pace_sd > PACE_SD_BAR)?
-                        <li className="pace_feedback">Your average speaking <span className="bold_span">pace</span> seemed <span className="pace_span">appropriately</span>. Varying your pace helped emphasize key points and engage listeners from diverse backgrounds.</li> :
-                        <li className="pace_feedback">Your average speaking <span className="bold_span">pace</span> seemed <span className="pace_span">inappropriately</span>. You may vary your pace to help emphasize key points and engage listeners from diverse backgrounds.</li>
+                        <li className="pace_feedback">Your average speaking <span className="bold_span">pace</span> seemed <span className="pace_span">appropriate</span>. Varying your pace helped emphasize key points and engage listeners from diverse backgrounds.</li> :
+                        <li className="pace_feedback">Your average speaking <span className="bold_span">pace</span> seemed <span className="pace_span">inappropriate</span>. You may vary your pace to help emphasize key points and engage listeners from diverse backgrounds.</li>
                     }
 
 
                     {/* pitch variation */}
                     {(pitch_vary_sign == "changable")?
-                        <li className="pitch_feedback">Your <span className="bold_span">pitch</span> changed <span className="stress_span">expressively</span> e.g. when conveying the sentence <span className="stress_sentence">{stress_sentence}</span>. This creative language practice helped acknowledge different perspectives respectfully.</li> :
-                        <li className="pitch_feedback">You showed <span className="stress_span">only some changes</span> in <span className="bold_span">pitch</span>. You may learn to modulate your speech by varying your pitches to help acknowledge different perspectives respectfully.</li>
+                        <li className="pitch_feedback">Your <span className="bold_span">pitch</span> changed <span className="stress_span">expressively</span>, e.g., when conveying the sentence <span className="stress_sentence">{stress_sentence}</span>. This creative language practice helped acknowledge different perspectives respectfully.</li> :
+                        <li className="pitch_feedback">You showed only <span className="stress_span">slight</span> changes in <span className="bold_span">pitch</span>. You may learn to modulate your speech by varying your pitches to help acknowledge different perspectives respectfully.</li>
                     }                    
                     {/* <li className="pitch_feedback">Your <span className="bold_span">pitch</span> is <span className="stress_label">{pitch_vary_sign}</span>, presenting the most varied tone in sentence <span className="stress_sentence">{stress_sentence}</span>.</li> */}
                     
@@ -1525,10 +1525,10 @@ function PartFeedback({ part, reuslt_json }) {
                     {/* pause */}
                     {pausing_valid_sign &&
                         (pausing_flexible_sign)?
-                            <li className="pause_feedback">You utilized <span className="bold_span">pausing</span> <span className="pause_span">flexibly</span>, for example before {pause_examples.map((example, ex_idx) => {
+                            <li className="pause_feedback">You utilized <span className="bold_span">pausing</span> <span className="pause_span">flexibly</span>, e.g., before {pause_examples.map((example, ex_idx) => {
                                 return (ex_idx == pause_examples.length-1)? <span className="pause_example">{(pause_examples.length>1) && "and "}"{example}"</span>:<span className="pause_example">"{example}", </span>
-                            })}, seamlessly bringing together listeners from different backgrounds.</li> :
-                            <li className="pause_feedback">You utilized <span className="bold_span">pausing</span> <span className="pause_span">inflexibly</span>. You may want to modulate your speech by making pauses at the end of a complete chunk or at points you would like to emphasize.</li>
+                            })}, seamlessly connecting listeners from different backgrounds.</li> :
+                            <li className="pause_feedback">You might have utilized <span className="bold_span">pausing</span> <span className="pause_span">inflexibly</span>. You may want to modulate your speech by making pauses at the end of a complete chunk or at points you would like to emphasize.</li>
                     }
                     {jam_detect_sign &&
                         <li className="pause_feedback">Your speech included systematic <span className="bold_span">pauses</span> that occurred <span className="jam_span">unintentionally</span>.</li>
@@ -1549,7 +1549,7 @@ function PartFeedback({ part, reuslt_json }) {
                 <ul>
                     {(negotiate_flexible_sign)?
                         <li>You <span className="grammar_span">skillfully</span> drew from diverse <span className="bold_span">grammatical practices</span> to negotiate meaning <span className="grammar_span">flexibly</span>.</li> :
-                        <li>You showed <span className="grammar_span">only some</span> diverse <span className="bold_span">grammatical practices</span> and negotiated meaning <span className="grammar_span">inflexibly</span>.</li>
+                        <li>You demonstrated <span className="grammar_span">only some</span> diverse <span className="bold_span">grammatical practices</span> and might <span className="grammar_span">not</span> have negotiated meaning <span className="grammar_span">flexibly</span>.</li>
                     }
                 </ul>
                 {/* <GrammarAspects mJson={response_json} mMaxSentences={max_score_sentences} mMinSentences={min_score_sentences} mMaxScores={max_sentence_scores} mMinScores={min_sentence_scores}/> */}
@@ -1558,14 +1558,14 @@ function PartFeedback({ part, reuslt_json }) {
                 <p className="report_title">Vocabulary report:</p>
                 <ul>
                     {(vocab_diverse_sign)?
-                        <li>You demonstrated skills in <span className="vocab_span">creatively adapting</span> your <span className="bold_span">word choices</span> for listeners globally. Varied choices highlighted ideas respectfully and built cooperation across communities.</li> :
+                        <li>You demonstrated skills <span className="vocab_span">creatively adapting</span> your <span className="bold_span">word choices</span> for listeners globally. Varied choices highlighted ideas respectfully and built cooperation across communities.</li> :
                         <li>You might need to <span className="vocab_span">further adapt</span> your <span className="bold_span">word choices</span> for a global audience. You may pay attention to {vocab_diverse_terms.map((diverse_term, diverse_term_idx) => {
                             return (<span className="vocab_example">{(vocab_diverse_terms.length>1 && diverse_term_idx==(vocab_diverse_terms.length-1)) && "and "}{diverse_term.replace("_", " ")}{(diverse_term_idx!=(vocab_diverse_terms.length-1)) && ", "}</span>);
                         })} when improving your vocabulary diversity.</li>
                     }
                     
                     { academic_sign &&
-                        <li>Your word selections matched audiences and aims authentically. This enhanced building consensus while representing varied cultural viewpoints harmoniously through cooperative practices.</li>
+                        <li>Your word selections authentically matched audiences and aims. This enhanced building consensus while representing varied cultural viewpoints harmoniously through cooperative practices.</li>
                     }
                 </ul>
                 {/* <VocabularyAspects mJson={response_json} mMaxSentences={max_score_sentences} mMinSentences={min_score_sentences} mMaxScores={max_sentence_scores} mMinScores={min_sentence_scores}/> */}
